@@ -1,0 +1,37 @@
+{
+    "name": "mademedia/silverstripe-cloudinary",
+    "description": "SilverStripe Module. Replaces SilverStripe's inbuilt asset management with Cloudinary.",
+    "type": "silverstripe-module",
+    "keywords": ["silverstripe", "cloudinary"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Sealan Cronin",
+            "homepage": "http://www.mademedia.co.uk/",
+            "role": "Developer"
+        },
+        {
+            "name": "Hiren Patel",
+            "email": "hiren.patel@mademedia.co.uk",
+            "role": "Developer"
+        },
+        {
+            "name": "Nivanka Fonseka",
+            "email": "nivanka.fonseka@mademedia.co.uk",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "email": "developers@mademedia.co.uk",
+        "issues": "https://github.com/MadeHQ/silverstripe-markdown/issues",
+        "wiki": "https://github.com/MadeHQ/silverstripe-markdown/wiki",
+        "source": "https://github.com/MadeHQ/silverstripe-markdown"
+    },
+    "require": {
+        "silverstripe/framework": "3.1.13",
+        "composer/installers": "*"
+    },
+    "extra": {
+        "installer-name": "cloudinary"
+    }
+}
