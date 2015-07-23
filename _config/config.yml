@@ -8,3 +8,6 @@ After: 'framework/*','cms/*'
 SiteConfig:
   extensions:
     - CloudinaryConfigs
+Controller:
+  extensions:
+    - CloudinaryControllerExtension

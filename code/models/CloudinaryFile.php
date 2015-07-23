@@ -7,9 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Cloudinary.php';
-require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Uploader.php';
-require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Api.php';
+
 
 class CloudinaryFile extends DataObject {
 
@@ -24,16 +22,16 @@ class CloudinaryFile extends DataObject {
 	 * @var array
 	 */
 	private static $db = array(
-		'Title'				=> 'Varchar(500)',
-		'FileName'			=> 'Varchar(500)',
-		'PublicID'			=> 'Varchar(500)',
-		'Version'			=> 'Varchar(500)',
-		'Signature'			=> 'Varchar(500)',
+		'Title'				=> 'Varchar(200)',
+		'FileName'			=> 'Varchar(200)',
+		'PublicID'			=> 'Varchar(200)',
+		'Version'			=> 'Varchar(200)',
+		'Signature'			=> 'Varchar(200)',
 		'URL'				=> 'Varchar(500)',
 		'SecureURL'			=> 'Varchar(500)',
-		'FileType'			=> 'Varchar(500)',
+		'FileType'			=> 'Varchar(100)',
 		'FileSize'			=> 'Float',
-		'Format'			=> 'Varchar(500)'
+		'Format'			=> 'Varchar(50)'
 	);
 
 
@@ -41,28 +39,44 @@ class CloudinaryFile extends DataObject {
 	 * @var array
 	 */
 	private static $summary_fields = array(
-		'Thumbnail',
 		'FileName',
 		'Date',
 		'FileSize'
 	);
 
+
+	/**
+	 * @var array
+	 */
 	private static $searchable_fields = array(
 		'FileName'
 	);
 
 
-
 	/**
-	 * Set cloudinary configs
+	 * SetCloudinaryConfigs
+	 *
+	 * Check whether the database is ready and update cloudinary
+	 * configs from the site configs
 	 */
 	public static function SetCloudinaryConfigs()
 	{
-		Cloudinary::config(array(
-			"cloud_name"    => SiteConfig::current_site_config()->CloudinaryCloudName,
-			"api_key"       => SiteConfig::current_site_config()->CloudinaryAPIKey,
-			"api_secret"    => SiteConfig::current_site_config()->CloudinaryAPISecret,
-		));
+		if(DB::isActive()) {
+			$tables = DB::tableList();
+			if(in_array('SiteConfig', $tables)){
+				$result = DB::query('SELECT * FROM "SiteConfig"');
+				if($result->numRecords()){
+					$arr = $result->nextRecord();
+					if(isset($arr['CloudinaryCloudName']) && isset($arr['CloudinaryAPIKey']) && isset($arr['CloudinaryAPISecret'])){
+						Cloudinary::config(array(
+							"cloud_name"    => $arr['CloudinaryCloudName'],
+							"api_key"       => $arr['CloudinaryAPIKey'],
+							"api_secret"    => $arr['CloudinaryAPISecret']
+						));
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -82,9 +96,12 @@ class CloudinaryFile extends DataObject {
 	}
 
 
+	/**
+	 * @return FieldList
+	 * update the CMS fields
+	 */
 	public function getCMSFields(){
 		$fields = parent::getCMSFields();
-
 		$arrFields = array(
 			'FileName',
 			'PublicID',
@@ -98,10 +115,8 @@ class CloudinaryFile extends DataObject {
 			'Format',
 			'FileType'
 		);
-
 		foreach($arrFields as $strType){
 			if($field = $fields->dataFieldByName($strType)){
-
 				if(in_array($strType, array('URL', 'SecureURL'))){
 					$url = $this->getField($strType);
 					$newField = LiteralField::create($strType, $this->GetLiteralHTML($strType, "<a href='{$url}' target='_blank'>{$url}</a>"));
@@ -114,16 +129,17 @@ class CloudinaryFile extends DataObject {
 				else {
 					$fields->replaceField($strType, $field->performReadonlyTransformation());
 				}
-
-
-
 			}
 		}
-
 		return $fields;
 	}
 
 
+	/**
+	 * @param $strField
+	 * @param $strValue
+	 * @return string
+	 */
 	function GetLiteralHTML($strField, $strValue){
 		$str = <<<HTML
 <div id='{$strField}' class='field readonly text'>
@@ -138,23 +154,30 @@ HTML;
 		return $str;
 	}
 
+
+
 	/**
 	 * @return mixed|null
 	 */
 	public function getDisplayURL()
 	{
+
+		$strSource = '';
 		if($this->PublicID){
-			$options = $this->options ? $this->options : array();
 			$strSource = $this->PublicID . '.' . $this->Format;
-			CloudinaryImage::SetCloudinaryConfigs();
-			return Cloudinary::cloudinary_url($strSource, $options);
 		}elseif($this->URL || $this->SecureURL){
 			$strURL = $this->URL ? $this->URL : $this->SecureURL;
-			$options = $this->options ? $this->options : array();
 			$strSource = substr($strURL, strrpos($strURL, '/') + 1);
-			CloudinaryImage::SetCloudinaryConfigs();
-			return Cloudinary::cloudinary_url($strSource, $options);
 		}
+
+		if($strSource){
+			$options = $this->options ? $this->options : array();
+			return Cloudinary::cloudinary_url(
+				$strSource,
+				$options
+			);
+		}
+
 		return null;
 	}
 
@@ -165,17 +188,7 @@ HTML;
 	public function CloudinaryURL($options)
 	{
 		$strSource = $this->PublicID . '.' . $this->Format;
-		CloudinaryFile::SetCloudinaryConfigs();
 		Cloudinary::cloudinary_url($strSource, $options);
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function AbsoluteSize()
-	{
-		return $this->FileSize;
 	}
 
 
@@ -184,34 +197,39 @@ HTML;
 	 */
 	public function getSize()
 	{
-		$size = $this->AbsoluteSize();
-		return ($size) ? File::format_size($size) : false;
+		return ($this->FileSize) ? File::format_size($this->FileSize) : false;
 	}
 
+
+	/**
+	 * @return mixed
+	 * get the extension from the file name
+	 */
 	public function getExtension(){
 		return pathinfo($this->FileName, PATHINFO_EXTENSION);
 	}
 
+
+	/**
+	 * @return Image_Cached
+	 */
 	public function StripThumbnail(){
 		return new Image_Cached($this->Icon());
 	}
+
 
 	/**
 	 * @return mixed|null
 	 */
 	public function Icon()
 	{
-
 		$ext = strtolower($this->Format);
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
 			$ext = $this->appCategory();
 		}
-
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
 			$ext = "generic";
 		}
-
 		return FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif";
-
 	}
 } 

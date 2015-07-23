@@ -19,18 +19,18 @@ class CloudinaryImage extends CloudinaryFile {
 
 
 	/**
-	 * @return mixed|null
+	 * @return CloudinaryImage_Cached|mixed|null
 	 */
 	public function Icon()
 	{
-		$options = array(
-			'width'     => 100,
-			'height'    => 100,
-			'crop'      => 'fill'
-		);
-		$strSource = $this->PublicID . '.' . $this->Format;
-		CloudinaryFile::SetCloudinaryConfigs();
-		return Cloudinary::cloudinary_url($strSource, $options);
+		return $this->MakeCloudinaryCached(100, 100, 'fill');
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached|Image_Cached
+	 */
+	public function StripThumbnail(){
+		return $this->MakeCloudinaryCached(100, 100, 'fill', 60);
 	}
 
 	/**
@@ -47,21 +47,30 @@ class CloudinaryImage extends CloudinaryFile {
 	 */
 	public function getTag()
 	{
-		CloudinaryFile::SetCloudinaryConfigs();
-		$url = $this->DirectOutputURL ? $this->DirectOutputURL : $this->getDisplayURL();
-
-
+		$url = $this->getDisplayURL();
 		$title = $this->FileName;
 		if($url)
 			return "<img src=\"$url\" alt=\"$title\" />";
 	}
 
-	public function StripThumbnail(){
 
-		return $this->MakeCloudinaryCached(100, 100, 60, 'fill');
-	}
+	/**
+	 * @param $iWidth
+	 * @param $iHeight
+	 * @param string $crop
+	 * @param int $iQuality
+	 * @param null $strGravity
+	 * @param null $fetchFormat
+	 * @param null $strBackground
+	 * @param null $x
+	 * @param null $y
+	 * @return CloudinaryImage_Cached
+	 */
+	function MakeCloudinaryCached($iWidth, $iHeight, $crop = 'fit', $iQuality = 0, $strGravity = null, $fetchFormat = null, $strBackground = null, $x = null, $y = null){
 
-	function MakeCloudinaryCached($iWidth, $iHeight, $iQuality, $crop = 'fit', $strGravity = null, $fetchFormat = null, $strBackground = null, $x = null, $y = null){
+		if(!$iQuality){
+			$iQuality = CloudinaryConfigs::ImageQuality();
+		}
 
 		$arrOptions = array(
 			'width' 	=> $iWidth,
@@ -78,19 +87,23 @@ class CloudinaryImage extends CloudinaryFile {
 			$arrOptions['y'] = $y;
 		}
 
-		if($fetchFormat)
+		if($fetchFormat){
 			$arrOptions['fetch_format'] = $fetchFormat;
+		}
 
-		if($strGravity)
+		if($strGravity){
 			$arrOptions['gravity'] = $strGravity;
+		}
 
-		if($strBackground)
+		if($strBackground){
 			$arrOptions['background'] = $strBackground;
+		}
 
 		return new CloudinaryImage_Cached($arrOptions, $this);
 	}
 
 }
+
 
 class CloudinaryImage_Cached extends CloudinaryImage {
 
@@ -102,11 +115,10 @@ class CloudinaryImage_Cached extends CloudinaryImage {
 	 */
 	public function __construct($options = null, $dataRecord = null, $model = null)
 	{
-		$bIsSingleton = !($dataRecord instanceof CloudinaryImage);
-		parent::__construct(array(), $bIsSingleton, $model);
+		parent::__construct(array(), false, $model);
 		$this->ID = -1;
 		$this->options =  $options;
-		if($dataRecord instanceof CloudinaryImage){
+		if($dataRecord instanceof CloudinaryFile){
 			$this->PublicID = $dataRecord->PublicID;
 			$this->URL      = $dataRecord->URL;
 			$this->SecureURL = $dataRecord->SecureURL;
@@ -115,9 +127,6 @@ class CloudinaryImage_Cached extends CloudinaryImage {
 			$this->Format = $dataRecord->Format;
 		}
 
-		if($dataRecord instanceof CloudinaryVideo){
-			$this->DirectOutputURL = $dataRecord->DirectOutputURL;
-		}
 	}
 
 }

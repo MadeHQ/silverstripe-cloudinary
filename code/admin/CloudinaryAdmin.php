@@ -159,7 +159,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 
 		$fields->setForm($form);
 		$form->setTemplate($this->getTemplatesWithSuffix('_EditForm'));
-		$form->addExtraClass('cms-edit-form cms-panel-padded center ' . $this->BaseCSSClasses());
+		$form->addExtraClass('cms-edit-form center ' . $this->BaseCSSClasses());
 		$form->setAttribute('data-pjax-fragment', 'CurrentForm');
 		$this->extend('updateEditForm', $form);
 

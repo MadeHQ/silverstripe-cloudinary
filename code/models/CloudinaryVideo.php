@@ -21,8 +21,17 @@ class CloudinaryVideo extends CloudinaryFile {
 	);
 
 	public function StripThumbnail(){
-		$this->DirectOutputURL = $this->Icon();
-		return new CloudinaryImage_Cached(array(), $this);
+		$clone = $this->duplicate(false);
+		$clone->Format = 'jpg';
+		return new CloudinaryImage_Cached(array(
+			'width'     	=> 100,
+			'height'   	 	=> 100,
+			'crop'      	=> 'fill',
+			'start_offset'	=> 0,
+			'resource_type'	=> 'video',
+			'quality'		=> 70
+		), $clone);
+
 	}
 
 	public function Icon()
@@ -35,11 +44,9 @@ class CloudinaryVideo extends CloudinaryFile {
 			'start_offset'	=> 0,
 			'resource_type'	=> 'video',
 			'quality'		=> 70
-
 		);
 
 		$strSource = $this->PublicID . '.jpg';
-		CloudinaryFile::SetCloudinaryConfigs();
 		return Cloudinary::cloudinary_url($strSource, $options);
 	}
 

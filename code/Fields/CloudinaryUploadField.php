@@ -37,10 +37,6 @@ class CloudinaryUploadField extends UploadField
 			return $this->httpError(403);
 		}
 
-		require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Cloudinary.php';
-		require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Uploader.php';
-		require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Api.php';
-
 		// Protect against CSRF on destructive action
 		$token = $this->getForm()->getSecurityToken();
 		if(!$token->checkRequest($request)) return $this->httpError(400);
@@ -187,7 +183,7 @@ class CloudinaryUploadField extends UploadField
 			'name' => $file->FileName,
 			'url' => $file->URL,
 			'thumbnail_url' => $file->UploadFieldThumbnailURL,
-			'size' => $file->AbsoluteSize(),
+			'size' => $file->FileSize,
 			'type' => $file->FileType,
 			'buttons' => $file->UploadFieldFileButtons,
 			'fieldname' => $this->getName()
