@@ -20,18 +20,57 @@ class CloudinaryVideo extends CloudinaryFile {
 		'FrameRate'			=> 'Varchar(100)'
 	);
 
+	/**
+	 * @return FieldList
+	 */
+	public function getCMSFields() {
+		$fields = parent::getCMSFields();
+
+		$fileAttributes = $fields->fieldByName('Root.Main.FilePreview')->fieldByName('FilePreviewData');
+		$fileAttributes->push(new ReadonlyField("Dimensions", _t('AssetTableField.DIM','Dimensions') . ':', $this->Width . ' x ' . $this->Height));
+		$fileAttributes->push(new ReadonlyField("Duration", 'Duration:'));
+
+		return $fields;
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached|Image_Cached
+	 */
 	public function StripThumbnail(){
+		return $this->GetVideoImage(132, 128, 60);
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached
+	 */
+	public function getThumbnail(){
+		return $this->GetVideoImage(32, 32, 60);
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached|Image_Cached
+	 */
+	public function CMSThumbnail(){
+		return $this->GetVideoImage(132, 128, 60);
+	}
+
+	/**
+	 * @param $iWidth
+	 * @param $iHeight
+	 * @param int $iQuality
+	 * @return CloudinaryImage_Cached
+	 */
+	public function GetVideoImage($iWidth, $iHeight, $iQuality = 70){
 		$clone = $this->duplicate(false);
 		$clone->Format = 'jpg';
 		return new CloudinaryImage_Cached(array(
-			'width'     	=> 100,
-			'height'   	 	=> 100,
+			'width'     	=> $iWidth,
+			'height'   	 	=> $iHeight,
 			'crop'      	=> 'fill',
 			'start_offset'	=> 0,
 			'resource_type'	=> 'video',
-			'quality'		=> 70
+			'quality'		=> $iQuality
 		), $clone);
-
 	}
 
 	public function Icon()

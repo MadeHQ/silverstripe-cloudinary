@@ -19,6 +19,18 @@ class CloudinaryImage extends CloudinaryFile {
 
 
 	/**
+	 * @return FieldList
+	 */
+	public function getCMSFields() {
+		$fields = parent::getCMSFields();
+
+		$fileAttributes = $fields->fieldByName('Root.Main.FilePreview')->fieldByName('FilePreviewData');
+		$fileAttributes->push(new ReadonlyField("Dimensions", _t('AssetTableField.DIM','Dimensions') . ':', $this->Width . ' x ' . $this->Height));
+
+		return $fields;
+	}
+
+	/**
 	 * @return CloudinaryImage_Cached|mixed|null
 	 */
 	public function Icon()
@@ -31,6 +43,20 @@ class CloudinaryImage extends CloudinaryFile {
 	 */
 	public function StripThumbnail(){
 		return $this->MakeCloudinaryCached(100, 100, 'fill', 60);
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached
+	 */
+	public function getThumbnail(){
+		return $this->MakeCloudinaryCached(32, 32, 'fill', 60);
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached|Image_Cached
+	 */
+	public function CMSThumbnail(){
+		return $this->MakeCloudinaryCached(132, 128, 'fill', 60);
 	}
 
 	/**
@@ -47,7 +73,7 @@ class CloudinaryImage extends CloudinaryFile {
 	 */
 	public function getTag()
 	{
-		$url = $this->getDisplayURL();
+		$url = $this->getURL();
 		$title = $this->FileName;
 		if($url)
 			return "<img src=\"$url\" alt=\"$title\" />";

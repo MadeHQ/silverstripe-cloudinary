@@ -11,3 +11,9 @@ SiteConfig:
 Controller:
   extensions:
     - CloudinaryControllerExtension
+CloudinaryConfigs:
+  settings:
+    CloudName: ''
+    APIKey: ''
+    APISecret: ''
+    Quality: 70

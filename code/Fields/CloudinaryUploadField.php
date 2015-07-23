@@ -48,12 +48,6 @@ class CloudinaryUploadField extends UploadField
 		// Save the temporary file into a File object
 		$uploadedFiles = $this->extractUploadedFileData($postVars);
 
-		\Cloudinary::config(array(
-			"cloud_name" 	=> SiteConfig::current_site_config()->CloudinaryCloudName,
-			"api_key" 		=> SiteConfig::current_site_config()->CloudinaryAPIKey,
-			"api_secret" 	=> SiteConfig::current_site_config()->CloudinaryAPISecret
-		));
-
 		$return = array('error' => 'The file upload was not successful');
 		$uploadedFile = reset($uploadedFiles);
 

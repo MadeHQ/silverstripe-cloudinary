@@ -61,21 +61,22 @@ class CloudinaryFile extends DataObject {
 	 */
 	public static function SetCloudinaryConfigs()
 	{
-		if(DB::isActive()) {
-			$tables = DB::tableList();
-			if(in_array('SiteConfig', $tables)){
-				$result = DB::query('SELECT * FROM "SiteConfig"');
-				if($result->numRecords()){
-					$arr = $result->nextRecord();
-					if(isset($arr['CloudinaryCloudName']) && isset($arr['CloudinaryAPIKey']) && isset($arr['CloudinaryAPISecret'])){
-						Cloudinary::config(array(
-							"cloud_name"    => $arr['CloudinaryCloudName'],
-							"api_key"       => $arr['CloudinaryAPIKey'],
-							"api_secret"    => $arr['CloudinaryAPISecret']
-						));
-					}
-				}
-			}
+		$arr = Config::inst()->get('CloudinaryConfigs', 'settings');
+		if(isset($arr['CloudName'])
+			&& isset($arr['APIKey'])
+			&& isset($arr['APISecret'])
+			&& !empty($arr['CloudName'])
+			&& !empty($arr['APIKey'])
+			&& !empty($arr['APISecret'])
+		){
+			Cloudinary::config(array(
+				"cloud_name"    => $arr['CloudName'],
+				"api_key"       => $arr['APIKey'],
+				"api_secret"    => $arr['APISecret']
+			));
+		}
+		else{
+			user_error("Cloudinary configs are not defined", E_USER_ERROR);
 		}
 	}
 
@@ -100,39 +101,46 @@ class CloudinaryFile extends DataObject {
 	 * @return FieldList
 	 * update the CMS fields
 	 */
-	public function getCMSFields(){
-		$fields = parent::getCMSFields();
-		$arrFields = array(
-			'FileName',
-			'PublicID',
-			'Version',
-			'Signature',
-			'URL',
-			'SecureURL',
-			'FileSize',
-			'Width',
-			'Height',
-			'Format',
-			'FileType'
+
+	public function getCMSFields() {
+		// Preview
+		$previewField = new LiteralField("ImageFull", $this->CMSThumbnail());
+
+		//create the file attributes in a FieldGroup
+		$filePreview = CompositeField::create(
+			CompositeField::create(
+				$previewField
+			)->setName("FilePreviewImage")->addExtraClass('cms-file-info-preview'),
+			CompositeField::create(
+				$fileDataField = CompositeField::create(
+					new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
+					new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName),
+					new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()),
+					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL') ,
+						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Link())
+					),
+					new DateField_Disabled("Created", _t('AssetTableField.CREATED','First uploaded') . ':'),
+					new DateField_Disabled("LastEdited", _t('AssetTableField.LASTEDIT','Last changed') . ':')
+				)
+			)->setName("FilePreviewData")->addExtraClass('cms-file-info-data')
+		)->setName("FilePreview")->addExtraClass('cms-file-info');
+
+		$urlField->dontEscape = true;
+
+		$fields = new FieldList(
+			new TabSet('Root',
+				new Tab('Main',
+					$filePreview,
+					new TextField("Title", _t('AssetTableField.TITLE','Title'))
+				)
+			)
 		);
-		foreach($arrFields as $strType){
-			if($field = $fields->dataFieldByName($strType)){
-				if(in_array($strType, array('URL', 'SecureURL'))){
-					$url = $this->getField($strType);
-					$newField = LiteralField::create($strType, $this->GetLiteralHTML($strType, "<a href='{$url}' target='_blank'>{$url}</a>"));
-					$fields->replaceField($strType, $newField);
-				}
-				else if ($strType === 'FileSize') {
-					$newField = LiteralField::create($strType, $this->GetLiteralHTML($strType, $this->getSize()));
-					$fields->replaceField($strType, $newField);
-				}
-				else {
-					$fields->replaceField($strType, $field->performReadonlyTransformation());
-				}
-			}
-		}
+
+		$this->extend('updateCMSFields', $fields);
+
 		return $fields;
 	}
+
 
 
 	/**
@@ -155,11 +163,23 @@ HTML;
 	}
 
 
+	public function Link(){
+		$strLink = "";
+		if($this->PublicID){
+			$strLink = Cloudinary::cloudinary_url(
+				$this->PublicID . '.' . $this->Format
+			);
+		}elseif($this->URL || $this->SecureURL){
+			$strLink = $this->URL ? $this->URL : $this->SecureURL;
+		}
+		return $strLink;
+	}
+
 
 	/**
 	 * @return mixed|null
 	 */
-	public function getDisplayURL()
+	public function getURL()
 	{
 
 		$strSource = '';
@@ -214,6 +234,20 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function StripThumbnail(){
+		return new Image_Cached($this->Icon());
+	}
+
+	/**
+	 * @return Image_Cached
+	 */
+	public function CMSThumbnail(){
+		return new Image_Cached($this->Icon());
+	}
+
+	/**
+	 * @return CloudinaryImage_Cached
+	 */
+	public function getThumbnail(){
 		return new Image_Cached($this->Icon());
 	}
 
