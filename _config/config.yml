@@ -5,13 +5,14 @@ After: 'framework/*','cms/*'
 # YAML configuration for SilverStripe
 # See http://doc.silverstripe.org/framework/en/topics/configuration
 # Caution: Indentation through two spaces, not tabs
-SiteConfig:
+DataObject:
   extensions:
     - CloudinaryConfigs
 Controller:
   extensions:
     - CloudinaryControllerExtension
 CloudinaryConfigs:
+  replace_relationships: true
   settings:
     CloudName: ''
     APIKey: ''

@@ -7,8 +7,6 @@
  * To change this template use File | Settings | File Templates.
  */
 
-
-
 class CloudinaryFile extends DataObject {
 
 
@@ -248,7 +246,7 @@ HTML;
 	 * @return CloudinaryImage_Cached
 	 */
 	public function getThumbnail(){
-		return new Image_Cached($this->Icon());
+		return $this->CMSThumbnail();
 	}
 
 

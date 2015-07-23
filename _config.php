@@ -17,3 +17,6 @@ require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Api.php';
 
 CMSMenu::remove_menu_item('CloudinaryFileAddController');
 CMSMenu::remove_menu_item('AssetAdmin');
+
+
+CloudinaryConfigs::ReplaceFileFields();

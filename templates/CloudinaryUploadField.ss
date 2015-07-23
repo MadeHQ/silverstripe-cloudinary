@@ -8,7 +8,7 @@
                 <div class="ss-uploadfield-item-info">
                     <input type='hidden' value='$ID' name='{$Top.Name}[Files][]' />
                     <label class="ss-uploadfield-item-name">
-                        <span class="name">$Name.XML</span>
+                        <span class="name">$Title.XML</span>
                         <span class="size">$Size</span>
                         <div class="clear"><!-- --></div>
                     </label>
@@ -27,7 +27,7 @@
 </ul>
 <% if $canUpload || $canAttachExisting %>
     <div class="ss-uploadfield-item ss-uploadfield-addfile<% if $CustomisedItems %> borderTop<% end_if %>">
-        <% if canUpload %>
+        <% if $canUpload %>
             <div class="ss-uploadfield-item-preview ss-uploadfield-dropzone ui-corner-all">
                 <% if $multiple %>
                     <% _t('UploadField.DROPFILES', 'drop files') %>
@@ -44,7 +44,7 @@
                     <b><% _t('UploadField.ATTACHFILE', 'Attach a file') %></b>
                 <% end_if %>
                 <% if $canPreviewFolder %>
-                    <small>(<%t UploadField.UPLOADSINTO 'saves into /{path}' path=$FolderName %>)</small>
+                    <small>(saves into Cloudinary)</small>
                 <% end_if %>
             </label>
             <% if $canUpload %>

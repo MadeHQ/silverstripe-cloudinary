@@ -19,5 +19,60 @@ class CloudinaryConfigs extends DataExtension {
 		return $iSetting;
 	}
 
+	public function updateCMSFieldSecondary(FieldList $fields){
+		return $this->updateCMSFields($fields);
+	}
+
+	/**
+	 * @param FieldList $fields
+	 */
+	public function updateCMSFields(FieldList $fields){
+		if(Config::inst()->get('CloudinaryConfigs', 'replace_relationships')){
+			foreach($fields->dataFields() as $field) {
+				if($field instanceof UploadField) {
+
+					$fields->replaceField($field->getName(),
+						CloudinaryUploadField::create($field->getName(), $field->Title()));
+
+				}
+			}
+		}
+	}
+
+
+	/**
+	 * ReplaceFileFields
+	 */
+	public static function ReplaceFileFields(){
+		if(Config::inst()->get('CloudinaryConfigs', 'replace_relationships')){
+			$arrRelationships = array('has_one', 'has_many', 'many_many');
+
+			$classes = ClassInfo::subclassesFor('DataObject');
+			foreach($classes as $className){
+				foreach($arrRelationships as $relationType){
+					if($relation = Config::inst()->get($className, $relationType)){
+						if(in_array('File', $relation) || in_array('Image', $relation)){
+
+							$updateRelations = array();
+							foreach($relation as $field => $type){
+								$newType = $type;
+								if($type == 'File'){
+									$newType = 'CloudinaryFile';
+								}
+								if($type == 'Image'){
+									$newType = 'CloudinaryImage';
+								}
+								$updateRelations[$field] = $newType;
+							}
+
+							Config::inst()->update($className, $relationType, $updateRelations);
+
+						}
+					}
+				}
+
+			}
+		}
+	}
 
 } 

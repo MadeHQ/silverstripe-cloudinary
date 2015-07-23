@@ -255,8 +255,9 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 		$config->addComponent(new GridFieldFilterHeader());
 		$config->addComponent($colsComponent = new GridFieldDataColumns());
 		$colsComponent->setDisplayFields(array(
-			'FileName' => singleton('File')->fieldLabel('FileName'),
-			'Size' => singleton('File')->fieldLabel('Size')
+			'StripThumbnail'	=> 'Thumbnail',
+			'FileName' 			=> singleton('File')->fieldLabel('FileName'),
+			'Size' 				=> singleton('File')->fieldLabel('Size')
 		));
 
 		// If relation is to be autoset, we need to make sure we only list compatible objects.
