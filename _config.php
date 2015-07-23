@@ -20,3 +20,5 @@ CMSMenu::remove_menu_item('AssetAdmin');
 
 
 CloudinaryConfigs::ReplaceFileFields();
+
+ShortcodeParser::get('default')->register('cloudinary', array('CloudinaryFile', 'cloudinary_files'));

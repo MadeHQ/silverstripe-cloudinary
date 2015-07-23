@@ -264,4 +264,27 @@ HTML;
 		}
 		return FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif";
 	}
+
+
+	static public function cloudinary_files($arguments, $content = null, $parser = null){
+
+		if(!isset($arguments['id']) || !is_numeric($arguments['id'])) return;
+
+		$file = CloudinaryFile::get()->byID($arguments['id']);
+		if($file){
+
+			if($file->ClassName == 'CloudinaryFile'){
+				return sprintf('<a href="%s">%s</a>', $file->Link(), $content ? $content : $file->Title);
+			}
+			else if($file->ClassName == 'CloudinaryImage'){
+				return sprintf('<img src="%s" title="%s">', $file->Link(), $content ? $content : $file->Title);
+			}
+			else if($file->ClassName == 'CloudinaryVideo'){
+				return $file->forTemplate();
+			}
+		}
+
+	}
+
+
 } 

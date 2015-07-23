@@ -66,6 +66,9 @@ class CloudinaryVideo extends CloudinaryFile {
 		), $clone);
 	}
 
+	/**
+	 * @return mixed|null
+	 */
 	public function Icon()
 	{
 
@@ -80,6 +83,14 @@ class CloudinaryVideo extends CloudinaryFile {
 
 		$strSource = $this->PublicID . '.jpg';
 		return Cloudinary::cloudinary_url($strSource, $options);
+	}
+
+	public function forTemplate(){
+		return $this->getTag();
+	}
+
+	public function getTag(){
+		return cl_video_tag($this->PublicID . '.' . $this->Format);
 	}
 
 } 
