@@ -1,0 +1,39 @@
+.directcloudinaryupload p .or {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.uploadtext__container {
+    display: none;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #FFF;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 512px;
+}
+
+.status-text {
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #FFF;
+    display: block;
+    width: 0%;
+    background-color: #5db4df;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5db4df), color-stop(8%, #5db1dd), color-stop(50%, #439bcb), color-stop(54%, #3f99cd), color-stop(96%, #207db6), color-stop(100%, #1e7cba));
+    background-image: -webkit-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: -moz-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: -o-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+}
+
+.cms .ss-ui-button.video-delete-button {
+    color: #fff;
+    text-shadow: none;
+    border: solid 1px #980c10;
+    background: #d81b21;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));
+    background: -moz-linear-gradient(top, #ed1c24, #aa1317);
+}

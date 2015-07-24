@@ -7,6 +7,6 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class CloudinaryVimeoVideo extends CloudinaryVideo {
+class CloudinaryVimeoVideo extends CloudinaryExternalVideo {
 
 } 

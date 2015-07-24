@@ -177,13 +177,14 @@ HTML;
 	/**
 	 * @return mixed|null
 	 */
-	public function getURL()
+	public function getLink()
 	{
 
 		$strSource = '';
 		if($this->PublicID){
 			$strSource = $this->PublicID . '.' . $this->Format;
-		}elseif($this->URL || $this->SecureURL){
+		}
+        elseif($this->URL || $this->SecureURL){
 			$strURL = $this->URL ? $this->URL : $this->SecureURL;
 			$strSource = substr($strURL, strrpos($strURL, '/') + 1);
 		}
