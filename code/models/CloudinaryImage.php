@@ -72,6 +72,20 @@ class CloudinaryImage extends CloudinaryFile {
 			return "<img src=\"$url\" alt=\"$title\" />";
 	}
 
+	/*
+     * crop the image
+     */
+	public function CroppedImage($iWidth, $iHeight, $iQuality = 0)
+	{
+		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'crop', $iQuality);
+	}
+
+	public function FillImage( $iWidth, $iHeight, $iQuality = 70, $strGravity = 'faces' )
+	{
+		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'fill', $iQuality, $strGravity, 'auto');
+	}
+
+
 
 	/**
 	 * @param $iWidth

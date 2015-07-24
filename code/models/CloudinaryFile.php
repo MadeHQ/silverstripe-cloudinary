@@ -309,6 +309,8 @@ HTML;
 	 */
 	static public function cloudinary_files($arguments, $content = null, $parser = null){
 
+
+
 		if(!isset($arguments['id']) || !is_numeric($arguments['id'])) return;
 
 		$file = CloudinaryFile::get()->byID($arguments['id']);
@@ -318,7 +320,18 @@ HTML;
 				return sprintf('<a href="%s">%s</a>', $file->Link(), $content ? $content : $file->Title);
 			}
 			else if($file->ClassName == 'CloudinaryImage'){
-				return sprintf('<img src="%s" title="%s">', $file->Link(), $content ? $content : $file->Title);
+				$strSize = isset($arguments['size']) ? $arguments['size'] : null;
+				$arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_image_sizes');
+				if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
+					return sprintf('<img src="%s" title="%s">',
+						$file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getLink(),
+						$content ? $content : $file->Title
+					);
+				}
+				else {
+					return sprintf('<img src="%s" title="%s">', $file->Link(), $content ? $content : $file->Title);
+				}
+
 			}
 			else if($file->ClassName == 'CloudinaryVideo'){
 				return $file->forTemplate();
