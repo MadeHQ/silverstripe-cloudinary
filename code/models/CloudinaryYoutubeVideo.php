@@ -25,6 +25,7 @@ class CloudinaryYoutubeVideo extends CloudinaryVideo {
 
     public static function isYoutube($url){
         $host = parse_url($url, PHP_URL_HOST);
+//        echo (strpos($host, 'youtube') > 0);die();
         return strpos($host, 'youtube') > 0;
     }
 

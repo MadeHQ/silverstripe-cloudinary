@@ -1,5 +1,5 @@
 (function($){
-    $.entwine('VideoAttachField', function($){
+    $.entwine('NonCloudinaryVideoField', function($){
         $('button.video-attach-button').entwine({
             onclick: function(){
                 var forID = $(this).data('id') + '-holder';

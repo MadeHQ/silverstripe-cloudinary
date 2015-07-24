@@ -25,7 +25,7 @@ class CloudinaryVimeoVideo extends CloudinaryVideo {
 
     public static function isVimeo($url){
         $host = parse_url($url, PHP_URL_HOST);
-        return strpos($host, 'vimeo') > 0;
+        return strpos($host, 'vimeo') >= 0;
     }
 
 } 

@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: priyashantha
- * Date: 7/24/15
- * Time: 10:54 AM
- */
 
-class VideoAttachField extends FormField {
+class NonCloudinaryVideoField extends FormField {
 
     /**
      * @var array
@@ -18,8 +12,8 @@ class VideoAttachField extends FormField {
 
     public function Field($properties = array())
     {
-        Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/VideoAttachField.js");
-        Requirements::css(CLOUDINARY_RELATIVE . '/css/VideoAttachField.css');
+        Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/NonCloudinaryVideoField.js");
+        Requirements::css(CLOUDINARY_RELATIVE . '/css/NonCloudinaryVideoField.css');
 
         return parent::Field($properties);
 
@@ -105,28 +99,6 @@ class VideoAttachField extends FormField {
             'Success'		=> $bSuccess
         ));
     }
-/*
-    public function isYoutube($url){
-        $host = parse_url($url, PHP_URL_HOST);
-        return strpos($host, 'youtube') > 0;
-    }
-
-    public function isVimeo($url){
-        $host = parse_url($url, PHP_URL_HOST);
-        return strpos($host, 'vimeo') > 0;
-    }
-
-    public function youTubeVideoID($sourceURL)
-    {
-        parse_str( parse_url( $sourceURL, PHP_URL_HOST ), $arrVars );
-        return isset($arrVars['v']) ? $arrVars['v'] : null;
-    }
-
-    public function vimeoVideoID($sourceURL)
-    {
-        sscanf(parse_url($sourceURL, PHP_URL_PATH), '/%d', $iVimeoId);
-        return $iVimeoId;
-    }*/
 
     public function DeleteLink(){
         return $this->Link('delete_image');
