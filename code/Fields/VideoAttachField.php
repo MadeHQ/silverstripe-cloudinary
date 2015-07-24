@@ -34,7 +34,7 @@ class VideoAttachField extends FormField {
     {
         if(empty($value) && $record) {
             if(($record instanceof DataObject) && $record->hasMethod($this->getName())) {
-                $video = CloudinaryExternalVideo::get()->byId($record->getField($this->getName() . 'ID'));
+                $video = CloudinaryVideo::get()->byId($record->getField($this->getName() . 'ID'));
                 if($video)
                     $this->value = $video->ID;
             }
@@ -52,7 +52,7 @@ class VideoAttachField extends FormField {
 
     public function VideoURL(){
         if($this->value){
-            $video = CloudinaryExternalVideo::get()->byID($this->value);
+            $video = CloudinaryVideo::get()->byID($this->value);
             if($video)
                 return $video->getField('URL');
         }
@@ -80,13 +80,14 @@ class VideoAttachField extends FormField {
 
         if(isset($_POST['SourceURL'])){
             $sourceURL = $_POST['SourceURL'];
-            $bIsYoutube = $this->isYoutube($sourceURL);
-            $bIsVimeo = $this->isVimeo($sourceURL);
+            $bIsYoutube = CloudinaryYoutubeVideo::isYoutube($sourceURL);
+            $bIsVimeo = CloudinaryVimeoVideo::isVimeo($sourceURL);
             if($bIsYoutube || $bIsVimeo){
                 $filterClass = $bIsYoutube ? 'CloudinaryYoutubeVideo' : 'CloudinaryVimeoVideo';
+                $func = $bIsYoutube ? 'youtube_id_from_url' : 'vimeo_id_from_url';
                 $video = $filterClass::get()->filter('URL', $sourceURL)->first();
                 if(!$video){
-                    $sourceID = $bIsYoutube ? $this->youTubeVideoID($sourceURL) : $this->vimeoVideoID($sourceURL);
+                    $sourceID = $filterClass::$func($sourceURL);
                     $video = new $filterClass(array(
                         'URL'	    => $sourceURL,
                         'PublicID'	=> $sourceID,
@@ -104,21 +105,20 @@ class VideoAttachField extends FormField {
             'Success'		=> $bSuccess
         ));
     }
-
+/*
     public function isYoutube($url){
-        return strpos($url, 'youtube');
+        $host = parse_url($url, PHP_URL_HOST);
+        return strpos($host, 'youtube') > 0;
     }
 
     public function isVimeo($url){
-        return strpos($url, 'vimeo');
+        $host = parse_url($url, PHP_URL_HOST);
+        return strpos($host, 'vimeo') > 0;
     }
 
-    /**
-     * @return int|null
-     */
     public function youTubeVideoID($sourceURL)
     {
-        parse_str( parse_url( $sourceURL, PHP_URL_QUERY ), $arrVars );
+        parse_str( parse_url( $sourceURL, PHP_URL_HOST ), $arrVars );
         return isset($arrVars['v']) ? $arrVars['v'] : null;
     }
 
@@ -126,7 +126,7 @@ class VideoAttachField extends FormField {
     {
         sscanf(parse_url($sourceURL, PHP_URL_PATH), '/%d', $iVimeoId);
         return $iVimeoId;
-    }
+    }*/
 
     public function DeleteLink(){
         return $this->Link('delete_image');
