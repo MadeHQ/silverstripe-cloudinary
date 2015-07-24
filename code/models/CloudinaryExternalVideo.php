@@ -8,13 +8,8 @@
 
 class CloudinaryExternalVideo extends CloudinaryVideo {
 
-    private static $db = array(
-        'SourceID'      => 'Varchar(20)',
-        'SourceURL'     => 'Varchar(255)'
-    );
-
-    public function getLink(){
-        return $this->SourceURL;
+    public function Link(){
+        return $this->URL;
     }
 
 } 
