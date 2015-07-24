@@ -164,8 +164,12 @@ HTML;
 	public function Link(){
 		$strLink = "";
 		if($this->PublicID){
+			$options = array(
+				'resource_type'	=> $this->FileType
+			);
 			$strLink = Cloudinary::cloudinary_url(
-				$this->PublicID . '.' . $this->Format
+				$this->PublicID . '.' . $this->Format,
+				$options
 			);
 		}elseif($this->URL || $this->SecureURL){
 			$strLink = $this->URL ? $this->URL : $this->SecureURL;
@@ -233,6 +237,10 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function StripThumbnail(){
+
+		if($this->FileType == 'image'){
+			return $this->GetFileImage(100, 100, 60);
+		}
 		return new Image_Cached($this->Icon());
 	}
 
@@ -240,6 +248,9 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function CMSThumbnail(){
+		if($this->FileType == 'image'){
+			return $this->GetFileImage(132, 128, 60);
+		}
 		return new Image_Cached($this->Icon());
 	}
 
@@ -248,6 +259,26 @@ HTML;
 	 */
 	public function getThumbnail(){
 		return $this->CMSThumbnail();
+	}
+
+
+	/**
+	 * @param $iWidth
+	 * @param $iHeight
+	 * @param int $iQuality
+	 * @return CloudinaryImage_Cached
+	 */
+	public function GetFileImage($iWidth, $iHeight, $iQuality = 70){
+		$clone = $this->duplicate(false);
+		$clone->Format = 'jpg';
+		return new CloudinaryImage_Cached(array(
+			'width'     	=> $iWidth,
+			'height'   	 	=> $iHeight,
+			'crop'      	=> 'fill',
+			'start_offset'	=> 0,
+			'resource_type'	=> $this->FileType,
+			'quality'		=> $iQuality
+		), $clone);
 	}
 
 
@@ -267,6 +298,14 @@ HTML;
 	}
 
 
+	/**
+	 * @param $arguments
+	 * @param null $content
+	 * @param null $parser
+	 * @return string
+	 *
+	 * Parse short codes for the cloudinary tags
+	 */
 	static public function cloudinary_files($arguments, $content = null, $parser = null){
 
 		if(!isset($arguments['id']) || !is_numeric($arguments['id'])) return;

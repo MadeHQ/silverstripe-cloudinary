@@ -37,58 +37,19 @@ class CloudinaryVideo extends CloudinaryFile {
 	 * @return CloudinaryImage_Cached|Image_Cached
 	 */
 	public function StripThumbnail(){
-		return $this->GetVideoImage(132, 128, 60);
+		return $this->GetFileImage(100, 100, 60);
 	}
 
 	/**
 	 * @return CloudinaryImage_Cached|Image_Cached
 	 */
 	public function CMSThumbnail(){
-		return $this->GetVideoImage(132, 128, 60);
+		return $this->GetFileImage(132, 128, 60);
 	}
 
 	/**
-	 * @param $iWidth
-	 * @param $iHeight
-	 * @param int $iQuality
-	 * @return CloudinaryImage_Cached
+	 * @return string
 	 */
-	public function GetVideoImage($iWidth, $iHeight, $iQuality = 70){
-		$clone = $this->duplicate(false);
-		$clone->Format = 'jpg';
-		return new CloudinaryImage_Cached(array(
-			'width'     	=> $iWidth,
-			'height'   	 	=> $iHeight,
-			'crop'      	=> 'fill',
-			'start_offset'	=> 0,
-			'resource_type'	=> 'video',
-			'quality'		=> $iQuality
-		), $clone);
-	}
-
-	/**
-	 * @return mixed|null
-	 */
-	public function Icon()
-	{
-
-		$options = array(
-			'width'     	=> 100,
-			'height'   	 	=> 100,
-			'crop'      	=> 'fill',
-			'start_offset'	=> 0,
-			'resource_type'	=> 'video',
-			'quality'		=> 70
-		);
-
-		$strSource = $this->PublicID . '.jpg';
-		return Cloudinary::cloudinary_url($strSource, $options);
-	}
-
-	public function forTemplate(){
-		return $this->getTag();
-	}
-
 	public function getTag(){
 		return cl_video_tag($this->PublicID . '.' . $this->Format);
 	}

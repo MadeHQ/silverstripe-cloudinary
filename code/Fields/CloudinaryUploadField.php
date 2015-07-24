@@ -26,6 +26,11 @@ class CloudinaryUploadField extends UploadField
 	);
 
 
+	public function Field($properties = array()){
+		Requirements::css('cloudinary/css/CloudinaryUploadField.css');
+		return parent::Field($properties);
+	}
+
 
 	/**
 	 * @param SS_HTTPRequest $request
@@ -191,11 +196,10 @@ class CloudinaryUploadField extends UploadField
 	protected function customiseCloudinaryFile(CloudinaryFile $file) {
 		$file = $file->customise(array(
 			'UploadFieldThumbnailURL' => $this->getThumbnailURLForCloudinary($file),
-			'UploadFieldDeleteLink' => $this->getItemHandler($file->ID)->DeleteLink(),
+			'UploadFieldEditLink' => $this->getItemHandler($file->ID)->EditLink(),
 			'UploadField' => $this
 		));
 		// we do this in a second customise to have the access to the previous customisations
-
 		return $file->customise(array(
 			'UploadFieldFileButtons' => (string)$file->renderWith($this->getTemplateFileButtons())
 		));
@@ -256,8 +260,9 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 		$config->addComponent($colsComponent = new GridFieldDataColumns());
 		$colsComponent->setDisplayFields(array(
 			'StripThumbnail'	=> 'Thumbnail',
-			'FileName' 			=> singleton('File')->fieldLabel('FileName'),
-			'Size' 				=> singleton('File')->fieldLabel('Size')
+			'Title'				=> 'Title',
+			'FileName' 			=> singleton('CloudinaryFile')->fieldLabel('FileName'),
+			'Size' 				=> singleton('CloudinaryFile')->fieldLabel('Size')
 		));
 
 		// If relation is to be autoset, we need to make sure we only list compatible objects.

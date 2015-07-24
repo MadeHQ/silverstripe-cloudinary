@@ -10,6 +10,9 @@
 class CloudinaryConfigs extends DataExtension {
 
 
+	/**
+	 * @return int
+	 */
 	public static function ImageQuality(){
 		$arrConfigs = Config::inst()->get('CloudinaryConfigs', 'settings');
 		$iSetting = $arrConfigs['Quality'];
@@ -19,6 +22,10 @@ class CloudinaryConfigs extends DataExtension {
 		return $iSetting;
 	}
 
+
+	/**
+	 * @param FieldList $fields
+	 */
 	public function updateCMSFieldSecondary(FieldList $fields){
 		return $this->updateCMSFields($fields);
 	}
@@ -74,5 +81,6 @@ class CloudinaryConfigs extends DataExtension {
 			}
 		}
 	}
+
 
 } 

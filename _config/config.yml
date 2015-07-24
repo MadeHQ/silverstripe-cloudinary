@@ -11,6 +11,9 @@ DataObject:
 Controller:
   extensions:
     - CloudinaryControllerExtension
+ReportAdmin:
+  extensions:
+    - SS_ReportExtension
 CloudinaryConfigs:
   replace_relationships: true
   settings:
