@@ -21,3 +21,5 @@ CloudinaryConfigs:
     APIKey: ''
     APISecret: ''
     Quality: 70
+CloudinaryYoutubeVideo:
+  youtube_api_key: 'AIzaSyCipVtrzD-blwvmr4ugWUZTmcelUjY7NBM'

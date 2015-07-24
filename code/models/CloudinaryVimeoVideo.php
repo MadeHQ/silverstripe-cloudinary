@@ -28,4 +28,25 @@ class CloudinaryVimeoVideo extends CloudinaryVideo {
         return strpos($host, 'vimeo') >= 0;
     }
 
+    public static function vimeo_video_details($id) {
+        $url = sprintf('http://vimeo.com/api/v2/video/%s.json', $id);
+
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 30
+        ));
+        $response = json_decode(curl_exec($ch))[0];
+        curl_close($ch);
+
+        $return = array(
+            'title' => $response->title,
+            'duration' => $response->duration,
+        );
+
+        return $return;
+    }
+
 } 
