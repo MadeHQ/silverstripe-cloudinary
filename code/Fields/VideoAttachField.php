@@ -54,7 +54,7 @@ class VideoAttachField extends FormField {
         if($this->value){
             $video = CloudinaryExternalVideo::get()->byID($this->value);
             if($video)
-                return $video->getField('SourceURL');
+                return $video->getField('URL');
         }
     }
 
@@ -84,7 +84,7 @@ class VideoAttachField extends FormField {
             $bIsVimeo = $this->isVimeo($sourceURL);
             if($bIsYoutube || $bIsVimeo){
                 $filterClass = $bIsYoutube ? 'CloudinaryYoutubeVideo' : 'CloudinaryVimeoVideo';
-                $video = $filterClass::get()->filter('SourceURL', $sourceURL)->first();
+                $video = $filterClass::get()->filter('URL', $sourceURL)->first();
                 if(!$video){
                     $sourceID = $bIsYoutube ? $this->youTubeVideoID($sourceURL) : $this->vimeoVideoID($sourceURL);
                     $video = new $filterClass(array(
