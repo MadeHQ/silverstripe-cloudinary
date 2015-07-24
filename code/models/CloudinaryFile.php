@@ -276,7 +276,8 @@ HTML;
 			'height'   	 	=> $iHeight,
 			'crop'      	=> 'fill',
 			'start_offset'	=> 0,
-			'resource_type'	=> $this->FileType,
+			'resource_type'	=> !in_array($this->FileType, array('youtube', 'vimeo')) ? $this->FileType : 'image',
+			'type'			=> in_array($this->FileType, array('youtube', 'vimeo')) ? $this->FileType : '',
 			'quality'		=> $iQuality
 		), $clone);
 	}

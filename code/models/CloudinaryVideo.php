@@ -47,9 +47,7 @@ class CloudinaryVideo extends CloudinaryFile {
 		return $this->GetFileImage(132, 128, 60);
 	}
 
-	/**
-	 * @return string
-	 */
+
 	public function getTag(){
 		return cl_video_tag($this->PublicID . '.' . $this->Format);
 	}
