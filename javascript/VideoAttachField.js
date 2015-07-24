@@ -7,7 +7,7 @@
             }
         });
 
-        $('.cloudinary-delete').entwine({
+        $('.video-delete-button').entwine({
             onclick: function(){
                 var button = $(this);
                 var form = button.closest('form');

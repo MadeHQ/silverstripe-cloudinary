@@ -138,4 +138,8 @@ class VideoAttachField extends FormField {
         }
     }
 
+    public function IsUploaded(){
+        return !empty($this->value);
+    }
+
 } 
