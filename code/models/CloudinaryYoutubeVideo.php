@@ -9,22 +9,4 @@
 
 class CloudinaryYoutubeVideo extends CloudinaryExternalVideo {
 
-    public function StripThumbnail(){
-
-        $clone = $this->duplicate(false);
-        $clone->PublicID = $this->SourceID;
-        $clone->Format = 'jpg';
-
-
-
-        return cl_image_tag("aNwnPElsJGE", array(
-                "type" => "youtube", "transformation" => array("width" => 200, "height" => 120, "crop" => "fill")
-            )
-        );
-    }
-
-    public function getLink(){
-        return $this->CMSThumbnail();
-    }
-
 }

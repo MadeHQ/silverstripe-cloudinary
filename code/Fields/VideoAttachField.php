@@ -80,17 +80,17 @@ class VideoAttachField extends FormField {
 
         if(isset($_POST['SourceURL'])){
             $sourceURL = $_POST['SourceURL'];
-            $bIsYoutuve = $this->isYoutube($sourceURL);
+            $bIsYoutube = $this->isYoutube($sourceURL);
             $bIsVimeo = $this->isVimeo($sourceURL);
-            if($bIsYoutuve || $bIsVimeo){
-                $filterClass = $bIsYoutuve ? 'CloudinaryYoutubeVideo' : 'CloudinaryVimeoVideo';
+            if($bIsYoutube || $bIsVimeo){
+                $filterClass = $bIsYoutube ? 'CloudinaryYoutubeVideo' : 'CloudinaryVimeoVideo';
                 $video = $filterClass::get()->filter('SourceURL', $sourceURL)->first();
                 if(!$video){
-                    $sourceID = $bIsYoutuve ? $this->youTubeVideoID($sourceURL) : $this->vimeoVideoID($sourceURL);
+                    $sourceID = $bIsYoutube ? $this->youTubeVideoID($sourceURL) : $this->vimeoVideoID($sourceURL);
                     $video = new $filterClass(array(
-                        'SourceURL'	=> $sourceURL,
-                        'SourceID'	=> $sourceID,
-                        ''
+                        'URL'	    => $sourceURL,
+                        'PublicID'	=> $sourceID,
+                        'FileType'  => $bIsYoutube ? 'youtube' : 'vimeo'
                     ));
                     $video->write();
                 }
