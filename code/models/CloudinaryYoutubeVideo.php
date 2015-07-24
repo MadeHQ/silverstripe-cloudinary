@@ -25,8 +25,34 @@ class CloudinaryYoutubeVideo extends CloudinaryVideo {
 
     public static function isYoutube($url){
         $host = parse_url($url, PHP_URL_HOST);
-//        echo (strpos($host, 'youtube') > 0);die();
         return strpos($host, 'youtube') > 0;
+    }
+
+    public static function youtube_video_details($id) {
+        $url = 'https://www.googleapis.com/youtube/v3/videos?';
+        $url.= sprintf('key=%s', Config::inst()->get('CloudinaryYoutubeVideo', 'youtube_api_key'));
+        $url.= sprintf('&id=%s', $id);
+        $url.= '&fields=items(snippet(title),contentDetails(duration))';
+        $url.= '&part=snippet,contentDetails';
+
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_URL  => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_BINARYTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_TIMEOUT => 5
+        ));
+        $snippet = json_decode(curl_exec($ch))->items[0]->snippet;
+        $contentDetails = json_decode(curl_exec($ch))->items[0]->contentDetails;
+        curl_close($ch);
+
+        $return = array(
+            'title' => $snippet->title,
+            'duration' => $contentDetails->duration,
+        );
+
+        return $return;
     }
 
 }
