@@ -22,7 +22,7 @@ class SS_ReportExtension extends Extension {
 	public function UpdatedReportList() {
 		$output = new ArrayList();
 		foreach(SS_Report::get_reports() as $report) {
-			if(!in_array(get_class($report), array('SideReport_BrokenFiles', 'SideReport_BrokenLinks', 'BrokenLinksReport'))){
+			if(!in_array(get_class($report), array('SideReport_BrokenFiles'))){
 				if($report->canView()) {
 					$output->push($report);
 				}
