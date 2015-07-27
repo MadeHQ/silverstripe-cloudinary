@@ -1,6 +1,13 @@
 (function($){
     $.entwine('CloudinaryExternalVideoField', function($){
         $('button.video-attach-button').entwine({
+            onmatch: function(){
+                var forID = $(this).data('id') + '-holder';
+                var videoID = $('#' + forID).find('input.field_id_value');
+                if(videoID.val() > 0){
+                    $(this).hide();
+                }
+            },
             onclick: function(){
                 var forID = $(this).data('id') + '-holder';
                 attachVideo($('#' + forID));
@@ -19,6 +26,8 @@
                         button.hide();
                         $('input[name="' + button.data('name') + '"]').val(0);
                         $('input[name="' + button.data('name') + '__URL"]').val('');
+                        form.find('button.video-attach-button').show();
+                        form.find('a.thumbnail-link').remove();
                         form.removeClass('loading');
                     }
                 });
@@ -52,6 +61,8 @@
                 success: function(data){
                     if(data.Success){
                         $('input[name="' + name + '"]').val(data.VideoID);
+                        dom.find('input.video-attach-button').hide();
+                        $(data.Thumbnail).insertBefore(input.parent());
                     }
                     form.removeClass('loading');
                 }

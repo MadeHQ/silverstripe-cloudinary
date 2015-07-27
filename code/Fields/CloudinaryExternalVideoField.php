@@ -71,6 +71,7 @@ class CloudinaryExternalVideoField extends FormField {
     {
         $bSuccess = false;
         $iVideoID = 0;
+        $videoURL = '';
 
         if(isset($_POST['SourceURL'])){
             $sourceURL = $_POST['SourceURL'];
@@ -93,14 +94,16 @@ class CloudinaryExternalVideoField extends FormField {
                     ));
                     $video->write();
                 }
-                $iVideoID = $video->ID;
+                $this->value = $iVideoID = $video->ID;
+                $videoURL = $sourceURL;
                 $bSuccess = true;
             }
         }
 
         return Convert::array2json(array(
             'VideoID'	    => $iVideoID,
-            'Success'		=> $bSuccess
+            'Success'		=> $bSuccess,
+            'Thumbnail'     => '<a href="'.$videoURL.'" class="thumbnail-link" target="_blank">'.$this->Thumbnail()->forTemplate().'</a>'
         ));
     }
 
@@ -116,6 +119,12 @@ class CloudinaryExternalVideoField extends FormField {
 
     public function IsUploaded(){
         return !empty($this->value);
+    }
+
+    public function Thumbnail(){
+        if($video = CloudinaryFile::get()->byID($this->value)){
+            return $video->GetFileImage(100, 70);
+        }
     }
 
 } 
