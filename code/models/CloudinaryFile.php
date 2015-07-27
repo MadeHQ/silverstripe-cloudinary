@@ -340,5 +340,14 @@ HTML;
 
 	}
 
+    public function NameForSummaryField(){
+        if(in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+            $strName = $this->Title;
+        }else{
+            $strName = $this->Title;
+        }
+        return $strName;
+    }
+
 
 } 
