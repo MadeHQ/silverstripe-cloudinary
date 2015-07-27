@@ -68,11 +68,7 @@
     float: left;
 }
 
-.ss-uploadfield-item-info .buttons{
-    /*margin-left: 120px;*/
-}
-
 input.video-attach-field.text{
-    max-width: 380px !important;
+    max-width: 350px !important;
     margin-top: 15px;
 }
