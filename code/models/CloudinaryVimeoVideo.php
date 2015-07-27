@@ -38,15 +38,17 @@ class CloudinaryVimeoVideo extends CloudinaryVideo {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 30
         ));
-        $response = json_decode(curl_exec($ch))[0];
+        $response = Convert::json2obj(curl_exec($ch));
         curl_close($ch);
 
-        $return = array(
-            'title' => $response->title,
-            'duration' => $response->duration,
-        );
+        if($response){
+            $return = array(
+                'title' => $response[0]->title,
+                'duration' => $response[0]->duration,
+            );
 
-        return $return;
+            return $return;
+        }
     }
 
 } 

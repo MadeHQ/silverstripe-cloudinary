@@ -43,16 +43,19 @@ class CloudinaryYoutubeVideo extends CloudinaryVideo {
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_TIMEOUT => 5
         ));
-        $snippet = json_decode(curl_exec($ch))->items[0]->snippet;
-        $contentDetails = json_decode(curl_exec($ch))->items[0]->contentDetails;
-        curl_close($ch);
+        $response = Convert::json2obj(curl_exec($ch));
+        if($response){
+            $snippet = $response->items[0]->snippet;
+            $contentDetails = $response->items[0]->contentDetails;
+            curl_close($ch);
 
-        $return = array(
-            'title' => $snippet->title,
-            'duration' => $contentDetails->duration,
-        );
+            $return = array(
+                'title' => $snippet->title,
+                'duration' => $contentDetails->duration,
+            );
 
-        return $return;
+            return $return;
+        }
     }
 
 }
