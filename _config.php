@@ -16,12 +16,9 @@ require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Uploader.php';
 require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Api.php';
 
 CMSMenu::remove_menu_item('CloudinaryFileAddController');
-CMSMenu::remove_menu_item('AssetAdmin');
-
 
 CloudinaryConfigs::ReplaceFileFields();
 ShortcodeParser::get('default')->register('cloudinary', array('CloudinaryFile', 'cloudinary_files'));
-
 
 SiteTree::remove_extension('SiteTreeLinkTracking');
 Object::add_extension('SiteTree', 'CloudinarySiteTreeLinkTracking');

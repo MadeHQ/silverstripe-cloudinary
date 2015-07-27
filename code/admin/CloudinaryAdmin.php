@@ -13,7 +13,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 
 	private static $url_rule = '/$Action/$ID';
 
-	private static $menu_title = 'Files';
+	private static $menu_title = 'Cloudinary';
 
 	private static $menu_icon = 'cloudinary/images/logo.png';
 
@@ -251,4 +251,4 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 	}
 
 
-} 
+}

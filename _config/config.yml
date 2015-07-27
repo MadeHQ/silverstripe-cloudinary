@@ -16,10 +16,21 @@ ReportAdmin:
     - SS_ReportExtension
 CloudinaryConfigs:
   replace_relationships: true
+  editor_image_sizes:
+    small:
+      width: 100
+      height: 100
+    large:
+      width: 400
+      height: 150
+    banner:
+      width: 720
+      height: 120
   settings:
     CloudName: ''
     APIKey: ''
     APISecret: ''
     Quality: 70
 CloudinaryYoutubeVideo:
-  youtube_api_key: 'AIzaSyCipVtrzD-blwvmr4ugWUZTmcelUjY7NBM'
+  youtube_api_key: ''
+
