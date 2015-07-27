@@ -181,7 +181,7 @@ HTML;
 	/**
 	 * @return mixed|null
 	 */
-	public function getLink()
+	public function getURL()
 	{
 
 		$strSource = '';
@@ -324,7 +324,7 @@ HTML;
 				$arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_image_sizes');
 				if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
 					return sprintf('<img src="%s" title="%s">',
-						$file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getLink(),
+						$file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getURL(),
 						$content ? $content : $file->Title
 					);
 				}

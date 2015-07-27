@@ -66,7 +66,7 @@ class CloudinaryImage extends CloudinaryFile {
 	 */
 	public function getTag()
 	{
-		$url = $this->getLink();
+		$url = $this->getURL();
 		$title = $this->Title;
 		if($url)
 			return "<img src=\"$url\" alt=\"$title\" />";

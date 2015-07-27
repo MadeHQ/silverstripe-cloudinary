@@ -213,7 +213,7 @@ class CloudinaryUploadField extends UploadField
 		$width = $this->getPreviewMaxWidth();
 		$height = $this->getPreviewMaxHeight();
 		if ($file->hasMethod('getThumbnail')) {
-			return $file->getThumbnail($width, $height)->getLink();
+			return $file->getThumbnail($width, $height)->getURL();
 		} else {
 			return $file->Icon();
 		}

@@ -1,0 +1,41 @@
+.ColourSelectField-holder {
+    overflow: hidden;
+}
+
+.ColourSelectField-holder .imageHolder {
+    width: 200px;
+    float: left;
+    height: 112px;
+    overflow: hidden;
+    margin-right: 10px;
+}
+
+.ColourSelectField-holder .imageHolder img {
+    width: 100%;
+}
+
+.ColourSelectField-holder .colours {
+
+}
+
+.ColourSelectField-holder .colours ul {
+    overflow: hidden;
+}
+
+.ColourSelectField-holder .colours ul li {
+    float: left;
+    width: 50px;
+    height: 50px;
+    border: 2px solid #fff;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.ColourSelectField-holder .colours ul li:hover {
+    border-color: blue;
+}
+
+.ColourSelectField-holder .colours ul li.selected {
+    border-color: blue;
+}
