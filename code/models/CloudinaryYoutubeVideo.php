@@ -49,9 +49,13 @@ class CloudinaryYoutubeVideo extends CloudinaryVideo {
             $contentDetails = $response->items[0]->contentDetails;
             curl_close($ch);
 
+            $arrDuration = preg_split('/[^0-9]/', $contentDetails->duration);//PT1M26S
+            $iHours = $arrDuration[2] ? $arrDuration[2] : 0;
+            $iMinutes = $arrDuration[3] ? $arrDuration[3] : 0;
+            $iSeconds = $arrDuration[4] ? $arrDuration[4] : 0;
             $return = array(
                 'title' => $snippet->title,
-                'duration' => $contentDetails->duration,
+                'duration' => sprintf("%02d", $iHours). ':'. sprintf("%02d", $iMinutes). ':'. sprintf("%02d", $iSeconds),
             );
 
             return $return;

@@ -27,7 +27,10 @@ class CloudinaryVideo extends CloudinaryFile {
 		$fields = parent::getCMSFields();
 
 		$fileAttributes = $fields->fieldByName('Root.Main.FilePreview')->fieldByName('FilePreviewData');
-		$fileAttributes->push(new ReadonlyField("Dimensions", _t('AssetTableField.DIM','Dimensions') . ':', $this->Width . ' x ' . $this->Height));
+
+        if(!in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+            $fileAttributes->push(new ReadonlyField("Dimensions", _t('AssetTableField.DIM','Dimensions') . ':', $this->Width . ' x ' . $this->Height));
+        }
 		$fileAttributes->push(new ReadonlyField("Duration", 'Duration:'));
 
 		return $fields;

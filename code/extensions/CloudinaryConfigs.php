@@ -27,7 +27,7 @@ class CloudinaryConfigs extends DataExtension {
 	 * @param FieldList $fields
 	 */
 	public function updateCMSFieldSecondary(FieldList $fields){
-		return $this->updateCMSFields($fields);
+		$this->updateCMSFields($fields);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class CloudinaryConfigs extends DataExtension {
 				if($field instanceof UploadField) {
 
 					$fields->replaceField($field->getName(),
-						CloudinaryUploadField::create($field->getName(), $field->Title()));
+						CloudinaryUploadField::create(str_replace('ID', '', $field->getName()), $field->Title()));
 
 				}
 			}

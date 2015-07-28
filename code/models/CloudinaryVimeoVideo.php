@@ -41,10 +41,14 @@ class CloudinaryVimeoVideo extends CloudinaryVideo {
         $response = Convert::json2obj(curl_exec($ch));
         curl_close($ch);
 
+        $iTime = $response[0]->duration;
+        $iHours = intval($iTime / (60 * 60));
+        $iMinutes = intval(($iTime - ($iHours * 60 * 60)) / 60);
+        $iSeconds = ($iTime - ($iHours * 60 * 60) - ($iMinutes * 60));
         if($response){
             $return = array(
                 'title' => $response[0]->title,
-                'duration' => $response[0]->duration,
+                'duration' => sprintf("%02d", $iHours). ':'. sprintf("%02d", $iMinutes). ':'. sprintf("%02d", $iSeconds),
             );
 
             return $return;

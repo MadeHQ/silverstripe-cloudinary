@@ -111,9 +111,7 @@ class CloudinaryFile extends DataObject {
 			)->setName("FilePreviewImage")->addExtraClass('cms-file-info-preview'),
 			CompositeField::create(
 				$fileDataField = CompositeField::create(
-					new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
-					new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName),
-					new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()),
+                    new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
 					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL') ,
 						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Link())
 					),
@@ -133,6 +131,11 @@ class CloudinaryFile extends DataObject {
 				)
 			)
 		);
+
+        if(!in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+            $fields->insertAfter(new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName), 'FileType');
+            $fields->insertAfter(new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()), 'FileType');
+        }
 
 		$this->extend('updateCMSFields', $fields);
 
@@ -181,7 +184,7 @@ HTML;
 	/**
 	 * @return mixed|null
 	 */
-	public function getURL()
+	public function getSourceURL()
 	{
 
 		$strSource = '';
@@ -324,7 +327,7 @@ HTML;
 				$arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_image_sizes');
 				if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
 					return sprintf('<img src="%s" title="%s">',
-						$file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getURL(),
+						$file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getSourceURL(),
 						$content ? $content : $file->Title
 					);
 				}
