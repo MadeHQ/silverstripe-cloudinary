@@ -29,7 +29,7 @@ class CloudinaryColorSelectField extends FormField {
     public function Field($properties = array())
     {
 		Requirements::css(CLOUDINARY_RELATIVE . "/css/CloudinaryColorSelectField.css");
-        Requirements::javascript(CLOUDINARY_RELATIVE . "/thirdparty/color-thief.js");
+        Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/thirdparty/color-thief.js");
         Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/CloudinaryColorSelectField.js");
         return parent::Field($properties);
 

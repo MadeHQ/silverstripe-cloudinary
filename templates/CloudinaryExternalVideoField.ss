@@ -1,4 +1,4 @@
-<div class="ss-uploadfield-item ss-uploadfield-addfile<% if $CustomisedItems %> borderTop<% end_if %>" id="{$ID}-holder">
+<div class="ss-uploadfield-item ss-uploadfield-addfile<% if $CustomisedItems %> borderTop<% end_if %>" id="{$ID}-holder" data-imageurl="$ColorSelectThumbnail.SourceURL">
     <div class="ss-uploadfield-item-info">
         <% if $Value %><a href="$VideoURL" class="thumbnail-link" target="_blank">$Thumbnail</a><% end_if %>
         <div class="buttons" <% if $Value %>style="margin-left: 120px" <% end_if %>>

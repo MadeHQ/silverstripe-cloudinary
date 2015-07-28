@@ -14,11 +14,10 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 var holder = $(dom);
                 var div = holder.find('.ColourSelectField-holder');
                 var name = div.data('field');
-
-                holder.data('imageurl', $('input[name="'+name+ '__URL"]').val())
+                holder.data('imageurl', $('#'+name).find('.ss-uploadfield-item:first-child').data('imageurl'));
 
                 var imageURL = div.data('url') + '?current_image=' + holder.data('imageurl');
-                var input = holder.find('input.cloudinaryimagecolorselect');
+                var input = holder.find('input.cloudinarycolorselect');
                 var selectedColor = input.val();
                 if(imageURL){
                     var img = $('<img src="' + imageURL + '">');
@@ -66,7 +65,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
             PerformSelectColor: function(dom){
                 var holder = $(dom).closest('.ColourSelectField-holder');
-                var input = holder.find('input.cloudinaryimagecolorselect');
+                var input = holder.find('input.cloudinarycolorselect');
                 input.val($(dom).data('value'));
                 holder.find('.colour-select').removeClass('selected');
                 $(dom).addClass('selected');
@@ -88,7 +87,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
         }
 
 
-        $(".field.cloudinaryimagecolorselect").entwine({
+        $(".field.cloudinarycolorselect").entwine({
             onmatch: function() {
                 MadeUtils.ColorSelect.UpdateColorSelectWithSelection(this);
             }
