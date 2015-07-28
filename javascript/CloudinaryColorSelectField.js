@@ -38,7 +38,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                         var color = colorThief.getColor(img[0]);
                         var palette = colorThief.getPalette(img[0], 20);
 
-                        var strHTML = '<ul>';
+                        var strHTML = '';
                         var colorString = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
                         var className = 'colour-select';
                         if(colorString == selectedColor)
@@ -56,9 +56,10 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
                             strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
                         }
-                        strHTML += '</ul>';
 
-                        holder.find('.colours').html(strHTML);
+//                        holder.find('.colours').text('');
+                        holder.find('.colours li.loading-text').replaceWith(strHTML);
+                        holder.find('.colours li.colour-picker').show();
                     });
                 }
             },
@@ -73,7 +74,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
             },
 
             UpdateColorSelectWithSelection: function(dom){
-                $(dom).find('.colours').html('Loading...');
+                $(dom).find('.colours li.loading-text').replaceWith('<li class="loading-text">Loading....</li>');
                 this.LoadColorSelectTiles(dom);
             },
 
@@ -82,6 +83,20 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 if(inputs.length){
                     this.UpdateColorSelectWithSelection(inputs.parent().parent());
                 }
+            },
+
+            RGBToHex: function(r,g,b){
+                var bin = r << 16 | g << 8 | b;
+                return (function(h){
+                    return new Array(7-h.length).join("0")+h
+                })(bin.toString(16).toUpperCase())
+            },
+
+            hexToRGB: function(hex){
+                var r = hex >> 16;
+                var g = hex >> 8 & 0xFF;
+                var b = hex & 0xFF;
+                return [r,g,b];
             }
 
         }
@@ -98,6 +113,20 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
         $("li.colour-select").entwine({
             onclick: function(){
                 MadeUtils.ColorSelect.PerformSelectColor(this);
+            }
+        });
+
+        $("input.colourpickerinput").entwine({
+            onchange: function(){
+                var hex = parseInt($(this).val().replace('#', '') ,16);
+                var r = hex >> 16;
+                var g = hex >> 8 & 0xFF;
+                var b = hex & 0xFF;
+//                var rgb = 'rgb('+r+','+g+','+b+')';
+                var arr = MadeUtils.ColorSelect.hexToRGB(hex)
+                var rgb = 'rgb('+arr[0]+','+arr[1]+','+arr[1]+')';
+                $(this).val(MadeUtils.ColorSelect.RGBToHex(r, g, b));
+                $(this).parent().parent().data('value', rgb);
             }
         });
 

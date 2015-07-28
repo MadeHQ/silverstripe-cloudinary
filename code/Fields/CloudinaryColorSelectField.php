@@ -83,7 +83,8 @@ class CloudinaryColorSelectField extends FormField {
 		);
 	}
 
-
-
+    public function ColorPicker(){
+        return ColourPicker::create('Color')->forTemplate();
+    }
 
 } 

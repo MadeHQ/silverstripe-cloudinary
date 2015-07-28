@@ -22,7 +22,7 @@
     overflow: hidden;
 }
 
-.ColourSelectField-holder .colours ul li {
+.ColourSelectField-holder .colours ul li.colour-select {
     float: left;
     width: 50px;
     height: 50px;
@@ -30,6 +30,11 @@
     margin-right: 10px;
     margin-bottom: 10px;
     cursor: pointer;
+}
+
+.ColourSelectField-holder .colours ul li.colour-picker {
+    width: 175px;
+    height: 182px;
 }
 
 .ColourSelectField-holder .colours ul li:hover {
