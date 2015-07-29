@@ -44,18 +44,26 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
 
                         strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
+                        var bColorPicker = true;
                         for(key in palette){
                             color = palette[key];
                             colorString = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
 
                             className = 'colour-select';
-                            if(colorString == selectedColor)
+                            if(selectedColor && (colorString == selectedColor)){
                                 className += ' selected';
+                                bColorPicker = false;
+                            }
 
                             strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
                         }
 
                         holder.find('.colours li.loading-text').replaceWith(strHTML);
+                        if(bColorPicker){
+                            holder.find('.colours li.colour-picker .minicolors').css({
+                                'border': '1px solid blue'
+                            });
+                        }
                         holder.find('.colours li.colour-picker').show();
                     });
                 }
@@ -123,15 +131,20 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 var rgb = MadeUtils.ColorSelect.hexToRGB($(this).val());
                 $(this).val('#'+MadeUtils.ColorSelect.RGBToHex(rgb));
                 $(this).parent().parent().data('value', rgb);
-            },
+            }
+        });
+
+        $("div.minicolors").entwine({
             onclick: function() {
-                $(this).parent().parent().css({
-                    'width' : '175px',
-                    'height': '180px'
-                });
+                $(this).parent().css({'overflow' : 'visible'});
+                $(this).parent().parent().css({'overflow' : 'visible'});
+                $(this).parent().parent().parent().parent().css({'overflow' : 'visible'});
+                $(this).css({'border': '1px solid blue'});
+                $("li.colour-select.selected").removeClass('selected');
             },
             onfocusout: function() {
-                $(this).parent().parent().removeAttr('style');
+                $(this).parent().removeAttr('style');
+                $(this).removeAttr('style');
             }
         });
 

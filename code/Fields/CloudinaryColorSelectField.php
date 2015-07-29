@@ -49,11 +49,21 @@ class CloudinaryColorSelectField extends FormField {
         return $this->source_image_url;
     }
 
-	public function setSourceImageURL($strURL){
+    /**
+     * @param $strURL
+     * @return $this
+     * Set
+     */
+    public function setSourceImageURL($strURL){
 		$this->source_image_url = $strURL;
 		return $this;
 	}
 
+    /**
+     * @param DataObjectInterface $record
+     * @return $this|void
+     * if ColorPicker field exists, then convert the value hex to rgb
+     */
     public function saveInto(DataObjectInterface $record){
         $name = $this->getName();
 
@@ -63,6 +73,9 @@ class CloudinaryColorSelectField extends FormField {
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getAttributes(){
         return array_merge(
             parent::getAttributes(),
@@ -89,7 +102,11 @@ class CloudinaryColorSelectField extends FormField {
 		}
     }
 
-	public function getCloudinaryImageURL(){
+    /**
+     * @return string
+     * cloudinary image or video thumbnail url
+     */
+    public function getCloudinaryImageURL(){
 		$strRet = '';
 		if(isset($_REQUEST['current_image']))
 			$strRet = $_REQUEST['current_image'];

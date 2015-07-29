@@ -32,10 +32,6 @@
     cursor: pointer;
 }
 
-.ColourSelectField-holder .colours ul li.colour-picker {
-    display: inline-block;
-}
-
 .ColourSelectField-holder .colours ul li:hover {
     border-color: blue;
 }
