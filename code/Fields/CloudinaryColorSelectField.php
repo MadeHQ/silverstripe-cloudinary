@@ -2,46 +2,78 @@
 
 class CloudinaryColorSelectField extends FormField {
 
-	private static $allowed_actions = array(
+    /**
+     * @var string
+     * URL for image source which color select field to use
+     */
+    private $source_image_url = '';
+
+    /**
+     * @var null|string
+     * Media field which color select field refers
+     */
+    private $reference_field = '';
+
+    /**
+     * @var array
+     */
+    private static $allowed_actions = array(
 		'currentImage',
-        'changeUrl'
 	);
 
-	private $strImageUrl = '';
-	private $cloudName = '';
-
-	public function __construct($strName, $strTitle = '', $cloudinaryImageName = ''){
-		if($cloudinaryImageName)
-			$this->cloudName = $cloudinaryImageName->Name;
+	public function __construct($strName, $strTitle = '', $strReferenceField = null){
+		if($strReferenceField)
+			$this->reference_field = $strReferenceField;
 		parent::__construct($strName, $strTitle);
-	}
-
-	public function setCloudinaryFieldName($strField){
-		$this->cloudName = $strField;
-		return $this;
-	}
-
-	public function setCloudinaryURL($strURL){
-		$this->strImageUrl = $strURL;
-		return $this;
 	}
 
     public function Field($properties = array())
     {
-		Requirements::css(CLOUDINARY_RELATIVE . "/css/CloudinaryColorSelectField.css");
+        Requirements::css(CLOUDINARY_RELATIVE . "/css/CloudinaryColorSelectField.css");
         Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/thirdparty/color-thief.js");
         Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/CloudinaryColorSelectField.js");
         return parent::Field($properties);
 
     }
 
-    public function cloudName(){
-        return $this->cloudName;
+    public function getReferenceField(){
+        return $this->reference_field;
     }
 
+	public function setReferenceField($strField){
+		$this->reference_field = $strField;
+		return $this;
+	}
 
-	public function currentImage()
-	{
+    public function getSourceImageURL(){
+        return $this->source_image_url;
+    }
+
+	public function setSourceImageURL($strURL){
+		$this->source_image_url = $strURL;
+		return $this;
+	}
+
+    public function saveInto(DataObjectInterface $record){
+        $name = $this->getName();
+
+        if($this->ColorPickerExists() && $record->db($name)) {
+            $record->{"{$name}"} = $this->value ? 'rgb('.implode(',', $this->hex2rgb($this->value)).')' : null;
+        }
+        return $this;
+    }
+
+    public function getAttributes(){
+        return array_merge(
+            parent::getAttributes(),
+            array('type' => 'hidden')
+        );
+    }
+
+    /**
+     * echo the image in cms for color-thief
+     */
+    public function currentImage(){
 		if($imageURL = $this->getCloudinaryImageURL()){
 			$strHeader = '';
 			if(substr($imageURL, -strlen('.jpg')) == '.jpg')
@@ -61,30 +93,44 @@ class CloudinaryColorSelectField extends FormField {
 		$strRet = '';
 		if(isset($_REQUEST['current_image']))
 			$strRet = $_REQUEST['current_image'];
-		else if($this->strImageUrl)
-			$strRet = $this->strImageUrl;
+		else if($this->source_image_url)
+			$strRet = $this->source_image_url;
 		return $strRet;
 	}
 
-	public function GetImageURL(){
-		return $this->strImageUrl;
-	}
-
-	public function LoadImageURL()
-	{
+	public function LoadImageURL(){
 		return $this->Link('currentImage');
 	}
 
-	public function getAttributes()
-	{
-		return array_merge(
-			parent::getAttributes(),
-			array('type' => 'hidden')
-		);
-	}
-
     public function ColorPicker(){
-        return ColourPicker::create('Color')->forTemplate();
+        if(class_exists('ColourPicker')){
+            return ColourPicker::create($this->name)
+                ->addExtraClass('cloudinarycolorselect')
+                ->setValue($this->value ? $this->rgb2hex(sscanf($this->value, "rgb(%d, %d, %d)")) : '')
+                ->forTemplate();
+        }
+        return null;
+    }
+
+    public function ColorPickerExists(){
+        return class_exists('ColourPicker');
+    }
+
+    private function hex2rgb($hex) {
+        $hex = str_replace("#", "", $hex);
+        $r = hexdec(substr($hex,0,2));
+        $g = hexdec(substr($hex,2,2));
+        $b = hexdec(substr($hex,4,2));
+        $rgb = array($r, $g, $b);
+        return $rgb;
+    }
+
+    private function rgb2hex($rgb) {
+        $hex = "#";
+        $hex .= str_pad(dechex($rgb[0]), 2, "0", STR_PAD_LEFT);
+        $hex .= str_pad(dechex($rgb[1]), 2, "0", STR_PAD_LEFT);
+        $hex .= str_pad(dechex($rgb[2]), 2, "0", STR_PAD_LEFT);
+        return $hex;
     }
 
 } 

@@ -7,8 +7,6 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 (function($) {
     $.entwine('ss', function($){
 
-
-
         MadeUtils.ColorSelect = {
             LoadColorSelectTiles : function(dom){
                 var holder = $(dom);
@@ -18,7 +16,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
                 var imageURL = div.data('url') + '?current_image=' + holder.data('imageurl');
                 var input = holder.find('input.cloudinarycolorselect');
-                var selectedColor = input.val();
+                var selectedColor = holder.find('.colours li.colour-picker').length ? MadeUtils.ColorSelect.hexToRGB(input.val()) : input.val();
                 if(imageURL){
                     var img = $('<img src="' + imageURL + '">');
                     holder.find('.imageHolder').html(img);
@@ -57,7 +55,6 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                             strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
                         }
 
-//                        holder.find('.colours').text('');
                         holder.find('.colours li.loading-text').replaceWith(strHTML);
                         holder.find('.colours li.colour-picker').show();
                     });
@@ -65,11 +62,17 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
             },
 
             PerformSelectColor: function(dom){
+
                 var holder = $(dom).closest('.ColourSelectField-holder');
                 var input = holder.find('input.cloudinarycolorselect');
-                input.val($(dom).data('value'));
+                var rgb = $(dom).data('value');
+                var value = holder.find('.colours li.colour-picker').length ? '#'+MadeUtils.ColorSelect.RGBToHex(rgb) : rgb;
+                input.val(value);
                 holder.find('.colour-select').removeClass('selected');
                 $(dom).addClass('selected');
+                $('.minicolors-swatch-color').css({
+                    'background-color' : rgb
+                });
                 return false;
             },
 
@@ -85,30 +88,29 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 }
             },
 
-            RGBToHex: function(r,g,b){
-                var bin = r << 16 | g << 8 | b;
+            RGBToHex: function(rgb){
+                var arrRGB = rgb.replace(/[^\d,]/g, '').split(',');
+                var bin = arrRGB[0] << 16 | arrRGB[1] << 8 | arrRGB[2];
                 return (function(h){
                     return new Array(7-h.length).join("0")+h
-                })(bin.toString(16).toUpperCase())
+                })(bin.toString(16))
             },
 
             hexToRGB: function(hex){
+                hex = parseInt(hex.replace('#', '') ,16)
                 var r = hex >> 16;
                 var g = hex >> 8 & 0xFF;
                 var b = hex & 0xFF;
-                return [r,g,b];
+                return 'rgb('+r+','+g+','+b+')';
             }
 
         }
-
 
         $(".field.cloudinarycolorselect").entwine({
             onmatch: function() {
                 MadeUtils.ColorSelect.UpdateColorSelectWithSelection(this);
             }
         });
-
-
 
         $("li.colour-select").entwine({
             onclick: function(){
@@ -118,15 +120,18 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
         $("input.colourpickerinput").entwine({
             onchange: function(){
-                var hex = parseInt($(this).val().replace('#', '') ,16);
-                var r = hex >> 16;
-                var g = hex >> 8 & 0xFF;
-                var b = hex & 0xFF;
-//                var rgb = 'rgb('+r+','+g+','+b+')';
-                var arr = MadeUtils.ColorSelect.hexToRGB(hex)
-                var rgb = 'rgb('+arr[0]+','+arr[1]+','+arr[1]+')';
-                $(this).val(MadeUtils.ColorSelect.RGBToHex(r, g, b));
+                var rgb = MadeUtils.ColorSelect.hexToRGB($(this).val());
+                $(this).val('#'+MadeUtils.ColorSelect.RGBToHex(rgb));
                 $(this).parent().parent().data('value', rgb);
+            },
+            onclick: function() {
+                $(this).parent().parent().css({
+                    'width' : '175px',
+                    'height': '180px'
+                });
+            },
+            onfocusout: function() {
+                $(this).parent().parent().removeAttr('style');
             }
         });
 

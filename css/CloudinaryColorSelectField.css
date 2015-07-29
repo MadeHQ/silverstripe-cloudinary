@@ -33,8 +33,7 @@
 }
 
 .ColourSelectField-holder .colours ul li.colour-picker {
-    width: 175px;
-    height: 182px;
+    display: inline-block;
 }
 
 .ColourSelectField-holder .colours ul li:hover {
