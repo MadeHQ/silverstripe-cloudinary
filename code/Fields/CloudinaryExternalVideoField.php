@@ -103,7 +103,8 @@ class CloudinaryExternalVideoField extends FormField {
         return Convert::array2json(array(
             'VideoID'	    => $iVideoID,
             'Success'		=> $bSuccess,
-            'Thumbnail'     => '<a href="'.$videoURL.'" class="thumbnail-link" target="_blank">'.$this->Thumbnail()->forTemplate().'</a>'
+            'Thumbnail'     => '<a href="'.$videoURL.'" class="thumbnail-link" target="_blank">'.$this->Thumbnail()->forTemplate().'</a>',
+            'ColorSelectThumbnail'  => $this->ColorSelectThumbnail()->getSourceURL()
         ));
     }
 

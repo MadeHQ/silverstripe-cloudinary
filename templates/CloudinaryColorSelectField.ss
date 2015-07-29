@@ -10,6 +10,7 @@
             </ul>
         </div>
     <% else %>
+        <ul></ul>
         <p class="remove-on-attach">Please attach an image to pick a colour</p>
     <% end_if %>
 

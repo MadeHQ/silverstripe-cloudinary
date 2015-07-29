@@ -62,7 +62,10 @@
                     if(data.Success){
                         $('input[name="' + name + '"]').val(data.VideoID);
                         dom.find('input.video-attach-button').hide();
+                        dom.data('imageurl', data.ColorSelectThumbnail);
                         $(data.Thumbnail).insertBefore(input.parent());
+                        if(typeof MadeUtils.ColorSelect != 'undefined')
+                            MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(name);
                     }
                     form.removeClass('loading');
                 }

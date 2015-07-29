@@ -16,13 +16,15 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
                 var imageURL = div.data('url') + '?current_image=' + holder.data('imageurl');
                 var input = holder.find('input.cloudinarycolorselect');
-                var selectedColor = holder.find('.colours li.colour-picker').length ? MadeUtils.ColorSelect.hexToRGB(input.val()) : input.val();
+                var selectedColor = holder.find('.colours li.colour-picker').length
+                    ? (input.val() ? MadeUtils.ColorSelect.hexToRGB(input.val()) : 0)
+                    : input.val();
                 if(imageURL){
                     var img = $('<img src="' + imageURL + '">');
                     holder.find('.imageHolder').html(img);
                     if(!holder.data('imageurl')){
                         holder.find('.imageHolder').html('');
-                        holder.find('.colours').html('Please attach an image to pick a colour');
+                        holder.find('.colours').html('<ul></ul><p class="remove-on-attach">Please attach an image to pick a colour</p>');
                     }
 
                     img.on('load', function(){
@@ -44,15 +46,16 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
 
                         strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
-                        var bColorPicker = true;
+//                        alert(selectedColor)
+                        var bColorPicker = !!selectedColor;
                         for(key in palette){
                             color = palette[key];
                             colorString = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
 
                             className = 'colour-select';
-                            if(selectedColor && (colorString == selectedColor)){
-                                className += ' selected';
+                            if(colorString == selectedColor){
                                 bColorPicker = false;
+                                className += ' selected';
                             }
 
                             strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
@@ -78,14 +81,21 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 input.val(value);
                 holder.find('.colour-select').removeClass('selected');
                 $(dom).addClass('selected');
-                $('.minicolors-swatch-color').css({
+                holder.find('.minicolors-swatch-color').css({
                     'background-color' : rgb
                 });
                 return false;
             },
 
             UpdateColorSelectWithSelection: function(dom){
-                $(dom).find('.colours li.loading-text').replaceWith('<li class="loading-text">Loading....</li>');
+                $(dom).find('.colours p.remove-on-attach').hide();
+                var loadingText = $(dom).find('.colours li.loading-text');
+                if(loadingText.length){
+                    loadingText.replaceWith('<li class="loading-text">Loading....</li>');
+                }else{
+                    $(dom).find('.colours p.remove-on-attach').remove();
+                    $(dom).find('.colours ul').append('<li class="loading-text">Loading....</li>');
+                }
                 this.LoadColorSelectTiles(dom);
             },
 
@@ -105,7 +115,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
             },
 
             hexToRGB: function(hex){
-                hex = parseInt(hex.replace('#', '') ,16)
+                hex = parseInt(hex.replace('#', '') ,16);
                 var r = hex >> 16;
                 var g = hex >> 8 & 0xFF;
                 var b = hex & 0xFF;
