@@ -18,8 +18,6 @@
             onclick: function(){
                 var button = $(this);
                 var form = button.closest('form');
-                form.addClass('changed');
-                form.addClass('loading');
                 $.ajax({
                     url     : button.data('deletelink'),
                     success : function(){
@@ -28,7 +26,6 @@
                         $('input[name="' + button.data('name') + '__URL"]').val('');
                         form.find('button.video-attach-button').show();
                         form.find('a.thumbnail-link').remove();
-                        form.removeClass('loading');
                     }
                 });
                 return false;

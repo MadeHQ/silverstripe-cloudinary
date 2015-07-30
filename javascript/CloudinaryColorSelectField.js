@@ -19,13 +19,9 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 var selectedColor = holder.find('.colours li.colour-picker').length
                     ? (input.val() ? MadeUtils.ColorSelect.hexToRGB(input.val()) : 0)
                     : input.val();
-                if(imageURL){
+                if(holder.data('imageurl')){
                     var img = $('<img src="' + imageURL + '">');
                     holder.find('.imageHolder').html(img);
-                    if(!holder.data('imageurl')){
-                        holder.find('.imageHolder').html('');
-                        holder.find('.colours').html('<ul></ul><p class="remove-on-attach">Please attach an image to pick a colour</p>');
-                    }
 
                     img.on('load', function(){
                         if (!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0){
@@ -88,15 +84,15 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
             },
 
             UpdateColorSelectWithSelection: function(dom){
-                $(dom).find('.colours p.remove-on-attach').hide();
-                var loadingText = $(dom).find('.colours li.loading-text');
-                if(loadingText.length){
-                    loadingText.replaceWith('<li class="loading-text">Loading....</li>');
+                var fieldName = $(dom).find('.ColourSelectField-holder').data('field');
+                if($('#Form_EditForm_'+fieldName+'-holder').data('imageurl')){
+                    $(dom).find('.colours ul > li').hide();
+                    $(dom).find('.colours ul').prepend('<li class="loading-text">Loading....</li>');
                 }else{
-                    $(dom).find('.colours p.remove-on-attach').remove();
-                    $(dom).find('.colours ul').append('<li class="loading-text">Loading....</li>');
+                    $(dom).find('.colours ul').append('<li class="remove-on-attach">Please attach an image to pick a colour</li>');
                 }
                 this.LoadColorSelectTiles(dom);
+
             },
 
             UpdateColorSelectWithSelectionForCloudinary: function(imageFieldName){

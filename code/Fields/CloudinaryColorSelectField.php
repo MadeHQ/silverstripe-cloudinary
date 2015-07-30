@@ -50,13 +50,19 @@ class CloudinaryColorSelectField extends FormField {
     }
 
     /**
-     * @param $strURL
+     * @param $objMedia - pass only media object. function itself will generate the media image
      * @return $this
-     * Set
+     * Set image url for color select
      */
-    public function setSourceImageURL($strURL){
-		$this->source_image_url = $strURL;
-		return $this;
+    public function setSourceImage($objMedia){
+        if($objMedia){
+            if(is_a($objMedia, 'CloudinaryVideo')){
+                $this->source_image_url = $objMedia->GetFileImage(200, 140)->getSourceURL();
+            }elseif(is_a($objMedia, 'CloudinaryImage')){
+                $this->source_image_url = $objMedia->getSourceURL();
+            }
+        }
+        return $this;
 	}
 
     /**

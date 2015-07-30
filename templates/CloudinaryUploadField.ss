@@ -1,7 +1,7 @@
 <ul class="ss-uploadfield-files files">
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
-            <li class="ss-uploadfield-item template-download" data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
+            <li class="ss-uploadfield-item template-download" id="{$Up.ID}-holder" data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
                 <div class="ss-uploadfield-item-preview preview"><span>
 					<img alt="$hasRelation" src="$UploadFieldThumbnailURL" />
 				</span></div>
