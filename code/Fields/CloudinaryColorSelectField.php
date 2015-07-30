@@ -56,11 +56,7 @@ class CloudinaryColorSelectField extends FormField {
      */
     public function setSourceImage($objMedia){
         if($objMedia){
-            if(is_a($objMedia, 'CloudinaryVideo')){
-                $this->source_image_url = $objMedia->GetFileImage(200, 140)->getSourceURL();
-            }elseif(is_a($objMedia, 'CloudinaryImage')){
-                $this->source_image_url = $objMedia->getSourceURL();
-            }
+            $this->source_image_url = $objMedia->GetFileImage(200, 140)->getSourceURL();
         }
         return $this;
 	}
@@ -75,6 +71,8 @@ class CloudinaryColorSelectField extends FormField {
 
         if($this->ColorPickerExists() && $record->db($name)) {
             $record->{"{$name}"} = $this->value ? 'rgb('.implode(',', $this->hex2rgb($this->value)).')' : null;
+        }elseif($record->db($name)){
+            $record->{"{$name}"} = $this->value;
         }
         return $this;
     }
