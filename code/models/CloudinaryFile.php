@@ -336,9 +336,13 @@ HTML;
 				}
 
 			}
-			else if($file->ClassName == 'CloudinaryVideo'){
-				return $file->forTemplate();
-			}
+            else if(in_array($file->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+                return sprintf('<iframe src="%s"></iframe>', $file->VideoURL($file->Link()));
+            }
+            elseif($file->ClassName == 'CloudinaryVideo'){
+                return sprintf('<video>
+                         <source src="%s" type="video/mp4"/> </video>', $file->Link());
+            }
 		}
 
 	}

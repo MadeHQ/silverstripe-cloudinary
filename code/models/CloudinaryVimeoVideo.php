@@ -55,4 +55,16 @@ class CloudinaryVimeoVideo extends CloudinaryVideo {
         }
     }
 
+    public static function VimeoVideoID($url)
+    {
+        sscanf(parse_url($url, PHP_URL_PATH), '/%d', $iVimeoId);
+        return $iVimeoId;
+    }
+
+    public static function VideoURL($url){
+        $strURL = "http://player.vimeo.com/video/" . self::VimeoVideoID($url);
+        return $strURL;
+    }
+
+
 } 

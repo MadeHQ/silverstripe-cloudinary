@@ -62,4 +62,15 @@ class CloudinaryYoutubeVideo extends CloudinaryVideo {
         }
     }
 
+    public static function VideoURL($url){
+        $strURL = "http://www.youtube.com/embed/" . self::YouTubeVideoID($url);
+        return $strURL;
+    }
+
+    public static function YouTubeVideoID($url)
+    {
+        parse_str( parse_url( $url, PHP_URL_QUERY ), $arrVars );
+        return isset($arrVars['v']) ? $arrVars['v'] : null;
+    }
+
 }
