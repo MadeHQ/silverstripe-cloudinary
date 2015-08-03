@@ -1,4 +1,4 @@
-<div class="ColourSelectField-holder" data-url="$LoadImageURL" data-field="$ReferenceField" data-imageurl="{$SourceImageURL}">
+<div class="ColourSelectField-holder" data-url="$LoadImageURL" data-field="$ReferenceField" data-imageurl="{$ColourSelectSource}">
     <div class="imageHolder"></div>
     <div class="colours">
         <ul>
