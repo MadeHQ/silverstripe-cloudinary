@@ -18,7 +18,7 @@
             var elem = this.element;
             var uploadItem = elem.find('.ss-uploadfield-item:first-child');
             uploadItem.attr('id', elem.closest('form').attr('id') + '_' + fileData.fieldname + '-holder');
-            uploadItem.data('imageurl', fileData.url);
+            uploadItem.data('imageurl', fileData.colorselect_url);
             if(typeof MadeUtils.ColorSelect != 'undefined'){
                 MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(fileData.fieldname);
             }

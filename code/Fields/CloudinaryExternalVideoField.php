@@ -130,7 +130,7 @@ class CloudinaryExternalVideoField extends FormField {
 
     public function ColorSelectThumbnail(){
         if($video = CloudinaryFile::get()->byID($this->value)){
-            return $video->GetFileImage(200, 140);
+            return $video->GetFileImage(200, 112);
         }
     }
 

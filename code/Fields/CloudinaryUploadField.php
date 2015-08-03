@@ -184,6 +184,7 @@ class CloudinaryUploadField extends UploadField
 			'name' => $file->FileName,
 			'url' => $file->URL,
 			'thumbnail_url' => $file->UploadFieldThumbnailURL,
+			'colorselect_url' => $file->UploadFieldImageURL,
 			'size' => $file->FileSize,
 			'type' => $file->FileType,
 			'buttons' => $file->UploadFieldFileButtons,
@@ -198,7 +199,7 @@ class CloudinaryUploadField extends UploadField
 	protected function customiseCloudinaryFile(CloudinaryFile $file) {
 		$file = $file->customise(array(
 			'UploadFieldThumbnailURL' => $this->getThumbnailURLForCloudinary($file),
-			'UploadFieldImageURL' => $file->GetFileImage(200, 140)->getSourceURL(),
+			'UploadFieldImageURL' => $file->getThumbnail(200, 112, 90)->getSourceURL(),
 			'UploadFieldEditLink' => $this->getItemHandler($file->ID)->EditLink(),
 			'UploadField' => $this
 		));
@@ -220,7 +221,6 @@ class CloudinaryUploadField extends UploadField
 		} else {
 			return $file->Icon();
 		}
-		return false;
 	}
 
 }

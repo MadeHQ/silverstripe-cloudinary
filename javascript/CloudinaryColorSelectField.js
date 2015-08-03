@@ -77,9 +77,8 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 input.val(value);
                 holder.find('.colour-select').removeClass('selected');
                 $(dom).addClass('selected');
-                holder.find('.minicolors-swatch-color').css({
-                    'background-color' : rgb
-                });
+                holder.find('.minicolors-swatch-color').css({'background-color' : rgb});
+                holder.find('div.minicolors').removeAttr('style');
                 return false;
             },
 
