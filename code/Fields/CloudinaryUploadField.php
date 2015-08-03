@@ -26,10 +26,12 @@ class CloudinaryUploadField extends UploadField
 	);
 
 
-	public function Field($properties = array()){
-		Requirements::css('cloudinary/css/CloudinaryUploadField.css');
-		return parent::Field($properties);
-	}
+    public function Field($properties = array()){
+        $parent = parent::Field($properties);
+        Requirements::css('cloudinary/css/CloudinaryUploadField.css');
+        Requirements::javascript('cloudinary/javascript/CloudinaryUploadField.js');
+        return $parent;
+    }
 
 
 	/**
