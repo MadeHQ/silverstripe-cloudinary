@@ -48,8 +48,8 @@ class CloudinaryImage extends CloudinaryFile {
 	/**
 	 * @return CloudinaryImage_Cached|Image_Cached
 	 */
-	public function CMSThumbnail(){
-		return $this->MakeCloudinaryCached(132, 128, 'fill', 60);
+	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'fill', $iQuality);
 	}
 
 	/**

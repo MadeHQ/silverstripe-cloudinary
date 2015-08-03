@@ -250,9 +250,9 @@ HTML;
 	/**
 	 * @return Image_Cached
 	 */
-	public function CMSThumbnail(){
+	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
 		if($this->FileType == 'image'){
-			return $this->GetFileImage(132, 128, 60);
+			return $this->GetFileImage($iWidth, $iHeight, $iQuality);
 		}
 		return new Image_Cached($this->Icon());
 	}
@@ -260,8 +260,8 @@ HTML;
 	/**
 	 * @return CloudinaryImage_Cached
 	 */
-	public function getThumbnail(){
-		return $this->CMSThumbnail();
+	public function getThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+		return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
 	}
 
 
