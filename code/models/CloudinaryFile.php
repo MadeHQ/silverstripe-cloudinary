@@ -21,6 +21,7 @@ class CloudinaryFile extends DataObject {
 	 */
 	private static $db = array(
 		'Title'				=> 'Varchar(200)',
+		'Caption'			=> 'Varchar(200)',
 		'FileName'			=> 'Varchar(200)',
 		'PublicID'			=> 'Varchar(200)',
 		'Version'			=> 'Varchar(200)',
@@ -127,7 +128,8 @@ class CloudinaryFile extends DataObject {
 			new TabSet('Root',
 				new Tab('Main',
 					$filePreview,
-					new TextField("Title", _t('AssetTableField.TITLE','Title'))
+					new TextField("Title", _t('AssetTableField.TITLE','Title')),
+					new TextField("Caption", _t('AssetTableField.CAPTION','Caption'))
 				)
 			)
 		);

@@ -264,6 +264,7 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 		$colsComponent->setDisplayFields(array(
 			'StripThumbnail'	=> 'Thumbnail',
 			'Title'				=> 'Title',
+			'Caption'			=> 'Caption',
 			'FileName' 			=> singleton('CloudinaryFile')->fieldLabel('FileName'),
 			'Size' 				=> singleton('CloudinaryFile')->fieldLabel('Size')
 		));
