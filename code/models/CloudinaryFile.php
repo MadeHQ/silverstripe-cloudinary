@@ -336,16 +336,44 @@ HTML;
 				}
 
 			}
-            else if(in_array($file->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
-                return sprintf('<iframe src="%s"></iframe>', $file->VideoURL($file->Link()));
-            }
-            elseif($file->ClassName == 'CloudinaryVideo'){
-                return sprintf('<video>
-                         <source src="%s" type="video/mp4"/> </video>', $file->Link());
-            }
+            else if(in_array($file->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo','CloudinaryVideo'))) {
+				return self::getRelevantHtml($file,$arguments);
+			}
 		}
 
 	}
+
+	/**
+	 * @param $file
+	 * @param $arguments
+	 * @return string
+	 *
+	 * get relevent video tag html
+	 */
+	public static function getRelevantHtml($file,$arguments){
+
+		$strSize = isset($arguments['size']) ? $arguments['size'] : null;
+		$arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_video_sizes');
+		$width = $height = 0;
+		if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
+			$width = $arrDefinedSizes[$strSize]['width'];
+			$height = $arrDefinedSizes[$strSize]['height'];
+
+		}
+		if(in_array($file->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+			return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file->VideoURL($file->Link()),
+				($width) ? $width : $arrDefinedSizes['default']['width'],($height) ? $height : $arrDefinedSizes['default']['height']);
+
+		}
+		elseif($file->ClassName == 'CloudinaryVideo'){
+			return sprintf('<video width="%s" height="%s" controls>
+                         <source src="%s" type="video/mp4"/> </video>', ($width) ? $width : $arrDefinedSizes['default']['width'],
+				                                                      ($height) ? $height : $arrDefinedSizes['default']['height'],
+				$file->Link()
+			);
+		}
+	}
+
 
     public function NameForSummaryField(){
         if(in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
