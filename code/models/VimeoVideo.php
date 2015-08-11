@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class CloudinaryVimeoVideo extends CloudinaryVideo {
+class VimeoVideo extends CloudinaryVideo {
 
     public function Link(){
         return $this->URL;

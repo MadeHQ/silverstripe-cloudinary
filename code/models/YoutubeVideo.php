@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class CloudinaryYoutubeVideo extends CloudinaryVideo {
+class YoutubeVideo extends CloudinaryVideo {
 
     public function Link(){
         return $this->URL;
@@ -30,7 +30,7 @@ class CloudinaryYoutubeVideo extends CloudinaryVideo {
 
     public static function youtube_video_details($id) {
         $url = 'https://www.googleapis.com/youtube/v3/videos?';
-        $url.= sprintf('key=%s', Config::inst()->get('CloudinaryYoutubeVideo', 'youtube_api_key'));
+        $url.= sprintf('key=%s', Config::inst()->get('YoutubeVideo', 'youtube_api_key'));
         $url.= sprintf('&id=%s', $id);
         $url.= '&fields=items(snippet(title),contentDetails(duration))';
         $url.= '&part=snippet,contentDetails';

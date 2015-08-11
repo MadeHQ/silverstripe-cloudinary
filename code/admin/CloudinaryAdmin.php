@@ -72,10 +72,10 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 					$list = $list->filter('ClassName', 'CloudinaryVideo');
 					break;
 				case 'youtube':
-					$list = $list->filter('ClassName', 'CloudinaryYoutubeVideo');
+					$list = $list->filter('ClassName', 'YoutubeVideo');
 					break;
 				case 'vimeo':
-					$list = $list->filter('ClassName', 'CloudinaryVimeoVideo');
+					$list = $list->filter('ClassName', 'VimeoVideo');
 					break;
 
 			}

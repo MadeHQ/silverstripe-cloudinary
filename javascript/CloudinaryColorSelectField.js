@@ -12,7 +12,7 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
                 var holder = $(dom);
                 var div = holder.find('.ColourSelectField-holder');
                 var name = div.data('field');
-                holder.data('imageurl', $('#'+name).find('.ss-uploadfield-item:first-child').data('imageurl'));
+                holder.data('imageurl', $('#'+name).find('.ss-uploadfield-item').data('imageurl'));
 
                 var imageURL = div.data('url') + '?current_image=' + holder.data('imageurl');
                 var input = holder.find('input.cloudinarycolorselect');
@@ -42,7 +42,6 @@ if (typeof MadeUtils === 'undefined') { var MadeUtils = {};}
 
 
                         strHTML += '<li style="background: ' + colorString + '" data-value="' + colorString+ '" class="'+ className +'"></li>';
-//                        alert(selectedColor)
                         var bColorPicker = !!selectedColor;
                         for(key in palette){
                             color = palette[key];

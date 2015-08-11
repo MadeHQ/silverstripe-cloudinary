@@ -134,7 +134,7 @@ class CloudinaryFile extends DataObject {
 			)
 		);
 
-        if(!in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+        if(!in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
             $fields->insertAfter(new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName), 'FileType');
             $fields->insertAfter(new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()), 'FileType');
         }
@@ -338,7 +338,7 @@ HTML;
 				}
 
 			}
-            else if(in_array($file->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo','CloudinaryVideo'))) {
+            else if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo','CloudinaryVideo'))) {
 				return self::getRelevantHtml($file,$arguments);
 			}
 		}
@@ -362,7 +362,7 @@ HTML;
 			$height = $arrDefinedSizes[$strSize]['height'];
 
 		}
-		if(in_array($file->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+		if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
 			return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file->VideoURL($file->Link()),
 				($width) ? $width : $arrDefinedSizes['default']['width'],($height) ? $height : $arrDefinedSizes['default']['height']);
 
@@ -378,7 +378,7 @@ HTML;
 
 
     public function NameForSummaryField(){
-        if(in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+        if(in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
             $strName = $this->Title;
         }else{
             $strName = $this->Title;

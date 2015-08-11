@@ -33,7 +33,7 @@ class CloudinaryConfigs extends DataExtension {
 	/**
 	 * @param FieldList $fields
 	 */
-	public function updateCMSFields(FieldList $fields){
+	/*public function updateCMSFields(FieldList $fields){
 		if(Config::inst()->get('CloudinaryConfigs', 'replace_relationships')){
 			foreach($fields->dataFields() as $field) {
 				if($field instanceof UploadField) {
@@ -44,7 +44,7 @@ class CloudinaryConfigs extends DataExtension {
 				}
 			}
 		}
-	}
+	}*/
 
 
 	/**

@@ -28,7 +28,7 @@ class CloudinaryVideo extends CloudinaryFile {
 
 		$fileAttributes = $fields->fieldByName('Root.Main.FilePreview')->fieldByName('FilePreviewData');
 
-        if(!in_array($this->ClassName, array('CloudinaryVimeoVideo', 'CloudinaryYoutubeVideo'))){
+        if(!in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
             $fileAttributes->push(new ReadonlyField("Dimensions", _t('AssetTableField.DIM','Dimensions') . ':', $this->Width . ' x ' . $this->Height));
         }
 		$fileAttributes->push(new ReadonlyField("Duration", 'Duration:'));
@@ -54,5 +54,10 @@ class CloudinaryVideo extends CloudinaryFile {
 	public function getTag(){
 		return cl_video_tag($this->PublicID . '.' . $this->Format);
 	}
+
+    public static function isCloudinary($url){
+        $host = parse_url($url, PHP_URL_HOST);
+        return strpos($host, 'cloudinary') > 0;
+    }
 
 } 
