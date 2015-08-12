@@ -44,6 +44,20 @@ CloudinaryConfigs:
     APIKey: ''
     APISecret: ''
     Quality: 70
+
 YoutubeVideo:
   youtube_api_key: ''
 
+CloudinaryVideoField:
+  defaultConfig:
+    autoUpload: true
+    allowedMaxFileNumber:
+    canUpload: true
+    canAttachExisting: 'CMS_ACCESS_AssetAdmin'
+    canPreviewFolder: true
+    previewMaxWidth: 80
+    previewMaxHeight: 60
+    uploadTemplateName: 'ss-uploadfield-uploadtemplate'
+    downloadTemplateName: 'ss-cloudinary-videofield-downloadtemplate'
+    overwriteWarning: true # Warning before overwriting existing file (only relevant when Upload: replaceFile is true)
+  allowedExtensions: mpeg,mpg,m1v,mp2,mpa,mpe,ifo,vob,avi,wmv,asf,m2v,qt,ogv,webm,mp4

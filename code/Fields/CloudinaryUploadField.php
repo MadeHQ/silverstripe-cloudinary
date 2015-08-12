@@ -25,6 +25,23 @@ class CloudinaryUploadField extends UploadField
 		'fileexists'
 	);
 
+    public function __construct($parent, $itemID) {
+        $calledClass = get_called_class();
+        if($calledClass == 'CloudinaryUploadField'){
+            user_error('You can\'t create field with type CloudinaryUploadField. Please use CloudinaryImageField, CloudinaryVideoField or CloudinaryFileField E_USER_ERROR');
+        }
+        $this->parent = $parent;
+        $this->itemID = $itemID;
+
+        parent::__construct($parent, $itemID);
+        $this->getValidator()->setAllowedExtensions(
+            array_filter($this->getExtensionsAllowed())
+        );
+    }
+
+    public function getExtensionsAllowed(){
+        return Config::inst()->get('File', 'allowed_extensions');
+    }
 
     public function Field($properties = array()){
         $parent = parent::Field($properties);
