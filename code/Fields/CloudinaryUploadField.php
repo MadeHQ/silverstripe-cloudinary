@@ -25,15 +25,13 @@ class CloudinaryUploadField extends UploadField
 		'fileexists'
 	);
 
-    public function __construct($parent, $itemID) {
+    public function __construct($name, $title = null) {
         $calledClass = get_called_class();
         if($calledClass == 'CloudinaryUploadField'){
             user_error('You can\'t create field with type CloudinaryUploadField. Please use CloudinaryImageField, CloudinaryVideoField or CloudinaryFileField E_USER_ERROR');
         }
-        $this->parent = $parent;
-        $this->itemID = $itemID;
 
-        parent::__construct($parent, $itemID);
+        parent::__construct($name, $title);
         $this->getValidator()->setAllowedExtensions(
             array_filter($this->getExtensionsAllowed())
         );

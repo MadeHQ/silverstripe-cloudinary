@@ -5,12 +5,18 @@ SilverStripe Module. Replaces SilverStripe's inbuilt asset management with Cloud
 
 ### formfields
 CloudinaryUploadField.php
--> CloudinaryUploadImageField.php - for uploading images.
--> CloudinaryUploadVideoField.php - for uploading videos.
--> CloudinaryUploadFileField.php - for uploading other files.
+    -> CloudinaryImageField.php - for uploading images.
+    -> CloudinaryVideoField.php - for uploading videos.
+    -> CloudinaryFileField.php - for uploading other files.
+
+CloudinaryColorSelectField.php
 
 ### dataobjects
-CloudinaryFile.php (extends File)
+CloudinaryFile.php
+    -> CloudinaryImage
+    -> CloudinaryVideo
+        -> VimeoVideo
+        -> YoutubeVideo
 
 ## Dependencies
 
