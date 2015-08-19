@@ -1,4 +1,4 @@
-<ul class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
+<ul id="ss-imageuploadfield-files" class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
             <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
@@ -49,7 +49,7 @@
             </label>
             <% if $canUpload %>
                 <label class="ss-uploadfield-fromcomputer ss-ui-button ui-corner-all" title="<% _t('UploadField.FROMCOMPUTERINFO', 'Upload from your computer') %>" data-icon="drive-upload">
-                    <% _t('UploadField.FROMCOMPUTER', 'From your computer') %>
+                    <% _t('UploadField.FROMCOMPUTER', 'Upload') %>
                     <input id="$id" name="{$Name}[Uploads][]" class="$extraClass ss-uploadfield-fromcomputer-fileinput" data-config="$configString" type="file"<% if $multiple %> multiple="multiple"<% end_if %> />
                 </label>
             <% else %>
