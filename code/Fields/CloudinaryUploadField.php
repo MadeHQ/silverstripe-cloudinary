@@ -26,11 +26,6 @@ class CloudinaryUploadField extends UploadField
 	);
 
     public function __construct($name, $title = null) {
-        $calledClass = get_called_class();
-        if($calledClass == 'CloudinaryUploadField'){
-            user_error('You can\'t create field with type CloudinaryUploadField. Please use CloudinaryImageField, CloudinaryVideoField or CloudinaryFileField E_USER_ERROR');
-        }
-
         parent::__construct($name, $title);
         $this->getValidator()->setAllowedExtensions(
             array_filter($this->getExtensionsAllowed())
@@ -200,6 +195,7 @@ class CloudinaryUploadField extends UploadField
 			'url' => $file->URL,
 			'thumbnail_url' => $file->UploadFieldThumbnailURL,
 			'colorselect_url' => $file->UploadFieldImageURL,
+            'edit_url' => $file->UploadFieldEditLink,
 			'size' => $file->FileSize,
 			'type' => $file->FileType,
 			'buttons' => $file->UploadFieldFileButtons,
@@ -349,5 +345,14 @@ class CloudinaryUploadField_ItemHandler extends UploadField_ItemHandler {
 
 		$item->delete();
 	}
+
+    /**
+     * @return Form
+     */
+    public function EditForm() {
+        $form = parent::EditForm();
+		$form->removeExtraClass('small');
+        return $form;
+    }
 
 }

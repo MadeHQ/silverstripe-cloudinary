@@ -21,7 +21,6 @@ class CloudinaryFile extends DataObject {
 	 */
 	private static $db = array(
 		'Title'				=> 'Varchar(200)',
-		'Caption'			=> 'Varchar(200)',
 		'FileName'			=> 'Varchar(200)',
 		'PublicID'			=> 'Varchar(200)',
 		'Version'			=> 'Varchar(200)',
@@ -30,7 +29,9 @@ class CloudinaryFile extends DataObject {
 		'SecureURL'			=> 'Varchar(500)',
 		'FileType'			=> 'Varchar(100)',
 		'FileSize'			=> 'Float',
-		'Format'			=> 'Varchar(50)'
+		'Format'			=> 'Varchar(50)',
+		'Caption'			=> 'Varchar(200)',
+		'Credit'			=> 'Varchar(200)',
 	);
 
 
@@ -114,7 +115,7 @@ class CloudinaryFile extends DataObject {
 				$fileDataField = CompositeField::create(
                     new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
 					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL') ,
-						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Link())
+						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Title ? $this->Title : $this->Link())
 					),
 					new DateField_Disabled("Created", _t('AssetTableField.CREATED','First uploaded') . ':'),
 					new DateField_Disabled("LastEdited", _t('AssetTableField.LASTEDIT','Last changed') . ':')
@@ -129,7 +130,8 @@ class CloudinaryFile extends DataObject {
 				new Tab('Main',
 					$filePreview,
 					new TextField("Title", _t('AssetTableField.TITLE','Title')),
-					new TextField("Caption", _t('AssetTableField.CAPTION','Caption'))
+					new TextField("Caption", _t('AssetTableField.CAPTION','Caption')),
+					new TextField("Credit", _t('AssetTableField.CREDIT','Credit'))
 				)
 			)
 		);
