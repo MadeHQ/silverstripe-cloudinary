@@ -315,7 +315,8 @@ class CloudinaryUploadField_ItemHandler extends UploadField_ItemHandler {
 	 * @var array
 	 */
 	private static $allowed_actions = array(
-		'delete'
+		'delete',
+        'EditForm',
 	);
 
 	/**
