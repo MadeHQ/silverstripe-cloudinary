@@ -25,4 +25,16 @@
         }
     });
 
+    $('div.ss-uploadfield.display-logic, div.ss-uploadfield.display-logic-master').entwine({
+        getFormField: function() {
+            var field = this._super();
+            if(field.length > 0){
+                return field;
+            }else{
+                return this.find('[data-name='+this.getFieldName()+']');
+            }
+        }
+
+    })
+
 }(jQuery));

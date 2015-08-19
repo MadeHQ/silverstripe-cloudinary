@@ -1,4 +1,4 @@
-<ul class="ss-uploadfield-files files">
+<ul class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
             <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
