@@ -7,6 +7,7 @@
 				</span></div>
                 <div class="ss-uploadfield-item-info">
                     <input type='hidden' value='$ID' name='{$Top.Name}[Files][]' />
+                    <input type="hidden" class="sortHidden" name="{$Top.Name}[Files][][Sort]" value="$Sort" />
                     <label class="ss-uploadfield-item-name">
                         <span class="name">$Title.XML</span>
                         <span class="size">$Size</span>
@@ -16,6 +17,7 @@
                         <% if $Top.isActive %>
                             $UploadFieldFileButtons
                         <% end_if %>
+                        <img class="fieldHandler" src="$ModulePath(framework)/images/drag.gif" alt="Drag to rearrange order of fields">
                     </div>
                 </div>
                 <div class="ss-uploadfield-item-editform includeParent">

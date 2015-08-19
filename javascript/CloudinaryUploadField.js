@@ -19,7 +19,7 @@
             var uploadItem = elem.find('.ss-uploadfield-item:first-child');
             uploadItem.attr('id', elem.closest('form').attr('id') + '_' + fileData.fieldname + '-holder');
             uploadItem.data('imageurl', fileData.colorselect_url);
-            if(typeof MadeUtils.ColorSelect != 'undefined'){
+            if(typeof MadeUtils != 'undefined' && typeof MadeUtils.ColorSelect != 'undefined'){
                 MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(fileData.fieldname);
             }
         }
@@ -35,6 +35,41 @@
             }
         }
 
-    })
+    });
+
+    $(document).ready(function(){
+
+        var fields = {};
+
+        fields.update = function() {
+            $("#ss-imageuploadfield-files").sortable({
+                handle: '.fieldHandler',
+                cursor: 'pointer',
+                items: 'li.ss-uploadfield-item',
+                opacity: 0.6,
+                revert: 'true',
+                change : function (event, ui) {
+                    $("#ss-imageuploadfield-files").sortable('refreshPositions');
+                },
+                update : function (event, ui) {
+                    var sort = 1;
+
+                    $("li.ss-uploadfield-item").each(function() {
+                        $(this).find(".sortHidden").val(sort++);
+                    });
+                    alert('two')
+                }
+            });
+        }
+
+        $(".fieldHandler").live('hover', function() {
+            fields.update();
+        });
+
+        fields.update();
+
+    });
+
+
 
 }(jQuery));

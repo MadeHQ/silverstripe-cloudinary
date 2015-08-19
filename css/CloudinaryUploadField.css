@@ -2,3 +2,6 @@
     width: 100%;
 }
 
+.fieldHandler {
+    cursor: move;
+}
