@@ -57,7 +57,6 @@
                     $("li.ss-uploadfield-item").each(function() {
                         $(this).find(".sortHidden").val(sort++);
                     });
-                    alert('two')
                 }
             });
         }
