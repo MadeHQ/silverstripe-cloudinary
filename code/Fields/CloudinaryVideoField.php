@@ -27,10 +27,10 @@ class CloudinaryVideoField extends CloudinaryUploadField
 
     }
 
-    public function getExtensionsAllowed(){
-        $strExtensions = CloudinaryVideoField::config()->allowedExtensions;
-        return explode(',', $strExtensions);
-    }
+//    public function getExtensionsAllowed(){
+//        $strExtensions = CloudinaryVideoField::config()->allowedExtensions;
+//        return explode(',', $strExtensions);
+//    }
 
     public function VideoURL()
     {

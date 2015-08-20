@@ -34,7 +34,7 @@
                             dom.data('imageurl', data.ColorSelectThumbnail);
                             dom.find('.ss-uploadfield-item-preview').removeClass('.ss-uploadfield-dropzone').html(data.Thumbnail);
 
-                            if(typeof MadeUtils.ColorSelect != 'undefined')
+                            if(typeof MadeUtils != 'undefined' && typeof MadeUtils.ColorSelect != 'undefined')
                                 MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(name);
                         }
                         form.removeClass('loading');

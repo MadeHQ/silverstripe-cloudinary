@@ -32,6 +32,7 @@ class CloudinaryFile extends DataObject {
 		'Format'			=> 'Varchar(50)',
 		'Caption'			=> 'Varchar(200)',
 		'Credit'			=> 'Varchar(200)',
+		'SortOrder'			=> 'Int',
 	);
 
 

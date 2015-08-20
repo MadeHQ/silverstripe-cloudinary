@@ -41,31 +41,44 @@
 
         var fields = {};
 
-        fields.update = function() {
-            $("#ss-imageuploadfield-files").sortable({
+        fields.update = function(dom) {
+            dom.sortable({
                 handle: '.fieldHandler',
                 cursor: 'pointer',
                 items: 'li.ss-uploadfield-item',
                 opacity: 0.6,
                 revert: 'true',
                 change : function (event, ui) {
-                    $("#ss-imageuploadfield-files").sortable('refreshPositions');
+                    dom.sortable('refreshPositions');
                 },
                 update : function (event, ui) {
                     var sort = 1;
 
-                    $("li.ss-uploadfield-item").each(function() {
-                        $(this).find(".sortHidden").val(sort++);
+                    var items = dom.find("li.ss-uploadfield-item");
+                    var data = [];
+                    items.each(function() {
+                        var sortField = $(this).find(".sortHidden");
+                        sortField.val(sort++);
+                        data.push({
+                            name: sortField.attr('name'),
+                            value: sortField.val()
+                        })
                     });
+                    console.log(dom.data('name'));
+                    $.ajax({
+                        url: items.data('reorder-url'),
+                        type: 'POST',
+                        dataType: 'json',
+                        data: data
+                    })
                 }
             });
         }
 
         $(".fieldHandler").live('hover', function() {
-            fields.update();
+            var dom = $(this).closest('ul.ss-uploadfield-files');
+            fields.update(dom);
         });
-
-        fields.update();
 
     });
 

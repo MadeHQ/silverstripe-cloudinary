@@ -1,4 +1,4 @@
-<ul id="ss-videouploadfield-files" class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
+<ul class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
             <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
@@ -12,6 +12,11 @@
                         <% if $Top.isActive %>
                             $UploadFieldFileButtons
                         <% end_if %>
+                        <% if $Top.CanReorder %>
+                            <input type="hidden" class="sortHidden" name="{$Top.Name}[$ID]" value="$Sort" />
+                            <img class="fieldHandler" src="$ModulePath('framework')/images/drag.gif" alt="Drag to rearrange order of fields">
+                        <% end_if %>
+
                     </div>
                 </div>
             </li>
@@ -40,6 +45,7 @@
                 </label>
 
                 <button data-id="{$ID}" class="video-attach-button">Attach</button>
+
             <% else %>
                 <input id="$id" name="{$Name}[Uploads][]" class="$extraClass ss-uploadfield-fromcomputer-fileinput" data-config="$configString" type="hidden" />
             <% end_if %>

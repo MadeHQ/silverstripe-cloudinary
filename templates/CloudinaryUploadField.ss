@@ -1,13 +1,12 @@
-<ul id="ss-imageuploadfield-files" class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
+<ul class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
-            <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
+            <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL" data-reorder-url="$Top.ReorderURL">
                 <div class="ss-uploadfield-item-preview preview"><span>
 					<img alt="$hasRelation" src="$UploadFieldThumbnailURL" />
 				</span></div>
                 <div class="ss-uploadfield-item-info">
                     <input type='hidden' value='$ID' name='{$Top.Name}[Files][]' />
-                    <input type="hidden" class="sortHidden" name="{$Top.Name}[Files][][Sort]" value="$Sort" />
                     <label class="ss-uploadfield-item-name">
                         <span class="name">$Title.XML</span>
                         <span class="size">$Size</span>
@@ -17,7 +16,10 @@
                         <% if $Top.isActive %>
                             $UploadFieldFileButtons
                         <% end_if %>
-                        <img class="fieldHandler" src="$ModulePath(framework)/images/drag.gif" alt="Drag to rearrange order of fields">
+                        <% if $Top.CanReorder %>
+                            <input type="hidden" class="sortHidden" name="{$Top.Name}[$ID]" value="$Sort" />
+                            <img class="fieldHandler" src="$ModulePath('framework')/images/drag.gif" alt="Drag to rearrange order of fields">
+                        <% end_if %>
                     </div>
                 </div>
                 <div class="ss-uploadfield-item-editform includeParent">
