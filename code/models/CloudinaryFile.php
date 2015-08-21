@@ -172,9 +172,7 @@ HTML;
 	public function Link(){
 		$strLink = "";
 		if($this->PublicID){
-			$options = array(
-				'resource_type'	=> $this->FileType
-			);
+			$options = $this->options;
 			$strLink = Cloudinary::cloudinary_url(
 				$this->PublicID . '.' . $this->Format,
 				$options

@@ -27,10 +27,10 @@ class CloudinaryVideoField extends CloudinaryUploadField
 
     }
 
-//    public function getExtensionsAllowed(){
-//        $strExtensions = CloudinaryVideoField::config()->allowedExtensions;
-//        return explode(',', $strExtensions);
-//    }
+    public function getExtensionsAllowed(){
+        $strExtensions = CloudinaryVideoField::config()->allowedExtensions;
+        return explode(',', $strExtensions);
+    }
 
     public function VideoURL()
     {
@@ -49,9 +49,6 @@ class CloudinaryVideoField extends CloudinaryUploadField
 
     public function process()
     {
-        $bSuccess = false;
-        $iVideoID = 0;
-        $videoURL = '';
 
         if (isset($_POST['SourceURL'])) {
             $sourceURL = $_POST['SourceURL'];
@@ -105,15 +102,30 @@ class CloudinaryVideoField extends CloudinaryUploadField
                 $this->value = $iVideoID = $video->ID;
                 $videoURL = $sourceURL;
                 $bSuccess = true;
+
+                $file =  $this->customiseCloudinaryFile($video);
+
+                return Convert::array2json(array(
+                    'colorselect_url' => $file->UploadFieldImageURL,
+                    'thumbnail_url' => $file->UploadFieldThumbnailURL,
+                    'fieldname' => $this->getName(),
+                    'id' => $file->ID,
+                    'url' => $file->URL,
+                    'buttons' => $file->UploadFieldFileButtons,
+                    'more_files' => $this->canUploadMany(),
+                    'field_id'  => $this->ID()
+                ));
             }
         }
+        return Convert::array2json(array());
 
-        return Convert::array2json(array(
-            'VideoID' => $iVideoID,
-            'Success' => $bSuccess,
-            'Thumbnail' => '<a href="' . $videoURL . '" class="thumbnail-link" target="_blank">' . $this->Thumbnail()->forTemplate() . '</a>',
-            'ColorSelectThumbnail' => $this->ColorSelectThumbnail()->getSourceURL()
-        ));
+    }
+
+    public function canUploadMany(){
+        $record = $this->getRecord();
+        return ($record instanceof DataObject)
+            && $record->hasMethod($this->getName())
+            && $record->{$this->getName()}() instanceof RelationList;
     }
 
     public function DeleteLink()

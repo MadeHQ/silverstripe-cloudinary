@@ -1,6 +1,6 @@
 window.tmpl.cache['ss-cloudinary-videofield-downloadtemplate'] = tmpl(
     '{% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}' +
-        '<li class="ss-uploadfield-item template-download{% if (file.error) { %} ui-state-error{% } %}" data-fileid="{%=file.id%}">' +
+        '<li id="{%=file.field_id%}-holder" class="ss-uploadfield-item template-download{% if (file.error) { %} ui-state-error{% } %}" data-fileid="{%=file.id%}" data-imageurl="{%=file.colorselect_url%}">' +
             '{% if (file.thumbnail_url) { %}' +
                 '<div class="ss-uploadfield-item-preview preview"><span>' +
                     '<img src="{%=file.thumbnail_url%}" alt="" />' +
@@ -8,7 +8,7 @@ window.tmpl.cache['ss-cloudinary-videofield-downloadtemplate'] = tmpl(
             '{% } %}' +
             '<div class="ss-uploadfield-item-info">' +
                 '{% if (!file.error) { %}' +
-                    '<input type="hidden" name="{%=file.fieldname%}[Files][]" value="{%=file.id%}" />' +
+                    '<input type="hidden" class="field_id_value" name="{%=file.fieldname%}[Files][]" value="{%=file.id%}" />' +
                     '<input type="text" class="text video-attach-field" name="{%=file.fieldname%}__URL" value="{%=file.url%}" />' +
                 '{% } %}' +
                 '{% if (file.error) { %}' +
