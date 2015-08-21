@@ -56,16 +56,17 @@ class CloudinaryVideoField extends CloudinaryUploadField
             $bIsYoutube = YoutubeVideo::isYoutube($sourceURL);
             $bIsVimeo = VimeoVideo::isVimeo($sourceURL);
             if ($bIsYoutube || $bIsVimeo || $bIsCloudinary) {
-                if($bIsYoutube){
+                if($bIsCloudinary){
+                    $filterClass = 'CloudinaryVideo';
+                    $fileType = 'video';
+                }elseif($bIsYoutube){
                     $filterClass = 'YoutubeVideo';
                     $fileType = 'youtube';
                 }elseif($bIsVimeo){
                     $filterClass = 'VimeoVideo';
                     $fileType = 'vimeo';
-                }else{
-                    $filterClass = 'CloudinaryVideo';
-                    $fileType = 'video';
                 }
+
                 $funcForID = $bIsYoutube ? 'youtube_id_from_url' : 'vimeo_id_from_url';
                 $funcForDetails = $bIsYoutube ? 'youtube_video_details' : 'vimeo_video_details';
                 $video = $filterClass::get()->filter('URL', $sourceURL)->first();
@@ -100,8 +101,6 @@ class CloudinaryVideoField extends CloudinaryUploadField
                     }
                 }
                 $this->value = $iVideoID = $video->ID;
-                $videoURL = $sourceURL;
-                $bSuccess = true;
 
                 $file =  $this->customiseCloudinaryFile($video);
 

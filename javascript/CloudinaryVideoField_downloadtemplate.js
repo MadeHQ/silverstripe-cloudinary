@@ -25,6 +25,9 @@ window.tmpl.cache['ss-cloudinary-videofield-downloadtemplate'] = tmpl(
                 '<div class="ss-uploadfield-item-actions">{% print(file.buttons, true); %}</div>' +
                 '{% } %}' +
             '</div>' +
+            '{% if (!file.error) { %}' +
+                '<div class="ss-uploadfield-item-editform"><iframe frameborder="0" data-src="{%=file.edit_url%}" src="about:blank"></iframe></div>' +
+            '{% } %}' +
         '</li>' +
     '{% } %}'
 );

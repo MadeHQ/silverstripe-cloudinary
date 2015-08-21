@@ -19,6 +19,9 @@
 
                     </div>
                 </div>
+                <div class="ss-uploadfield-item-editform includeParent">
+                    <iframe frameborder="0" data-src="$UploadFieldEditLink" src="about:blank"></iframe>
+                </div>
             </li>
         <% end_loop %>
     <% end_if %>

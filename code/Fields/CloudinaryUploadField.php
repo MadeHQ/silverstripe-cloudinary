@@ -304,7 +304,7 @@ class CloudinaryUploadField extends UploadField
 	 * @param CloudinaryFile $file
 	 * @return array
 	 */
-	protected function encodeCloudinaryAttributes(CloudinaryFile $file)
+	public function encodeCloudinaryAttributes(CloudinaryFile $file)
 	{
 		// Collect all output data.
 		$file =  $this->customiseCloudinaryFile($file);
