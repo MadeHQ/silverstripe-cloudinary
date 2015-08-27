@@ -62,7 +62,7 @@ SilverStripe Module. Replaces SilverStripe's inbuilt asset management with Cloud
             $fields->addFieldToTab('Root.Media', CloudinaryFileField::create('Download', 'Download');
 
             // pass the has_one media object and field name that you need to select background color for
-            $fields->insertAfter(CloudinaryColorSelectField::create('BackGroundColor', '', $this->MainImage(), 'MainImage'))
+            $fields->insertAfter(CloudinaryColorSelectField::create('BackGroundColor', '', $this->MainImage(), 'MainImage'), 'MainImage')
 
             // for has_many | many_many relaitons (pass last two arguments if you need drag and drop reordering)
             $fields->addFieldToTab('Root.Media', CloudinaryImageField::create('Galleries', 'Galleries', $this->Galleries()->sort('Sort'), 'Sort'));
