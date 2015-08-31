@@ -78,7 +78,7 @@ class CloudinaryColorSelectField extends FormField {
     public function setColourSelectSource($objMedia){
         if($objMedia && !is_a($objMedia, 'CloudinaryImage') && !is_a($objMedia, 'CloudinaryVideo')){
             user_error(
-                "setSourceImage() accepts only CloudinaryVideo or CloudinaryImage objects.",
+                "setColourSelectSource() accepts only CloudinaryVideo or CloudinaryImage objects.",
                 E_USER_ERROR
             );
         }
