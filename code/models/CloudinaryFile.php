@@ -243,10 +243,6 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function StripThumbnail(){
-
-		if($this->FileType == 'image'){
-			return $this->GetFileImage(100, 100, 60);
-		}
 		return new Image_Cached($this->Icon());
 	}
 
@@ -254,19 +250,8 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
-		if($this->FileType == 'image'){
-			return $this->GetFileImage($iWidth, $iHeight, $iQuality);
-		}
 		return new Image_Cached($this->Icon());
 	}
-
-	/**
-	 * @return CloudinaryImage_Cached
-	 */
-	public function getThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
-		return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
-	}
-
 
 	/**
 	 * @param $iWidth
@@ -296,7 +281,7 @@ HTML;
 	{
 		$ext = strtolower($this->Format);
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
-			$ext = $this->appCategory();
+			$ext = File::get_app_category($ext);
 		}
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
 			$ext = "generic";

@@ -109,22 +109,33 @@ class CloudinaryUploadField extends UploadField
 		$arrOptions = array();
 		if($strClass == 'CloudinaryVideo'){
 			$arrOptions['resource_type'] = 'video';
+		}elseif($strClass == 'CloudinaryFile'){
+			$arrOptions['resource_type'] = 'raw';
+			$arrOptions['format'] = File::get_file_extension($uploadedFile['name']);
 		}
 
 		$arrUploaderDetails = \Cloudinary\Uploader::upload($uploadedFile['tmp_name'], $arrOptions);
 		if($arrUploaderDetails && is_array($arrUploaderDetails)){
 
+            if($strClass == 'CloudinaryFile'){
+                $arrPieces = explode('.', $arrUploaderDetails['public_id']);
+                $strPublicID = isset($arrPieces[0]) ? $arrPieces[0] : '';
+                $strFormat = isset($arrPieces[1]) ? $arrPieces[1] : '';
+            }else{
+                $strPublicID = $arrUploaderDetails['public_id'];
+                $strFormat = $arrUploaderDetails['format'];
+            }
 			$arrData = array(
 				'Title'				=> $uploadedFile['name'],
 				'FileName'			=> $uploadedFile['name'],
-				'PublicID'			=> $arrUploaderDetails['public_id'],
+				'PublicID'			=> $strPublicID,
 				'Version'			=> $arrUploaderDetails['version'],
 				'Signature'			=> $arrUploaderDetails['signature'],
 				'URL'				=> $arrUploaderDetails['url'],
 				'SecureURL'			=> $arrUploaderDetails['secure_url'],
 				'FileType'			=> $arrUploaderDetails['resource_type'],
 				'FileSize'			=> $arrUploaderDetails['bytes'],
-				'Format'			=> $arrUploaderDetails['format'],
+				'Format'			=> $strFormat,
 			);
 
 			if($strClass == 'CloudinaryImage'){
@@ -329,7 +340,7 @@ class CloudinaryUploadField extends UploadField
 	protected function customiseCloudinaryFile(CloudinaryFile $file) {
 		$file = $file->customise(array(
 			'UploadFieldThumbnailURL' => $this->getThumbnailURLForCloudinary($file),
-			'UploadFieldImageURL' => $file->getThumbnail(200, 112, 90)->getSourceURL(),
+			'UploadFieldImageURL' => $file->hasMethod('getThumbnail') ? $file->getThumbnail(200, 112, 90)->getSourceURL() : $file->Icon(),
 			'UploadFieldEditLink' => $this->getItemHandler($file->ID)->EditLink(),
 			'UploadField' => $this,
             'Sort'        => $this->sort_column && $file->hasField($this->sort_column) ? $file->{$this->sort_column} : 0

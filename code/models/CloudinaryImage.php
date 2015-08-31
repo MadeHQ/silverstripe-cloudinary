@@ -33,10 +33,19 @@ class CloudinaryImage extends CloudinaryFile {
 	/**
 	 * @return CloudinaryImage_Cached|mixed|null
 	 */
-	public function Icon()
-	{
+	public function Icon(){
 		return $this->MakeCloudinaryCached(100, 100, 'fill');
 	}
+
+    /**
+     * @param int $iWidth
+     * @param int $iHeight
+     * @param int $iQuality
+     * @return CloudinaryImage_Cached|Image_Cached
+     */
+    public function getThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+        return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
+    }
 
 	/**
 	 * @return CloudinaryImage_Cached|Image_Cached
@@ -45,10 +54,13 @@ class CloudinaryImage extends CloudinaryFile {
 		return $this->MakeCloudinaryCached(100, 100, 'fill', 60);
 	}
 
-	/**
-	 * @return CloudinaryImage_Cached|Image_Cached
-	 */
-	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+    /**
+     * @param int $iWidth
+     * @param int $iHeight
+     * @param int $iQuality
+     * @return CloudinaryImage_Cached|Image_Cached
+     */
+    public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
 		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'fill', $iQuality);
 	}
 
