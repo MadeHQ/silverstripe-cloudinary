@@ -147,17 +147,12 @@ class CloudinaryFile extends DataObject {
             $fields->insertAfter(new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName), 'FileType');
             $fields->insertAfter(new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()), 'FileType');
         }
+		
         if($this->ClassName == 'CloudinaryImage') {
 			$fields->dataFieldByName('Credit')->setRightTitle(_t('Cloudinary.IMAGECREDITHELP'));
 			$fields->dataFieldByName('Caption')->setRightTitle(_t('Cloudinary.IMAGEsCAPTIONHELP'));
-		}elseif($this->ClassName == 'CloudinaryVideo') {
-			$fields->dataFieldByName('Credit')->setRightTitle(_t('Cloudinary.VIDEOCREDITHELP'));
-			$fields->dataFieldByName('Caption')->setRightTitle(_t('Cloudinary.VIDEOAPTIONHELP'));
 		}
-		else{
-			$fields->dataFieldByName('Credit')->setRightTitle(_t('Cloudinary.FILECREDITHELP'));
-			$fields->dataFieldByName('Caption')->setRightTitle(_t('Cloudinary.FILECAPTIONHELP'));
-		}
+
 		$this->extend('updateCMSFields', $fields);
 
 		return $fields;
