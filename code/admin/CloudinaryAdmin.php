@@ -195,7 +195,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 		$appCategories = array(
 			'file' 		=> 'Files',
 			'image' 	=> 'Images',
-			'video' 	=> 'Videos',
+			'video' 	=> 'Cloudinary Videos',
 			'youtube' 	=> 'Youtube Videos',
 			'vimeo' 	=> 'Vimeo Videos'
 		);
