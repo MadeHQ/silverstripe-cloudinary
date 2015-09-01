@@ -55,6 +55,7 @@ class CloudinaryVideoField extends CloudinaryUploadField
             $bIsCloudinary = CloudinaryVideo::isCloudinary($sourceURL);
             $bIsYoutube = YoutubeVideo::isYoutube($sourceURL);
             $bIsVimeo = VimeoVideo::isVimeo($sourceURL);
+            $video = null;
             if ($bIsYoutube || $bIsVimeo || $bIsCloudinary) {
                 if($bIsCloudinary){
                     $filterClass = 'CloudinaryVideo';
@@ -62,21 +63,24 @@ class CloudinaryVideoField extends CloudinaryUploadField
                 }elseif($bIsYoutube){
                     $filterClass = 'YoutubeVideo';
                     $fileType = 'youtube';
-                }elseif($bIsVimeo){
+                }else{
                     $filterClass = 'VimeoVideo';
                     $fileType = 'vimeo';
                 }
 
                 $funcForID = $bIsYoutube ? 'youtube_id_from_url' : 'vimeo_id_from_url';
                 $funcForDetails = $bIsYoutube ? 'youtube_video_details' : 'vimeo_video_details';
-                $video = $filterClass::get()->filter('URL', $sourceURL)->first();
-                if (!$video) {
-                    if($bIsCloudinary){
-                        $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
-                        if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
-                            $cloudName = $arr['CloudName'];
-                            $fileName = str_replace('http://res.cloudinary.com/'.$cloudName.'/video/upload/', '', $sourceURL);
-                            $publicID = substr($fileName, 0, (strpos($fileName, '.')));
+                if($bIsCloudinary){
+                    $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
+                    if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
+                        $cloudName = $arr['CloudName'];
+                        $fileName = str_replace('http://res.cloudinary.com/'.$cloudName.'/video/upload/', '', $sourceURL);
+                        $publicID = substr($fileName, 0, (strpos($fileName, '.')));
+                        $video = $filterClass::get()->filterAny(array(
+                            'URL'       => $sourceURL,
+                            'PublicID'  => $publicID
+                        ))->first();
+                        if(!$video){
                             $video = new $filterClass(array(
                                 'PublicID' => $publicID,
                                 'URL' => $sourceURL,
@@ -85,8 +89,11 @@ class CloudinaryVideoField extends CloudinaryUploadField
                             ));
                             $video->write();
                         }
+                    }
 
-                    }else{
+                }else{
+                    $video = $filterClass::get()->filter('URL', $sourceURL)->first();
+                    if(!$video){
                         $sourceID = $filterClass::$funcForID($sourceURL);
                         $details = $filterClass::$funcForDetails($sourceID);
                         $video = new $filterClass(array(
@@ -100,20 +107,21 @@ class CloudinaryVideoField extends CloudinaryUploadField
                         $video->write();
                     }
                 }
-                $this->value = $iVideoID = $video->ID;
+                if ($video) {
+                    $this->value = $iVideoID = $video->ID;
+                    $file =  $this->customiseCloudinaryFile($video);
 
-                $file =  $this->customiseCloudinaryFile($video);
-
-                return Convert::array2json(array(
-                    'colorselect_url' => $file->UploadFieldImageURL,
-                    'thumbnail_url' => $file->UploadFieldThumbnailURL,
-                    'fieldname' => $this->getName(),
-                    'id' => $file->ID,
-                    'url' => $file->URL,
-                    'buttons' => $file->UploadFieldFileButtons,
-                    'more_files' => $this->canUploadMany(),
-                    'field_id'  => $this->ID()
-                ));
+                    return Convert::array2json(array(
+                        'colorselect_url' => $file->UploadFieldImageURL,
+                        'thumbnail_url' => $file->UploadFieldThumbnailURL,
+                        'fieldname' => $this->getName(),
+                        'id' => $file->ID,
+                        'url' => $file->URL,
+                        'buttons' => $file->UploadFieldFileButtons,
+                        'more_files' => $this->canUploadMany(),
+                        'field_id'  => $this->ID()
+                    ));
+                }
             }
         }
         return Convert::array2json(array());
