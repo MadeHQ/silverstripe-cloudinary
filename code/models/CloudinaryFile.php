@@ -139,7 +139,7 @@ class CloudinaryFile extends DataObject {
             $fields->addFieldsToTab('Root.Main', array(
                 new TextField("Caption", _t('AssetTableField.CAPTION','Caption')),
                 new TextField("Credit", _t('AssetTableField.CREDIT','Credit'))
-            ), 'Title');
+            ));
         }
 
         if(!in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
@@ -177,7 +177,10 @@ HTML;
 	public function Link(){
 		$strLink = "";
 		if($this->PublicID){
-			$options = $this->options ? $this->options : array('resource_type'    => $this->FileType);
+			$options = $this->options ? $this->options : array(
+                'resource_type' => $this->FileType,
+                'version'       => $this->Version
+            );
 			$strLink = Cloudinary::cloudinary_url(
 				$this->PublicID . '.' . $this->Format,
 				$options

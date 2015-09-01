@@ -76,16 +76,27 @@ class CloudinaryVideoField extends CloudinaryUploadField
                         $cloudName = $arr['CloudName'];
                         $fileName = str_replace('http://res.cloudinary.com/'.$cloudName.'/video/upload/', '', $sourceURL);
                         $publicID = substr($fileName, 0, (strpos($fileName, '.')));
+
                         $video = $filterClass::get()->filterAny(array(
                             'URL'       => $sourceURL,
                             'PublicID'  => $publicID
                         ))->first();
                         if(!$video){
+                            $api = new \Cloudinary\Api();
+                            $resource = $api->resource($publicID, array("resource_type" => "video"));;//qoogjqs9ksyez7ch8sh5
+                            $json = json_encode($resource);
+                            $arrResource = Convert::json2array($json);
+
                             $video = new $filterClass(array(
-                                'PublicID' => $publicID,
-                                'URL' => $sourceURL,
-                                'secure_url' => $sourceURL,
-                                'FileType' => $fileType,
+                                'Title'     => $arrResource['public_id']. '.' .$arrResource['format'],
+                                'PublicID'  => $arrResource['public_id'],
+                                'Version'	=> $arrResource['version'],
+                                'URL'		=> $arrResource['url'],
+                                'SecureURL'	=> $arrResource['secure_url'],
+                                'FileType'	=> $arrResource['resource_type'],
+                                'FileSize'	=> $arrResource['bytes'],
+                                'Format'	=> $arrResource['format'],
+                                'Signature'	=> isset($arrResource['signature']) ? $arrResource['signature'] : '',
                             ));
                             $video->write();
                         }
@@ -97,12 +108,12 @@ class CloudinaryVideoField extends CloudinaryUploadField
                         $sourceID = $filterClass::$funcForID($sourceURL);
                         $details = $filterClass::$funcForDetails($sourceID);
                         $video = new $filterClass(array(
-                            'Title' => $details['title'],
-                            'Duration' => $details['duration'],
-                            'URL' => $sourceURL,
-                            'secure_url' => $sourceURL,
-                            'PublicID' => $sourceID,
-                            'FileType' => $fileType,
+                            'Title'         => $details['title'],
+                            'Duration'      => $details['duration'],
+                            'URL'           => $sourceURL,
+                            'secure_url'    => $sourceURL,
+                            'PublicID'      => $sourceID,
+                            'FileType'      => $fileType,
                         ));
                         $video->write();
                     }
@@ -112,14 +123,14 @@ class CloudinaryVideoField extends CloudinaryUploadField
                     $file =  $this->customiseCloudinaryFile($video);
 
                     return Convert::array2json(array(
-                        'colorselect_url' => $file->UploadFieldImageURL,
-                        'thumbnail_url' => $file->UploadFieldThumbnailURL,
-                        'fieldname' => $this->getName(),
-                        'id' => $file->ID,
-                        'url' => $file->URL,
-                        'buttons' => $file->UploadFieldFileButtons,
-                        'more_files' => $this->canUploadMany(),
-                        'field_id'  => $this->ID()
+                        'colorselect_url'   => $file->UploadFieldImageURL,
+                        'thumbnail_url'     => $file->UploadFieldThumbnailURL,
+                        'fieldname'         => $this->getName(),
+                        'id'                => $file->ID,
+                        'url'               => $file->URL,
+                        'buttons'           => $file->UploadFieldFileButtons,
+                        'more_files'        => $this->canUploadMany(),
+                        'field_id'          => $this->ID()
                     ));
                 }
             }
