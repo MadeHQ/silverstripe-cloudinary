@@ -4,7 +4,9 @@ class CloudinaryFileField extends CloudinaryUploadField {
 
     public function getExtensionsAllowed(){
         $allCategories = File::config()->app_categories;
-        return array_merge($allCategories['zip'], $allCategories['doc']);
+        $ret = array_merge($allCategories['zip'], $allCategories['doc']);
+        $ret[] = 'zip';
+        return $ret;
     }
 
 } 

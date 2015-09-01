@@ -49,71 +49,101 @@ class CloudinaryVideoField extends CloudinaryUploadField
 
     public function process()
     {
-        $bSuccess = false;
-        $iVideoID = 0;
-        $videoURL = '';
 
         if (isset($_POST['SourceURL'])) {
             $sourceURL = $_POST['SourceURL'];
             $bIsCloudinary = CloudinaryVideo::isCloudinary($sourceURL);
             $bIsYoutube = YoutubeVideo::isYoutube($sourceURL);
             $bIsVimeo = VimeoVideo::isVimeo($sourceURL);
+            $video = null;
             if ($bIsYoutube || $bIsVimeo || $bIsCloudinary) {
-                if($bIsYoutube){
-                    $filterClass = 'YoutubeVideo';
-                    $fileType = 'youtube';
-                }elseif($bIsVimeo){
-                    $filterClass = 'VimeoVideo';
-                    $fileType = 'vimeo';
-                }else{
+                if($bIsCloudinary){
                     $filterClass = 'CloudinaryVideo';
                     $fileType = 'video';
+                }elseif($bIsYoutube){
+                    $filterClass = 'YoutubeVideo';
+                    $fileType = 'youtube';
+                }else{
+                    $filterClass = 'VimeoVideo';
+                    $fileType = 'vimeo';
                 }
+
                 $funcForID = $bIsYoutube ? 'youtube_id_from_url' : 'vimeo_id_from_url';
                 $funcForDetails = $bIsYoutube ? 'youtube_video_details' : 'vimeo_video_details';
-                $video = $filterClass::get()->filter('URL', $sourceURL)->first();
-                if (!$video) {
-                    if($bIsCloudinary){
-                        $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
-                        if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
-                            $cloudName = $arr['CloudName'];
-                            $fileName = str_replace('http://res.cloudinary.com/'.$cloudName.'/video/upload/', '', $sourceURL);
-                            $publicID = substr($fileName, 0, (strpos($fileName, '.')));
+                if($bIsCloudinary){
+                    $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
+                    if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
+                        $cloudName = $arr['CloudName'];
+                        $fileName = str_replace('http://res.cloudinary.com/'.$cloudName.'/video/upload/', '', $sourceURL);
+                        $publicID = substr($fileName, 0, (strpos($fileName, '.')));
+
+                        $video = $filterClass::get()->filterAny(array(
+                            'URL'       => $sourceURL,
+                            'PublicID'  => $publicID
+                        ))->first();
+                        if(!$video){
+                            $api = new \Cloudinary\Api();
+                            $resource = $api->resource($publicID, array("resource_type" => "video"));;//qoogjqs9ksyez7ch8sh5
+                            $json = json_encode($resource);
+                            $arrResource = Convert::json2array($json);
+
                             $video = new $filterClass(array(
-                                'PublicID' => $publicID,
-                                'URL' => $sourceURL,
-                                'secure_url' => $sourceURL,
-                                'FileType' => $fileType,
+                                'Title'     => $arrResource['public_id']. '.' .$arrResource['format'],
+                                'PublicID'  => $arrResource['public_id'],
+                                'Version'	=> $arrResource['version'],
+                                'URL'		=> $arrResource['url'],
+                                'SecureURL'	=> $arrResource['secure_url'],
+                                'FileType'	=> $arrResource['resource_type'],
+                                'FileSize'	=> $arrResource['bytes'],
+                                'Format'	=> $arrResource['format'],
+                                'Signature'	=> isset($arrResource['signature']) ? $arrResource['signature'] : '',
                             ));
                             $video->write();
                         }
+                    }
 
-                    }else{
+                }else{
+                    $video = $filterClass::get()->filter('URL', $sourceURL)->first();
+                    if(!$video){
                         $sourceID = $filterClass::$funcForID($sourceURL);
                         $details = $filterClass::$funcForDetails($sourceID);
                         $video = new $filterClass(array(
-                            'Title' => $details['title'],
-                            'Duration' => $details['duration'],
-                            'URL' => $sourceURL,
-                            'secure_url' => $sourceURL,
-                            'PublicID' => $sourceID,
-                            'FileType' => $fileType,
+                            'Title'         => $details['title'],
+                            'Duration'      => $details['duration'],
+                            'URL'           => $sourceURL,
+                            'secure_url'    => $sourceURL,
+                            'PublicID'      => $sourceID,
+                            'FileType'      => $fileType,
                         ));
                         $video->write();
                     }
                 }
-                $this->value = $iVideoID = $video->ID;
-                $videoURL = $sourceURL;
-                $bSuccess = true;
+                if ($video) {
+                    $this->value = $iVideoID = $video->ID;
+                    $file =  $this->customiseCloudinaryFile($video);
+
+                    return Convert::array2json(array(
+                        'colorselect_url'   => $file->UploadFieldImageURL,
+                        'thumbnail_url'     => $file->UploadFieldThumbnailURL,
+                        'fieldname'         => $this->getName(),
+                        'id'                => $file->ID,
+                        'url'               => $file->URL,
+                        'buttons'           => $file->UploadFieldFileButtons,
+                        'more_files'        => $this->canUploadMany(),
+                        'field_id'          => $this->ID()
+                    ));
+                }
             }
         }
+        return Convert::array2json(array());
 
-        return Convert::array2json(array(
-            'VideoID' => $iVideoID,
-            'Success' => $bSuccess,
-            'Thumbnail' => '<a href="' . $videoURL . '" class="thumbnail-link" target="_blank">' . $this->Thumbnail()->forTemplate() . '</a>',
-            'ColorSelectThumbnail' => $this->ColorSelectThumbnail()->getSourceURL()
-        ));
+    }
+
+    public function canUploadMany(){
+        $record = $this->getRecord();
+        return ($record instanceof DataObject)
+            && $record->hasMethod($this->getName())
+            && $record->{$this->getName()}() instanceof RelationList;
     }
 
     public function DeleteLink()

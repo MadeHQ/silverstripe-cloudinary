@@ -1,26 +1,79 @@
 # SilverStripe Cloudinary
+
+## Requirements
+
+* SilverStripe 3.1
+* [silverstripe-cloudinary](https://github.com/MadeHQ/silverstripe-cloudinary)
+
+## Description
+
 SilverStripe Module. Replaces SilverStripe's inbuilt asset management with Cloudinary.
-
-## TODO
-
-### formfields
-CloudinaryUploadField.php
-    -> CloudinaryImageField.php - for uploading images.
-    -> CloudinaryVideoField.php - for uploading videos.
-    -> CloudinaryFileField.php - for uploading other files.
-
-CloudinaryColorSelectField.php
-
-### dataobjects
-CloudinaryFile.php
-    -> CloudinaryImage
-    -> CloudinaryVideo
-        -> VimeoVideo
-        -> YoutubeVideo
 
 ## Dependencies
 
 * [PHP Extension for Cloudinary](https://github.com/cloudinary/cloudinary_php)
+
+## Installation with [Composer](https://getcomposer.org/)
+
+```composer require "mademedia/silverstripe-cloudinary"```
+
+## DataObjects
+* CloudinaryFile (extends DataObject)
+* CloudinaryImage (extends CloudinaryFile)
+* CloudinaryVideo (extends CloudinaryFile)
+* YoutubeVideo (extends CloudinaryVideo)
+* VimeoVideo (extends CloudinaryVideo)
+
+## FormFields
+* CloudinaryUploadField (not recommended for initializations)
+* CloudinaryFileField (extends CloudinaryUploadField) - for uploading files.
+* CloudinaryImageField (extends CloudinaryUploadField) - for uploading images.
+* CloudinaryVideoField (extends CloudinaryUploadField) - for uploading videos into cloudinary or attach youtube or vimeo videos.
+* CloudinaryColorSelectField (extends FormField) - For selecting background colours for attached media
+
+## Example usages
+
+    class Page extends SiteTree{
+
+        static $db = array(
+            'BackGroundColor' => 'Varchar'
+        );
+
+        static $has_one = array(
+            'MainImage' => 'CloudinaryImage',
+            'MainVideo' => 'CloudinaryVideo',
+            'Download'  => 'CloudinaryFile',
+        );
+
+        static $many_many = array(
+            'Galleries' => 'CloudinaryImage'
+        );
+
+        static $many_many_extraFields = array(
+            'Galleries'        => array('Sort' => 'Int')
+        );
+
+        public function getCMSFields(){
+            $fields = parent::getCMSFields();
+
+            // for has_one relations
+            $fields->addFieldToTab('Root.Media', CloudinaryImageField::create('MainImage', 'Main Image');
+            $fields->addFieldToTab('Root.Media', CloudinaryVideoField::create('MainVideo', 'Main Video');
+            $fields->addFieldToTab('Root.Media', CloudinaryFileField::create('Download', 'Download');
+
+            // pass the has_one media object and field name that you need to select background color for
+            $fields->insertAfter(CloudinaryColorSelectField::create('BackGroundColor', '', $this->MainImage(), 'MainImage'), 'MainImage')
+
+            // for has_many | many_many relaitons (pass last two arguments if you need drag and drop reordering)
+            $fields->addFieldToTab('Root.Media', CloudinaryImageField::create('Galleries', 'Galleries', $this->Galleries()->sort('Sort'), 'Sort'));
+
+            ....
+        }
+
+	    ...
+
+    }
+
 
 ## License ##
     Copyright (c) 2015, Made Media Ltd. - www.mademedia.co.uk

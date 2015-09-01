@@ -14,28 +14,41 @@ class CloudinaryUploadField extends UploadField
 	 */
 	protected $templateFileButtons = 'CloudinaryUploadField_FileButtons';
 
+    /**
+     * @var null
+     */
+    private $sort_column = null;
+
 	/**
 	 * @var array
 	 */
 	private static $allowed_actions = array(
 		'upload',
+		'reorder',
 		'attach',
 		'handleItem',
 		'handleSelect',
 		'fileexists'
 	);
 
-    public function __construct($name, $title = null) {
-        parent::__construct($name, $title);
+    /**
+     * @param string $name
+     * @param null $title
+     * @param SS_List $items
+     * @param null $sortColumn
+     */
+    public function __construct($name, $title = null, SS_List $items = null, $sortColumn = null) {
+        parent::__construct($name, $title, $items);
+        $this->setSortColumn($sortColumn);
         $this->getValidator()->setAllowedExtensions(
             array_filter($this->getExtensionsAllowed())
         );
     }
 
-    public function getExtensionsAllowed(){
-        return Config::inst()->get('File', 'allowed_extensions');
-    }
-
+    /**
+     * @param array $properties
+     * @return HTMLText
+     */
     public function Field($properties = array()){
         $field = parent::Field($properties);
         Requirements::css('cloudinary/css/CloudinaryUploadField.css');
@@ -43,6 +56,30 @@ class CloudinaryUploadField extends UploadField
         return $field;
     }
 
+    /**
+     * @return array|scalar
+     * allowed file extensions
+     */
+    public function getExtensionsAllowed(){
+        return Config::inst()->get('File', 'allowed_extensions');
+    }
+
+    /**
+     * @return null
+     */
+    public function getSortColumn(){
+        return $this->sort_column;
+    }
+
+    /**
+     * @param $sortColumn
+     * @return $this
+     * set the name of the sort column
+     */
+    public function setSortColumn($sortColumn){
+        $this->sort_column = $sortColumn;
+        return $this;
+    }
 
 	/**
 	 * @param SS_HTTPRequest $request
@@ -72,22 +109,33 @@ class CloudinaryUploadField extends UploadField
 		$arrOptions = array();
 		if($strClass == 'CloudinaryVideo'){
 			$arrOptions['resource_type'] = 'video';
+		}elseif($strClass == 'CloudinaryFile'){
+			$arrOptions['resource_type'] = 'raw';
+			$arrOptions['format'] = File::get_file_extension($uploadedFile['name']);
 		}
 
 		$arrUploaderDetails = \Cloudinary\Uploader::upload($uploadedFile['tmp_name'], $arrOptions);
 		if($arrUploaderDetails && is_array($arrUploaderDetails)){
 
+            if($strClass == 'CloudinaryFile'){
+                $arrPieces = explode('.', $arrUploaderDetails['public_id']);
+                $strPublicID = isset($arrPieces[0]) ? $arrPieces[0] : '';
+                $strFormat = isset($arrPieces[1]) ? $arrPieces[1] : '';
+            }else{
+                $strPublicID = $arrUploaderDetails['public_id'];
+                $strFormat = $arrUploaderDetails['format'];
+            }
 			$arrData = array(
 				'Title'				=> $uploadedFile['name'],
 				'FileName'			=> $uploadedFile['name'],
-				'PublicID'			=> $arrUploaderDetails['public_id'],
+				'PublicID'			=> $strPublicID,
 				'Version'			=> $arrUploaderDetails['version'],
 				'Signature'			=> $arrUploaderDetails['signature'],
 				'URL'				=> $arrUploaderDetails['url'],
 				'SecureURL'			=> $arrUploaderDetails['secure_url'],
 				'FileType'			=> $arrUploaderDetails['resource_type'],
 				'FileSize'			=> $arrUploaderDetails['bytes'],
-				'Format'			=> $arrUploaderDetails['format'],
+				'Format'			=> $strFormat,
 			);
 
 			if($strClass == 'CloudinaryImage'){
@@ -133,6 +181,7 @@ class CloudinaryUploadField extends UploadField
 		foreach($files as $file) {
 			$return[] = $this->encodeCloudinaryAttributes($file);
 		}
+
 		$response = new SS_HTTPResponse(Convert::raw2json($return));
 		$response->addHeader('Content-Type', 'application/json');
 		return $response;
@@ -159,7 +208,9 @@ class CloudinaryUploadField extends UploadField
 	 */
 	public function getCustomisedItems() {
 		$customised = new ArrayList();
-		foreach($this->getItems() as $file) {
+        $items = $this->getItems();
+        $items = $this->CanReorder() ? $items->sort($this->sort_column) : $items;
+		foreach($items as $file) {
 			$customised->push($this->customiseCloudinaryFile($file));
 		}
 		return $customised;
@@ -181,11 +232,89 @@ class CloudinaryUploadField extends UploadField
 		return CloudinaryUploadField_ItemHandler::create($this, $itemID);
 	}
 
+    /**
+     * @return bool
+     * can be reordered if number of items more than 1 and sort column provided
+     */
+    public function CanReorder(){
+        return $this->getItems()->Count() > 1 && $this->sort_column !== null;
+    }
+
+    /**
+     * @return String
+     * provide action link which process the reorder fucntion
+     */
+    public function ReorderURL(){
+        return $this->Link('reorder');
+    }
+
+    /**
+     * reorder field items if field is fed with a RelationList (has_many or many_many)
+     */
+    public function reorder(){
+        $record = $this->getRecord();
+        if(($record instanceof DataObject)
+            && $record->hasMethod($this->getName())
+            && $record->{$this->getName()}() instanceof RelationList
+        ) {
+
+            $relationList = $record->{$this->getName()}();
+            $arrItems = reset($_POST);
+            $sortColumn = $this->sort_column;
+            $bManyMany = $relationList instanceof ManyManyList;
+
+            //Start transaction if supported
+            if(DB::getConn()->supportsTransactions()) {
+                DB::getConn()->transactionStart();
+            }
+
+            if($bManyMany) {
+                list($parentClass, $componentClass, $parentField, $componentField, $table) = $record->many_many($this->getName());
+            }else{
+                $modelClass = $record->has_many($this->getName());
+                list($table, $baseDataClass) = $this->getRelationTables($modelClass, $sortColumn);
+            }
+
+
+            foreach($arrItems as $iID => $sort){
+                if($bManyMany){
+                    DB::query('
+                        UPDATE "' . $table . '"
+                            SET "' . $sortColumn.'" = ' . $sort . '
+                            WHERE "' . $componentField . '" = ' . $iID . ' AND "' . $parentField . '" = ' . $record->ID
+                    );
+                }else{
+                    DB::query('
+                        UPDATE ' . $table . '
+                            SET ' . $sortColumn . ' = ' . $sort . '
+                            WHERE ID = '. $iID
+                    );
+
+                    DB::query('
+                        UPDATE "' . $baseDataClass . '"
+                            SET "LastEdited" = \'' . date('Y-m-d H:i:s') . '\'' . '
+                            WHERE "ID" = '. $iID
+                    );
+                }
+                if($alItems = $this->items){
+                    if($item = $alItems->find('ID', $iID)){
+                        $item->{$sortColumn} = $sort;
+                    }
+                }
+            }
+
+            //End transaction if supported
+            if(DB::getConn()->supportsTransactions()) {
+                DB::getConn()->transactionEnd();
+            }
+        }
+    }
+
 	/**
 	 * @param CloudinaryFile $file
 	 * @return array
 	 */
-	protected function encodeCloudinaryAttributes(CloudinaryFile $file)
+	public function encodeCloudinaryAttributes(CloudinaryFile $file)
 	{
 		// Collect all output data.
 		$file =  $this->customiseCloudinaryFile($file);
@@ -210,9 +339,10 @@ class CloudinaryUploadField extends UploadField
 	protected function customiseCloudinaryFile(CloudinaryFile $file) {
 		$file = $file->customise(array(
 			'UploadFieldThumbnailURL' => $this->getThumbnailURLForCloudinary($file),
-			'UploadFieldImageURL' => $file->getThumbnail(200, 112, 90)->getSourceURL(),
+			'UploadFieldImageURL' => $file->hasMethod('getThumbnail') ? $file->getThumbnail(200, 112, 90)->getSourceURL() : $file->Icon(),
 			'UploadFieldEditLink' => $this->getItemHandler($file->ID)->EditLink(),
-			'UploadField' => $this
+			'UploadField' => $this,
+            'Sort'        => $this->sort_column && $file->hasField($this->sort_column) ? $file->{$this->sort_column} : 0
 		));
 		// we do this in a second customise to have the access to the previous customisations
 		return $file->customise(array(
@@ -233,6 +363,31 @@ class CloudinaryUploadField extends UploadField
 			return $file->Icon();
 		}
 	}
+
+    private function getRelationTables($modelClass, $sortColumn){
+        $table = false;
+        $db = Config::inst()->get($modelClass, "db", CONFIG::UNINHERITED);
+        if(!empty($db) && array_key_exists($modelClass, $db)) {
+            $table = $modelClass;
+        }else {
+            $classes = ClassInfo::ancestry($modelClass, true);
+            foreach($classes as $class) {
+                $db = Config::inst()->get($class, "db", CONFIG::UNINHERITED);
+                if(!empty($db) && array_key_exists($sortColumn, $db)) {
+                    $table = $class;
+                    break;
+                }
+            }
+        }
+
+        if($table===false) {
+            user_error('Sort column '.$sortColumn.' could not be found in '.$modelClass.'\'s ancestry', E_USER_ERROR);
+            exit;
+        }
+
+        $baseDataClass=ClassInfo::baseDataClass($modelClass);
+        return array($table, $baseDataClass);
+    }
 
 }
 

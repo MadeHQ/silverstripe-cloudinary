@@ -1,18 +1,26 @@
-<ul id="ss-videouploadfield-files" class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
+<ul class="ss-uploadfield-files files" data-name="$Name" data-display-logic-masters="$DisplayLogicMasters" data-display-logic-eval="$DisplayLogic">
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
-            <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL">
+            <li <% if $First %>id="{$Up.ID}-holder"<% end_if %> class="ss-uploadfield-item template-download" data-fileid="$ID" data-imageurl="$UploadFieldImageURL" data-reorder-url="$Top.ReorderURL">
                 <div class="ss-uploadfield-item-preview preview"><span>
 					<a href="$URL" target="_blank"><img alt="$hasRelation" src="$UploadFieldThumbnailURL" /></a>
 				</span></div>
                 <div class="ss-uploadfield-item-info">
-                    <input type='hidden' class="field_id_value" value='$ID' name='{$Top.Name}[Files][]' />
-                    <input id="{$Top.ID}" class="text video-attach-field" name="{$Top.Name}__URL" type="text" value="{$Top.VideoURL}"/>
+                    <input type='hidden' class="field_id_value" name='{$Top.Name}[Files][]' value='$ID' />
+                    <input id="{$Top.ID}" class="text video-attach-field" name="{$Top.Name}__URL" type="text" value="{$URL}"/>
                     <div class="ss-uploadfield-item-actions">
                         <% if $Top.isActive %>
                             $UploadFieldFileButtons
                         <% end_if %>
+                        <% if $Top.CanReorder %>
+                            <input type="hidden" class="sortHidden" name="{$Top.Name}[$ID]" value="$Sort" />
+                            <img class="fieldHandler" src="$ModulePath('framework')/images/drag.gif" alt="Drag to rearrange order of fields">
+                        <% end_if %>
+
                     </div>
+                </div>
+                <div class="ss-uploadfield-item-editform includeParent">
+                    <iframe frameborder="0" data-src="$UploadFieldEditLink" src="about:blank"></iframe>
                 </div>
             </li>
         <% end_loop %>
@@ -40,6 +48,7 @@
                 </label>
 
                 <button data-id="{$ID}" class="video-attach-button">Attach</button>
+
             <% else %>
                 <input id="$id" name="{$Name}[Uploads][]" class="$extraClass ss-uploadfield-fromcomputer-fileinput" data-config="$configString" type="hidden" />
             <% end_if %>

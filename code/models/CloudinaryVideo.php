@@ -43,6 +43,16 @@ class CloudinaryVideo extends CloudinaryFile {
 		return $this->GetFileImage(100, 100, 60);
 	}
 
+    /**
+     * @param int $iWidth
+     * @param int $iHeight
+     * @param int $iQuality
+     * @return CloudinaryImage_Cached|Image_Cached
+     */
+    public function getThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+        return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
+    }
+
 	/**
 	 * @return CloudinaryImage_Cached|Image_Cached
 	 */

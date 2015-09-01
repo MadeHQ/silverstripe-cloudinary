@@ -31,7 +31,9 @@ class CloudinaryFile extends DataObject {
 		'FileSize'			=> 'Float',
 		'Format'			=> 'Varchar(50)',
 		'Caption'			=> 'Varchar(200)',
-		'Credit'			=> 'Varchar(200)'
+		'Credit'			=> 'Varchar(200)',
+		'SortOrder'			=> 'Int',
+
 	);
 
 
@@ -115,7 +117,7 @@ class CloudinaryFile extends DataObject {
 				$fileDataField = CompositeField::create(
                     new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
 					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL') ,
-						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Title ? $this->Title : $this->Link())
+						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Title ? $this->Title : $this->PublicID.'.'.$this->Format)
 					),
 					new DateField_Disabled("Created", _t('AssetTableField.CREATED','First uploaded') . ':'),
 					new DateField_Disabled("LastEdited", _t('AssetTableField.LASTEDIT','Last changed') . ':')
@@ -129,12 +131,17 @@ class CloudinaryFile extends DataObject {
 			new TabSet('Root',
 				new Tab('Main',
 					$filePreview,
-					new TextField("Title", _t('AssetTableField.TITLE','Title')),
-					new TextField("Caption", _t('AssetTableField.CAPTION','Caption')),
-					new TextField("Credit", _t('AssetTableField.CREDIT','Credit'))
+					new TextField("Title", _t('AssetTableField.TITLE','Title'))
 				)
 			)
 		);
+
+        if($this->ClassName != 'CloudinaryFile'){
+            $fields->addFieldsToTab('Root.Main', array(
+                new TextField("Caption", _t('AssetTableField.CAPTION','Caption')),
+                new TextField("Credit", _t('AssetTableField.CREDIT','Credit'))
+            ));
+        }
 
         if(!in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
             $fields->insertAfter(new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName), 'FileType');
@@ -181,9 +188,10 @@ HTML;
 	public function Link(){
 		$strLink = "";
 		if($this->PublicID){
-			$options = array(
-				'resource_type'	=> $this->FileType
-			);
+			$options = $this->options ? $this->options : array(
+                'resource_type' => $this->FileType,
+                'version'       => $this->Version
+            );
 			$strLink = Cloudinary::cloudinary_url(
 				$this->PublicID . '.' . $this->Format,
 				$options
@@ -254,10 +262,6 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function StripThumbnail(){
-
-		if($this->FileType == 'image'){
-			return $this->GetFileImage(100, 100, 60);
-		}
 		return new Image_Cached($this->Icon());
 	}
 
@@ -265,19 +269,8 @@ HTML;
 	 * @return Image_Cached
 	 */
 	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
-		if($this->FileType == 'image'){
-			return $this->GetFileImage($iWidth, $iHeight, $iQuality);
-		}
 		return new Image_Cached($this->Icon());
 	}
-
-	/**
-	 * @return CloudinaryImage_Cached
-	 */
-	public function getThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
-		return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
-	}
-
 
 	/**
 	 * @param $iWidth
@@ -307,7 +300,7 @@ HTML;
 	{
 		$ext = strtolower($this->Format);
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
-			$ext = $this->appCategory();
+			$ext = File::get_app_category($ext);
 		}
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
 			$ext = "generic";

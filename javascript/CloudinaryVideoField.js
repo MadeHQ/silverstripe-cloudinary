@@ -2,8 +2,7 @@
     $.entwine('ss', function($){
         $('button.video-attach-button').entwine({
             onclick: function(){
-                var forID = $(this).data('id') + '-holder';
-                var dom = $('#' + forID);
+                var dom = $(this).closest('div.ss-uploadfield-item');
 
                 var form = dom.closest('form');
                 var input = dom.find('input.video-attach-field');
@@ -18,7 +17,7 @@
                     form.removeClass('changed').removeClass('loading');
                     return;
                 }
-
+                var self = this;
                 $.ajax({
                     url: dom.find('input.video-processUrl').val(),
                     data: {
@@ -27,20 +26,21 @@
                     dataType: 'json',
                     type: 'POST',
                     success: function(data){
-                        if(data.Success){
-                            console.log(data)
-                            $('input[name="' + name + '[Files][]"]').val(data.VideoID);
-                            dom.find('input.video-attach-button').hide();
-                            dom.data('imageurl', data.ColorSelectThumbnail);
-                            dom.find('.ss-uploadfield-item-preview').removeClass('.ss-uploadfield-dropzone').html(data.Thumbnail);
 
-                            if(typeof MadeUtils.ColorSelect != 'undefined')
-                                MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(name);
-                        }
+                        data.more_files ? input.val('') : dom.hide();
+                        var ul = dom.parent().find('ul.ss-uploadfield-files');
+                        var li = window.tmpl('ss-cloudinary-videofield-downloadtemplate')({
+                            files: [data]
+                        });
+                        ul.append(li);
+
+                        if(typeof MadeUtils != 'undefined' && typeof MadeUtils.ColorSelect != 'undefined')
+                            MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(name);
                         form.removeClass('loading');
                     }
                 })
             }
+
         });
 
     })
