@@ -182,7 +182,6 @@ class CloudinaryUploadField extends UploadField
 			$return[] = $this->encodeCloudinaryAttributes($file);
 		}
 
-//        echo '<pre>'.print_r($return,1);die();
 		$response = new SS_HTTPResponse(Convert::raw2json($return));
 		$response->addHeader('Content-Type', 'application/json');
 		return $response;
