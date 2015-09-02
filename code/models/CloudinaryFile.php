@@ -32,6 +32,7 @@ class CloudinaryFile extends DataObject {
 		'Format'			=> 'Varchar(50)',
 		'Caption'			=> 'Varchar(200)',
 		'Credit'			=> 'Varchar(200)',
+        'Description'       => 'Text',
 		'SortOrder'			=> 'Int',
 	);
 
@@ -140,6 +141,8 @@ class CloudinaryFile extends DataObject {
                 new TextField("Caption", _t('AssetTableField.CAPTION','Caption')),
                 new TextField("Credit", _t('AssetTableField.CREDIT','Credit'))
             ));
+        }else{
+            $fields->addFieldToTab('Root.Main', new TextareaField("Description", _t('AssetTableField.DESCRIPTION','Description')));
         }
 
         if(!in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
