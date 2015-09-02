@@ -34,6 +34,7 @@ class CloudinaryFile extends DataObject {
 		'Credit'			=> 'Varchar(200)',
         'Description'       => 'Text',
 		'SortOrder'			=> 'Int',
+
 	);
 
 
@@ -149,6 +150,11 @@ class CloudinaryFile extends DataObject {
             $fields->insertAfter(new ReadonlyField("FileName",  _t('AssetTableField.FILENAME','Filename') . ':', $this->FileName), 'FileType');
             $fields->insertAfter(new ReadonlyField("Size", _t('AssetTableField.SIZE','File size') . ':', $this->getSize()), 'FileType');
         }
+		
+        if($this->ClassName == 'CloudinaryImage') {
+			$fields->dataFieldByName('Credit')->setRightTitle(_t('Cloudinary.IMAGECREDITHELP'));
+			$fields->dataFieldByName('Caption')->setRightTitle(_t('Cloudinary.IMAGEsCAPTIONHELP'));
+		}
 
 		$this->extend('updateCMSFields', $fields);
 
