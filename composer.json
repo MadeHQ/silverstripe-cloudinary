@@ -28,7 +28,7 @@
         "source": "https://github.com/MadeHQ/silverstripe-markdown"
     },
     "require": {
-        "silverstripe/framework": "3.1.13",
+        "silverstripe/framework": "3.1.*",
         "composer/installers": "*"
     },
     "extra": {
