@@ -73,9 +73,10 @@ class CloudinaryVideoField extends CloudinaryUploadField
                 if($bIsCloudinary){
                     $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
                     if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
-                        $cloudName = $arr['CloudName'];
-                        $fileName = str_replace('http://res.cloudinary.com/'.$cloudName.'/video/upload/', '', $sourceURL);
-                        $publicID = substr($fileName, 0, (strpos($fileName, '.')));
+                        $arrPieces = explode('/', $sourceURL);
+                        $arrFileName = array_slice($arrPieces, 7);
+                        $fileName = implode('/', $arrFileName);
+                        $publicID = substr($fileName, 0, (strrpos($fileName, '.')));
 
                         $video = $filterClass::get()->filterAny(array(
                             'URL'       => $sourceURL,
