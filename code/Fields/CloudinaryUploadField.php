@@ -40,8 +40,9 @@ class CloudinaryUploadField extends UploadField
     public function __construct($name, $title = null, SS_List $items = null, $sortColumn = null) {
         parent::__construct($name, $title, $items);
         $this->setSortColumn($sortColumn);
+        $arrExtensions = array_merge(array_filter($this->getExtensionsAllowed()), array('svg'));
         $this->getValidator()->setAllowedExtensions(
-            array_filter($this->getExtensionsAllowed())
+            $arrExtensions
         );
     }
 
