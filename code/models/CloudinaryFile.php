@@ -118,7 +118,7 @@ class CloudinaryFile extends DataObject {
 				$fileDataField = CompositeField::create(
                     new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
 					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL') ,
-						sprintf('<a href="%s" target="_blank">%s</a>', $this->Link(), $this->Title ? $this->Title : $this->PublicID.'.'.$this->Format)
+						sprintf('<a href="%s" target="_blank" download="true">Download the file</a>', $this->Link())
 					),
 					new DateField_Disabled("Created", _t('AssetTableField.CREATED','First uploaded') . ':'),
 					new DateField_Disabled("LastEdited", _t('AssetTableField.LASTEDIT','Last changed') . ':')
