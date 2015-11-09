@@ -60,7 +60,7 @@ class VimeoVideo extends CloudinaryVideo {
      * @param $url
      * @return string
      */
-    public static function VideoEmbedURL($url) {
+    public static function video_embed_url($url) {
         $strURL = "http://player.vimeo.com/video/" . self::vimeo_id_from_url($url);
         return $strURL;
     }

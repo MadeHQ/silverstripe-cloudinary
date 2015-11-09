@@ -138,7 +138,7 @@ class CloudinaryFile extends DataObject {
 
         }
         if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
-            return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file->VideoURL($file->Link()),
+            return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file::video_embed_url($file->Link()),
                 ($width) ? $width : $arrDefinedSizes['default']['width'],($height) ? $height : $arrDefinedSizes['default']['height']);
 
         }

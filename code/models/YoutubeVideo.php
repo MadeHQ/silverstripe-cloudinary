@@ -56,7 +56,7 @@ class YoutubeVideo extends CloudinaryVideo {
      * @param $url
      * @return string
      */
-    public static function VideoEmbedURL($url){
+    public static function video_embed_url($url){
         return "http://www.youtube.com/embed/" . self::youtube_id_from_url($url);
     }
 
