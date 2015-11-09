@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
+class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 
 	private static $url_segment = 'cloudinary';
 
@@ -23,7 +23,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 	 * @config
 	 * @var int
 	 */
-	private static $page_length = 100;
+	private static $page_length = 50;
 
 	/**
 	 * @config
@@ -48,7 +48,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 		$params = $this->request->requestVar('q');
 		$list = $context->getResults($params);
 
-		if($this->request->requestVar('ID') === null && ($this->request->param('ID') == 'field')){
+		if($this->request->requestVar('ID') === null && ($this->request->param('ID') == 'field')) {
 			return $list;
 		}
 
@@ -60,7 +60,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider{
 		}
 
 
-		if(!empty($params['AssetCategory'])){
+		if(!empty($params['AssetCategory'])) {
 			switch ($params['AssetCategory']){
 				case 'file':
 					$list = $list->filter('ClassName', 'CloudinaryFile');

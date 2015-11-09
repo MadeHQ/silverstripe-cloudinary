@@ -50,7 +50,7 @@ class CloudinaryUploadField extends UploadField
      * @param array $properties
      * @return HTMLText
      */
-    public function Field($properties = array()){
+    public function Field($properties = array()) {
         $field = parent::Field($properties);
         Requirements::css('cloudinary/css/CloudinaryUploadField.css');
         Requirements::javascript('cloudinary/javascript/CloudinaryUploadField.js');
@@ -61,14 +61,14 @@ class CloudinaryUploadField extends UploadField
      * @return array|scalar
      * allowed file extensions
      */
-    public function getExtensionsAllowed(){
+    public function getExtensionsAllowed() {
         return Config::inst()->get('File', 'allowed_extensions');
     }
 
     /**
      * @return null
      */
-    public function getSortColumn(){
+    public function getSortColumn() {
         return $this->sort_column;
     }
 
@@ -77,7 +77,7 @@ class CloudinaryUploadField extends UploadField
      * @return $this
      * set the name of the sort column
      */
-    public function setSortColumn($sortColumn){
+    public function setSortColumn($sortColumn) {
         $this->sort_column = $sortColumn;
         return $this;
     }
@@ -86,8 +86,7 @@ class CloudinaryUploadField extends UploadField
 	 * @param SS_HTTPRequest $request
 	 * @return SS_HTTPResponse|void
 	 */
-	public function upload(SS_HTTPRequest $request)
-	{
+	public function upload(SS_HTTPRequest $request) {
 		if($this->isDisabled() || $this->isReadonly() || !$this->canUpload()) {
 			return $this->httpError(403);
 		}
@@ -171,8 +170,7 @@ class CloudinaryUploadField extends UploadField
 	 * @param SS_HTTPRequest $request
 	 * @return SS_HTTPResponse|void
 	 */
-	public function attach(SS_HTTPRequest $request)
-	{
+	public function attach(SS_HTTPRequest $request) {
 		if(!$request->isPOST()) return $this->httpError(403);
 		if(!$this->canAttachExisting()) return $this->httpError(403);
 
@@ -192,8 +190,7 @@ class CloudinaryUploadField extends UploadField
 	 * @param SS_HTTPRequest $request
 	 * @return SS_HTTPResponse
 	 */
-	public function fileexists(SS_HTTPRequest $request)
-	{
+	public function fileexists(SS_HTTPRequest $request) {
 		$originalFile = $request->requestVar('filename');
 		$existingImage = CloudinaryFile::get()->filter(array(
 			'FileName'		=> $originalFile
@@ -237,7 +234,7 @@ class CloudinaryUploadField extends UploadField
      * @return bool
      * can be reordered if number of items more than 1 and sort column provided
      */
-    public function CanReorder(){
+    public function CanReorder() {
         return $this->getItems()->Count() > 1 && $this->sort_column !== null;
     }
 
@@ -245,14 +242,14 @@ class CloudinaryUploadField extends UploadField
      * @return String
      * provide action link which process the reorder fucntion
      */
-    public function ReorderURL(){
+    public function ReorderURL() {
         return $this->Link('reorder');
     }
 
     /**
      * reorder field items if field is fed with a RelationList (has_many or many_many)
      */
-    public function reorder(){
+    public function reorder() {
         $record = $this->getRecord();
         if(($record instanceof DataObject)
             && $record->hasMethod($this->getName())
@@ -271,20 +268,20 @@ class CloudinaryUploadField extends UploadField
 
             if($bManyMany) {
                 list($parentClass, $componentClass, $parentField, $componentField, $table) = $record->many_many($this->getName());
-            }else{
+            } else {
                 $modelClass = $record->has_many($this->getName());
                 list($table, $baseDataClass) = $this->getRelationTables($modelClass, $sortColumn);
             }
 
 
-            foreach($arrItems as $iID => $sort){
-                if($bManyMany){
+            foreach($arrItems as $iID => $sort) {
+                if($bManyMany) {
                     DB::query('
                         UPDATE "' . $table . '"
                             SET "' . $sortColumn.'" = ' . $sort . '
                             WHERE "' . $componentField . '" = ' . $iID . ' AND "' . $parentField . '" = ' . $record->ID
                     );
-                }else{
+                } else {
                     DB::query('
                         UPDATE ' . $table . '
                             SET ' . $sortColumn . ' = ' . $sort . '
@@ -297,6 +294,7 @@ class CloudinaryUploadField extends UploadField
                             WHERE "ID" = '. $iID
                     );
                 }
+
                 if($alItems = $this->items){
                     if($item = $alItems->find('ID', $iID)){
                         $item->{$sortColumn} = $sort;
@@ -315,8 +313,7 @@ class CloudinaryUploadField extends UploadField
 	 * @param CloudinaryFile $file
 	 * @return array
 	 */
-	public function encodeCloudinaryAttributes(CloudinaryFile $file)
-	{
+	public function encodeCloudinaryAttributes(CloudinaryFile $file) {
 		// Collect all output data.
 		$file =  $this->customiseCloudinaryFile($file);
 		return array(
@@ -412,8 +409,7 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 	/**
 	 * @return HTMLText
 	 */
-	public function index()
-	{
+	public function index() {
 		return parent::index();
 	}
 
@@ -421,12 +417,12 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 	 * @param $folderID
 	 * @return CompositeField|FormField
 	 */
-	protected function getListField($folderID)
-	{
+	protected function getListField($folderID) {
 		// Generate the file list field.
 		$config = GridFieldConfig::create();
 		$config->addComponent(new GridFieldSortableHeader());
 		$config->addComponent(new GridFieldFilterHeader());
+		$config->addComponent(new GridFieldPaginator(20));
 		$config->addComponent($colsComponent = new GridFieldDataColumns());
 		$colsComponent->setDisplayFields(array(
 			'StripThumbnail'	=> 'Thumbnail',
@@ -441,6 +437,9 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 
 		// Create the data source for the list of files within the current directory.
 		$files = DataList::create($baseClass);
+        if($this->parent->hasMethod('addFilterForFiles')){
+            $files = $this->parent->addFilterForFiles($files);
+        }
 
 		$fileField = new GridField('Files', false, $files, $config);
 		$fileField->setAttribute('data-selectable', true);
@@ -478,8 +477,7 @@ class CloudinaryUploadField_ItemHandler extends UploadField_ItemHandler {
 	/**
 	 * @return DataObject|File
 	 */
-	public function getItem()
-	{
+	public function getItem() {
 		return CloudinaryFile::get()->byId($this->itemID);
 	}
 
@@ -487,8 +485,7 @@ class CloudinaryUploadField_ItemHandler extends UploadField_ItemHandler {
 	 * @param SS_HTTPRequest $request
 	 * @return SS_HTTPResponse|void
 	 */
-	public function delete(SS_HTTPRequest $request)
-	{
+	public function delete(SS_HTTPRequest $request) {
 		if($this->parent->isDisabled() || $this->parent->isReadonly()) return $this->httpError(403);
 
 		// Protect against CSRF on destructive action

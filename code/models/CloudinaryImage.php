@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by Nivanka Fonseka (nivanka@silverstripers.com).
- * User: nivankafonseka
- * Date: 7/22/15
- * Time: 2:49 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class CloudinaryImage extends CloudinaryMedia {
 
@@ -16,7 +9,6 @@ class CloudinaryImage extends CloudinaryMedia {
 		'Width'				=> 'Varchar(500)',
 		'Height'			=> 'Varchar(500)',
 	);
-
 
 	/**
 	 * @return FieldList
@@ -33,7 +25,7 @@ class CloudinaryImage extends CloudinaryMedia {
 	/**
 	 * @return CloudinaryImage_Cached|mixed|null
 	 */
-	public function Icon(){
+	public function Icon() {
 		return $this->MakeCloudinaryCached(100, 100, 'fill');
 	}
 
@@ -43,14 +35,14 @@ class CloudinaryImage extends CloudinaryMedia {
      * @param int $iQuality
      * @return CloudinaryImage_Cached|Image_Cached
      */
-    public function Thumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+    public function Thumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60) {
         return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
     }
 
 	/**
 	 * @return CloudinaryImage_Cached|Image_Cached
 	 */
-	public function StripThumbnail(){
+	public function StripThumbnail() {
 		return $this->MakeCloudinaryCached(100, 100, 'fill', 60);
 	}
 
@@ -60,15 +52,14 @@ class CloudinaryImage extends CloudinaryMedia {
      * @param int $iQuality
      * @return CloudinaryImage_Cached|Image_Cached
      */
-    public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+    public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60) {
 		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'fill', $iQuality);
 	}
 
 	/**
 	 * @return string
 	 */
-	public function forTemplate()
-	{
+	public function forTemplate() {
 		return $this->getTag();
 	}
 
@@ -76,8 +67,7 @@ class CloudinaryImage extends CloudinaryMedia {
 	/**
 	 * @return string
 	 */
-	public function getTag()
-	{
+	public function getTag() {
 		$url = $this->getSourceURL();
 		$title = $this->Title;
 		if($url)
@@ -87,17 +77,13 @@ class CloudinaryImage extends CloudinaryMedia {
 	/*
      * crop the image
      */
-	public function CroppedImage($iWidth, $iHeight, $iQuality = 0)
-	{
+	public function CroppedImage($iWidth, $iHeight, $iQuality = 0) {
 		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'crop', $iQuality);
 	}
 
-	public function FillImage( $iWidth, $iHeight, $iQuality = 70, $strGravity = 'faces' )
-	{
+	public function FillImage( $iWidth, $iHeight, $iQuality = 70, $strGravity = 'faces' ) {
 		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'fill', $iQuality, $strGravity, 'auto');
 	}
-
-
 
 	/**
 	 * @param $iWidth
@@ -111,9 +97,11 @@ class CloudinaryImage extends CloudinaryMedia {
 	 * @param null $y
 	 * @return CloudinaryImage_Cached
 	 */
-	function MakeCloudinaryCached($iWidth, $iHeight, $crop = 'fit', $iQuality = 0, $strGravity = null, $fetchFormat = null, $strBackground = null, $x = null, $y = null){
-
-		if(!$iQuality){
+	public function MakeCloudinaryCached(
+        $iWidth, $iHeight, $crop = 'fit', $iQuality = 0, $strGravity = null, $fetchFormat = null,
+        $strBackground = null, $x = null, $y = null
+    ) {
+		if(!$iQuality) {
 			$iQuality = CloudinaryConfigs::ImageQuality();
 		}
 
@@ -124,23 +112,23 @@ class CloudinaryImage extends CloudinaryMedia {
 			'quality'	=> $iQuality
 		);
 
-		if($x >= 0){
+		if($x >= 0) {
 			$arrOptions['x'] = $x;
 		}
 
-		if($y >= 0){
+		if($y >= 0) {
 			$arrOptions['y'] = $y;
 		}
 
-		if($fetchFormat){
+		if($fetchFormat) {
 			$arrOptions['fetch_format'] = $fetchFormat;
 		}
 
-		if($strGravity){
+		if($strGravity) {
 			$arrOptions['gravity'] = $strGravity;
 		}
 
-		if($strBackground){
+		if($strBackground) {
 			$arrOptions['background'] = $strBackground;
 		}
 
@@ -158,12 +146,11 @@ class CloudinaryImage_Cached extends CloudinaryImage {
 	 * @param CloudinaryImage $dataRecord
 	 * @param $model
 	 */
-	public function __construct($options = null, $dataRecord = null, $model = null)
-	{
+	public function __construct($options = null, $dataRecord = null, $model = null) {
 		parent::__construct(array(), false, $model);
 		$this->ID = -1;
 		$this->options =  $options;
-		if($dataRecord instanceof CloudinaryFile){
+		if($dataRecord instanceof CloudinaryFile) {
 			$this->PublicID = $dataRecord->PublicID;
 			$this->URL      = $dataRecord->URL;
 			$this->SecureURL = $dataRecord->SecureURL;

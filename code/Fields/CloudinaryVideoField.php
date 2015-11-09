@@ -1,14 +1,16 @@
 <?php
 
-class CloudinaryVideoField extends CloudinaryMediaField
-{
+class CloudinaryVideoField extends CloudinaryMediaField {
 
     /**
      * @var string
      */
     protected $templateFileButtons = 'CloudinaryVideoField_FileButtons';
 
-    public function getExtensionsAllowed(){
+    /**
+     * @return array|scalar
+     */
+    public function getExtensionsAllowed() {
         $strExtensions = CloudinaryVideoField::config()->allowedExtensions;
         return explode(',', $strExtensions);
     }

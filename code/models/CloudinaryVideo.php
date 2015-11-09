@@ -13,6 +13,15 @@ class CloudinaryVideo extends CloudinaryMedia {
 		'FrameRate'			=> 'Varchar(100)'
 	);
 
+    /**
+     * @param $url
+     * @return bool
+     */
+    public static function isCloudinary($url) {
+        $host = parse_url($url, PHP_URL_HOST);
+        return strpos($host, 'cloudinary') > 0;
+    }
+
 	/**
 	 * @return FieldList
 	 */
@@ -32,7 +41,7 @@ class CloudinaryVideo extends CloudinaryMedia {
 	/**
 	 * @return CloudinaryImage_Cached|Image_Cached
 	 */
-	public function StripThumbnail(){
+	public function StripThumbnail() {
 		return $this->GetFileImage(100, 100, 60);
 	}
 
@@ -42,25 +51,31 @@ class CloudinaryVideo extends CloudinaryMedia {
      * @param int $iQuality
      * @return CloudinaryImage_Cached|Image_Cached
      */
-    public function Thumbnail($iWidth, $iHeight, $iQuality = 60){
+    public function Thumbnail($iWidth, $iHeight, $iQuality = 60) {
         return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
     }
 
-	/**
-	 * @return CloudinaryImage_Cached|Image_Cached
-	 */
-	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+    /**
+     * @param int $iWidth
+     * @param int $iHeight
+     * @param int $iQuality
+     * @return CloudinaryImage_Cached|Image_Cached
+     */
+    public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60) {
 		return $this->GetFileImage($iWidth, $iHeight, $iQuality);
 	}
 
-
-	public function getTag(){
+    /**
+     * @return string
+     */
+    public function getTag() {
 		return cl_video_tag($this->PublicID . '.' . $this->Format);
 	}
 
-    public static function isCloudinary($url){
-        $host = parse_url($url, PHP_URL_HOST);
-        return strpos($host, 'cloudinary') > 0;
+    /**
+     * @return mixed|null|string
+     */
+    public function Link() {
+        return $this->URL;
     }
-
 } 

@@ -17,31 +17,26 @@ class CloudinarySiteTreeLinkTracking extends SiteTreeLinkTracking {
 		"CloudinaryTracking" => array("FieldName" => "Varchar")
 	);
 
-
-
 	/**
 	 * Scrape the content of a field to detect anly links to local SiteTree pages or files
 	 *
 	 * @param string $field The name of the field on {@link @owner} to scrape
 	 */
-	function trackLinksInField($field) {
+	public function trackLinksInField($field) {
 		$record = $this->owner;
-
 		$linkedCloudinary = array();
-
 		preg_match_all('/\[cloudinary,id=\"\d*\"/i', $record->$field, $matches);
-		if($matches && isset($matches[0])) foreach($matches[0] as $match){
-			$id = str_replace('"', '', str_replace('[cloudinary,id=', '', $match));
+        if($matches && isset($matches[0])) {
+            foreach($matches[0] as $match) {
+                $id = str_replace('"', '', str_replace('[cloudinary,id=', '', $match));
 
-			if($file = CloudinaryFile::get()->byID((int)$id)){
-				$linkedCloudinary[] = (int)$id;
-			}
-			else{
-				$record->HasBrokenFile = true;
-			}
-
-		}
-
+                if($file = CloudinaryFile::get()->byID((int)$id)) {
+                    $linkedCloudinary[] = (int)$id;
+                } else {
+                    $record->HasBrokenFile = true;
+                }
+            }
+        }
 		// Update the "CloudinaryTracking" many_many
 		if($record->ID && $record->many_many('CloudinaryTracking') && $tracker = $record->CloudinaryTracking()) {
 			$tracker->removeByFilter(sprintf(
@@ -55,18 +50,13 @@ class CloudinarySiteTreeLinkTracking extends SiteTreeLinkTracking {
 				$tracker->add($item, array('FieldName' => $field));
 			}
 		}
-
 		parent::trackLinksInField($field);
 	}
-
-
-
-
 
 	/**
 	 * select all the files, HTML and Markdown and run the link tracking tests
 	 */
-	function augmentSyncLinkTracking() {
+	public function augmentSyncLinkTracking() {
 		// Reset boolean broken flags
 		$this->owner->HasBrokenLink = false;
 		$this->owner->HasBrokenFile = false;
@@ -83,9 +73,9 @@ class CloudinarySiteTreeLinkTracking extends SiteTreeLinkTracking {
 				}
 			}
 		}
-
-		foreach($contentFields as $field) $this->trackLinksInField($field);
-
+		foreach($contentFields as $field) {
+            $this->trackLinksInField($field);
+        }
 	}
 
 } 

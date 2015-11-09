@@ -9,9 +9,8 @@
 
 class CloudinaryControllerExtension extends Extension {
 
-	public function onBeforeInit(){
+	public function onBeforeInit() {
 		CloudinaryFile::SetCloudinaryConfigs();
 	}
-
 
 } 

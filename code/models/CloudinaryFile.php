@@ -1,20 +1,11 @@
 <?php
-/**
- * Created by Nivanka Fonseka (nivanka@silverstripers.com).
- * User: nivankafonseka
- * Date: 7/22/15
- * Time: 2:49 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class CloudinaryFile extends DataObject {
-
 
 	/**
 	 * @var array
 	 */
 	protected $options;
-
 
 	/**
 	 * @var array
@@ -37,7 +28,6 @@ class CloudinaryFile extends DataObject {
 
 	);
 
-
 	/**
 	 * @var array
 	 */
@@ -47,7 +37,6 @@ class CloudinaryFile extends DataObject {
 		'FileSize'
 	);
 
-
 	/**
 	 * @var array
 	 */
@@ -55,15 +44,13 @@ class CloudinaryFile extends DataObject {
 		'FileName'
 	);
 
-
 	/**
 	 * SetCloudinaryConfigs
 	 *
 	 * Check whether the database is ready and update cloudinary
 	 * configs from the site configs
 	 */
-	public static function SetCloudinaryConfigs()
-	{
+	public static function SetCloudinaryConfigs() {
 		$arr = Config::inst()->get('CloudinaryConfigs', 'settings');
 		if(isset($arr['CloudName'])
 			&& isset($arr['APIKey'])
@@ -71,14 +58,13 @@ class CloudinaryFile extends DataObject {
 			&& !empty($arr['CloudName'])
 			&& !empty($arr['APIKey'])
 			&& !empty($arr['APISecret'])
-		){
+		) {
 			Cloudinary::config(array(
 				"cloud_name"    => $arr['CloudName'],
 				"api_key"       => $arr['APIKey'],
 				"api_secret"    => $arr['APISecret']
 			));
-		}
-		else{
+		} else {
 			user_error("Cloudinary configs are not defined", E_USER_ERROR);
 		}
 	}
@@ -87,7 +73,7 @@ class CloudinaryFile extends DataObject {
 	 * @param $strFileName
 	 * @return string
 	 */
-	public static function GetCloudinaryFileForFile($strFileName){
+	public static function GetCloudinaryFileForFile($strFileName) {
 		$strClass = 'CloudinaryFile';
 		$extension = pathinfo($strFileName, PATHINFO_EXTENSION);
 		if(in_array($extension, array('jpg', 'jpeg', 'png', 'gif', 'tiff', 'ico', 'svg'))){
@@ -99,12 +85,77 @@ class CloudinaryFile extends DataObject {
 		return $strClass;
 	}
 
+    /**
+     * @param $arguments
+     * @param null $content
+     * @param null $parser
+     * @return string
+     *
+     * Parse short codes for the cloudinary tags
+     */
+    static public function cloudinary_files($arguments, $content = null, $parser = null) {
+        if(!isset($arguments['id']) || !is_numeric($arguments['id'])) return;
+
+        $file = CloudinaryFile::get()->byID($arguments['id']);
+        if($file){
+
+            if($file->ClassName == 'CloudinaryFile') {
+                return sprintf('<a href="%s">%s</a>', $file->Link(), $content ? $content : $file->Title);
+            } elseif($file->ClassName == 'CloudinaryImage') {
+                $strSize = isset($arguments['size']) ? $arguments['size'] : null;
+                $arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_image_sizes');
+                if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
+                    return sprintf('<img src="%s" title="%s">',
+                        $file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getSourceURL(),
+                        $content ? $content : $file->Title
+                    );
+                } else {
+                    return sprintf('<img src="%s" title="%s">', $file->Link(), $content ? $content : $file->Title);
+                }
+
+            } elseif(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo','CloudinaryVideo'))) {
+                return self::getRelevantHtml($file,$arguments);
+            }
+        }
+
+    }
+
+    /**
+     * @param $file
+     * @param $arguments
+     * @return string
+     *
+     * get relevent video tag html
+     */
+    public static function getRelevantHtml($file,$arguments) {
+
+        $strSize = isset($arguments['size']) ? $arguments['size'] : null;
+        $arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_video_sizes');
+        $width = $height = 0;
+        if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
+            $width = $arrDefinedSizes[$strSize]['width'];
+            $height = $arrDefinedSizes[$strSize]['height'];
+
+        }
+        if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
+            return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file->VideoURL($file->Link()),
+                ($width) ? $width : $arrDefinedSizes['default']['width'],($height) ? $height : $arrDefinedSizes['default']['height']);
+
+        }
+        elseif($file->ClassName == 'CloudinaryVideo'){
+            return sprintf('<video width="%s" height="%s" controls>
+                         <source src="%s" type="video/mp4"/> </video>', ($width) ? $width : $arrDefinedSizes['default']['width'],
+                ($height) ? $height : $arrDefinedSizes['default']['height'],
+                $file->Link()
+            );
+        }
+    }
+
 
 	/**
 	 * @return FieldList
 	 * update the CMS fields
 	 */
-
 	public function getCMSFields() {
 		// Preview
 		$previewField = new LiteralField("ImageFull", $this->CMSThumbnail());
@@ -161,14 +212,12 @@ class CloudinaryFile extends DataObject {
 		return $fields;
 	}
 
-
-
 	/**
 	 * @param $strField
 	 * @param $strValue
 	 * @return string
 	 */
-	function GetLiteralHTML($strField, $strValue){
+	public function GetLiteralHTML($strField, $strValue) {
 		$str = <<<HTML
 <div id='{$strField}' class='field readonly text'>
 	<label class='left' for='Form_ItemEditForm_{$strField}'>{$strField}</label>
@@ -182,8 +231,7 @@ HTML;
 		return $str;
 	}
 
-
-	public function Link(){
+	public function Link() {
 		$strLink = "";
 		if($this->PublicID){
 			$options = $this->options ? $this->options : array(
@@ -200,13 +248,10 @@ HTML;
 		return $strLink;
 	}
 
-
 	/**
 	 * @return mixed|null
 	 */
-	public function getSourceURL()
-	{
-
+	public function getSourceURL() {
 		$strSource = '';
 		if($this->PublicID){
 			$strSource = $this->PublicID . '.' . $this->Format;
@@ -231,8 +276,7 @@ HTML;
 	/**
 	 * @param array $options
 	 */
-	public function CloudinaryURL($options)
-	{
+	public function CloudinaryURL($options) {
 		$strSource = $this->PublicID . '.' . $this->Format;
 		Cloudinary::cloudinary_url($strSource, $options);
 	}
@@ -241,8 +285,7 @@ HTML;
 	/**
 	 * @return bool|string
 	 */
-	public function getSize()
-	{
+	public function getSize() {
 		return ($this->FileSize) ? File::format_size($this->FileSize) : false;
 	}
 
@@ -251,7 +294,7 @@ HTML;
 	 * @return mixed
 	 * get the extension from the file name
 	 */
-	public function getExtension(){
+	public function getExtension() {
 		return pathinfo($this->FileName, PATHINFO_EXTENSION);
 	}
 
@@ -259,14 +302,14 @@ HTML;
 	/**
 	 * @return Image_Cached
 	 */
-	public function StripThumbnail(){
+	public function StripThumbnail() {
 		return new Image_Cached($this->Icon());
 	}
 
 	/**
 	 * @return Image_Cached
 	 */
-	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60) {
 		return new Image_Cached($this->Icon());
 	}
 
@@ -276,7 +319,7 @@ HTML;
 	 * @param int $iQuality
 	 * @return CloudinaryImage_Cached
 	 */
-	public function GetFileImage($iWidth, $iHeight, $iQuality = 70){
+	public function GetFileImage($iWidth, $iHeight, $iQuality = 70) {
 		$clone = $this->duplicate(false);
 		$clone->Format = 'jpg';
 		return new CloudinaryImage_Cached(array(
@@ -294,8 +337,7 @@ HTML;
 	/**
 	 * @return mixed|null
 	 */
-	public function Icon()
-	{
+	public function Icon() {
 		$ext = strtolower($this->Format);
 		if(!Director::fileExists(FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif")) {
 			$ext = File::get_app_category($ext);
@@ -306,80 +348,9 @@ HTML;
 		return FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif";
 	}
 
-
-	/**
-	 * @param $arguments
-	 * @param null $content
-	 * @param null $parser
-	 * @return string
-	 *
-	 * Parse short codes for the cloudinary tags
-	 */
-	static public function cloudinary_files($arguments, $content = null, $parser = null){
-
-
-
-		if(!isset($arguments['id']) || !is_numeric($arguments['id'])) return;
-
-		$file = CloudinaryFile::get()->byID($arguments['id']);
-		if($file){
-
-			if($file->ClassName == 'CloudinaryFile'){
-				return sprintf('<a href="%s">%s</a>', $file->Link(), $content ? $content : $file->Title);
-			}
-			else if($file->ClassName == 'CloudinaryImage'){
-				$strSize = isset($arguments['size']) ? $arguments['size'] : null;
-				$arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_image_sizes');
-				if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
-					return sprintf('<img src="%s" title="%s">',
-						$file->FillImage($arrDefinedSizes[$strSize]['width'], $arrDefinedSizes[$strSize]['height'])->getSourceURL(),
-						$content ? $content : $file->Title
-					);
-				}
-				else {
-					return sprintf('<img src="%s" title="%s">', $file->Link(), $content ? $content : $file->Title);
-				}
-
-			}
-            else if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo','CloudinaryVideo'))) {
-				return self::getRelevantHtml($file,$arguments);
-			}
-		}
-
-	}
-
-	/**
-	 * @param $file
-	 * @param $arguments
-	 * @return string
-	 *
-	 * get relevent video tag html
-	 */
-	public static function getRelevantHtml($file,$arguments){
-
-		$strSize = isset($arguments['size']) ? $arguments['size'] : null;
-		$arrDefinedSizes = Config::inst()->get('CloudinaryConfigs', 'editor_video_sizes');
-		$width = $height = 0;
-		if($strSize && $arrDefinedSizes && isset($arrDefinedSizes[$strSize])){
-			$width = $arrDefinedSizes[$strSize]['width'];
-			$height = $arrDefinedSizes[$strSize]['height'];
-
-		}
-		if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
-			return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file->VideoURL($file->Link()),
-				($width) ? $width : $arrDefinedSizes['default']['width'],($height) ? $height : $arrDefinedSizes['default']['height']);
-
-		}
-		elseif($file->ClassName == 'CloudinaryVideo'){
-			return sprintf('<video width="%s" height="%s" controls>
-                         <source src="%s" type="video/mp4"/> </video>', ($width) ? $width : $arrDefinedSizes['default']['width'],
-				                                                      ($height) ? $height : $arrDefinedSizes['default']['height'],
-				$file->Link()
-			);
-		}
-	}
-
-
+    /**
+     * @return mixed
+     */
     public function NameForSummaryField(){
         if(in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
             $strName = $this->Title;
@@ -388,6 +359,5 @@ HTML;
         }
         return $strName;
     }
-
 
 } 

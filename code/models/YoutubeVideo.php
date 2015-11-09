@@ -2,9 +2,6 @@
 
 class YoutubeVideo extends CloudinaryVideo {
 
-    public function Link(){
-        return $this->URL;
-    }
 
     public static function youtube_id_from_url($url) {
         $regex = '~(?:(?:<iframe [^>]*src=")?|(?:(?:<object .*>)?(?:<param .*</param>)*(?:<embed [^>]*src=")?)?)?(?:https?:\/\/(?:[\w]+\.)*(?:youtu\.be/| youtube\.com| youtube-nocookie\.com)(?:\S*[^\w\-\s])?([\w\-]{11})[^\s]*)"?(?:[^>]*>)?(?:</iframe>|</embed></object>)?~ix';
@@ -16,7 +13,7 @@ class YoutubeVideo extends CloudinaryVideo {
         return false;
     }
 
-    public static function isYoutube($url){
+    public static function is_youtube($url){
         $host = parse_url($url, PHP_URL_HOST);
         return strpos($host, 'youtube') > 0;
     }
@@ -55,15 +52,12 @@ class YoutubeVideo extends CloudinaryVideo {
         }
     }
 
-    public static function VideoURL($url){
-        $strURL = "http://www.youtube.com/embed/" . self::YouTubeVideoID($url);
-        return $strURL;
-    }
-
-    public static function YouTubeVideoID($url)
-    {
-        parse_str( parse_url( $url, PHP_URL_QUERY ), $arrVars );
-        return isset($arrVars['v']) ? $arrVars['v'] : null;
+    /**
+     * @param $url
+     * @return string
+     */
+    public static function VideoEmbedURL($url){
+        return "http://www.youtube.com/embed/" . self::youtube_id_from_url($url);
     }
 
 }

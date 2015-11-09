@@ -13,7 +13,7 @@ class CloudinaryConfigs extends DataExtension {
 	/**
 	 * @return int
 	 */
-	public static function ImageQuality(){
+	public static function ImageQuality() {
 		$arrConfigs = Config::inst()->get('CloudinaryConfigs', 'settings');
 		$iSetting = $arrConfigs['Quality'];
 		if(!$iSetting)
@@ -22,44 +22,25 @@ class CloudinaryConfigs extends DataExtension {
 		return $iSetting;
 	}
 
-
 	/**
 	 * @param FieldList $fields
 	 */
-	public function updateCMSFieldSecondary(FieldList $fields){
+	public function updateCMSFieldSecondary(FieldList $fields) {
 		$this->updateCMSFields($fields);
 	}
 
 	/**
-	 * @param FieldList $fields
-	 */
-	/*public function updateCMSFields(FieldList $fields){
-		if(Config::inst()->get('CloudinaryConfigs', 'replace_relationships')){
-			foreach($fields->dataFields() as $field) {
-				if($field instanceof UploadField) {
-
-					$fields->replaceField($field->getName(),
-						CloudinaryUploadField::create(str_replace('ID', '', $field->getName()), $field->Title()));
-
-				}
-			}
-		}
-	}*/
-
-
-	/**
 	 * ReplaceFileFields
 	 */
-	public static function ReplaceFileFields(){
-		if(Config::inst()->get('CloudinaryConfigs', 'replace_relationships')){
+	public static function ReplaceFileFields() {
+		if(Config::inst()->get('CloudinaryConfigs', 'replace_relationships')) {
 			$arrRelationships = array('has_one', 'has_many', 'many_many');
 
 			$classes = ClassInfo::subclassesFor('DataObject');
-			foreach($classes as $className){
+			foreach($classes as $className) {
 				foreach($arrRelationships as $relationType){
-					if($relation = Config::inst()->get($className, $relationType)){
-						if(in_array('File', $relation) || in_array('Image', $relation)){
-
+					if($relation = Config::inst()->get($className, $relationType)) {
+						if(in_array('File', $relation) || in_array('Image', $relation)) {
 							$updateRelations = array();
 							foreach($relation as $field => $type){
 								$newType = $type;
@@ -71,16 +52,13 @@ class CloudinaryConfigs extends DataExtension {
 								}
 								$updateRelations[$field] = $newType;
 							}
-
 							Config::inst()->update($className, $relationType, $updateRelations);
 
 						}
 					}
 				}
-
 			}
 		}
 	}
-
 
 } 

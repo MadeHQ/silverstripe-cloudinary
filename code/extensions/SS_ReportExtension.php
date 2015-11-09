@@ -9,17 +9,22 @@
 
 class SS_ReportExtension extends Extension {
 
-	function updateEditForm(Form $form){
-
+    /**
+     * @param Form $form
+     * @return bool
+     */
+    public function updateEditForm(Form $form) {
 		$fields = $form->Fields();
 		if($gridField = $fields->fieldByName('Reports')){
 			$gridField->setList($this->UpdatedReportList());
 		}
-
 		return false;
 	}
 
-	public function UpdatedReportList() {
+    /**
+     * @return ArrayList
+     */
+    public function UpdatedReportList() {
 		$output = new ArrayList();
 		foreach(SS_Report::get_reports() as $report) {
 			if(!in_array(get_class($report), array('SideReport_BrokenFiles'))){
