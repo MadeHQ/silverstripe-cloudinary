@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class CloudinaryImage extends CloudinaryFile {
+class CloudinaryImage extends CloudinaryMedia {
 
 	/**
 	 * @var array

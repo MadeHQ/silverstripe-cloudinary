@@ -5,3 +5,13 @@
 .fieldHandler {
     cursor: move;
 }
+
+.field.cloudinarymedia .dropdown.media-select {
+    width: 57%;
+    margin-bottom: 5px;
+    margin-left: 0 !important;
+}
+
+.ss-uploadfield-item-info.media-select-holder {
+    padding: 0 10px 10px 10px !important;
+}

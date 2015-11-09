@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by Nivanka Fonseka (nivanka@silverstripers.com).
- * User: nivankafonseka
- * Date: 7/22/15
- * Time: 3:57 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class YoutubeVideo extends CloudinaryVideo {
 
@@ -50,9 +43,9 @@ class YoutubeVideo extends CloudinaryVideo {
             curl_close($ch);
 
             $arrDuration = preg_split('/[^0-9]/', $contentDetails->duration);//PT1M26S
-            $iHours = $arrDuration[2] ? $arrDuration[2] : 0;
-            $iMinutes = $arrDuration[3] ? $arrDuration[3] : 0;
-            $iSeconds = $arrDuration[4] ? $arrDuration[4] : 0;
+            $iHours = isset($arrDuration[2]) ? $arrDuration[2] : 0;
+            $iMinutes = isset($arrDuration[3]) ? $arrDuration[3] : 0;
+            $iSeconds = isset($arrDuration[4]) ? $arrDuration[4] : 0;
             $return = array(
                 'title' => $snippet->title,
                 'duration' => sprintf("%02d", $iHours). ':'. sprintf("%02d", $iMinutes). ':'. sprintf("%02d", $iSeconds),

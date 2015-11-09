@@ -2,7 +2,11 @@
     <% if $CustomisedItems %>
         <% loop $CustomisedItems %>
             <li class="ss-uploadfield-item template-download" <% if $First %>id="{$Up.ID}-holder"<% end_if %> data-fileid="$ID" data-imageurl="$UploadFieldImageURL" data-reorder-url="$Top.ReorderURL">
-                <% include ImageItemProcessed FieldName=$Top.Name,CanReorder=$Top.CanReorder,isActive=$Top.isActive %>
+                <% if $ClassName == 'CloudinaryImage' %>
+                    <% include ImageItemProcessed FieldName=$Top.Name,CanReorder=$Top.CanReorder,isActive=$Top.isActive %>
+                <% else %>
+                    <% include VideoItemProcessed FieldID=$Top.ID,FieldName=$Top.Name,CanReorder=$Top.CanReorder,isActive=$Top.isActive %>
+                <% end_if %>
                 <div class="ss-uploadfield-item-editform includeParent">
                     <iframe frameborder="0" data-src="$UploadFieldEditLink" src="about:blank"></iframe>
                 </div>
@@ -21,9 +25,15 @@
                 <% end_if %>
             </div>
         <% end_if %>
-        <div class="ss-uploadfield-item-info">
+        <div class="ss-uploadfield-item-info media-select-holder">
+            <select class="media-select dropdown">
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+            </select>
             <% include ImageFieldItem %>
+            <% include VideoFieldItem %>
         </div>
+
         <div class="clear"><!-- --></div>
     </div>
 <% end_if %>
