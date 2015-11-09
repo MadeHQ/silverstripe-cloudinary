@@ -61,6 +61,7 @@
 .ss-uploadfield-item-info{
     height: 70px;
     padding: 10px;
+    margin-left: 105px !important;
 }
 
 .ss-uploadfield-item-info a{
@@ -69,7 +70,7 @@
 }
 
 input.video-attach-field.text{
-    max-width: 450px !important;
+    max-width: 440px !important;
     margin-bottom: 12px;
 }
 

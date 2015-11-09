@@ -1,3 +1,9 @@
+<% if $CanReorder %>
+    <div class="media-reorder">
+        <input type="hidden" class="sortHidden" name="{$FieldName}[$ID]" value="$Sort" />
+        <img class="fieldHandler" src="$ModulePath('framework')/images/drag.gif" alt="Drag to rearrange order of fields">
+    </div>
+<% end_if %>
 <div class="ss-uploadfield-item-preview preview">
     <span><a href="$URL" target="_blank"><img alt="$hasRelation" src="$UploadFieldThumbnailURL" /></a></span>
 </div>
@@ -7,10 +13,6 @@
     <div class="ss-uploadfield-item-actions">
         <% if $isActive %>
             $UploadFieldFileButtons
-        <% end_if %>
-        <% if $CanReorder %>
-            <input type="hidden" class="sortHidden" name="{$FieldName}[$ID]" value="$Sort" />
-            <img class="fieldHandler" src="$ModulePath('framework')/images/drag.gif" alt="Drag to rearrange order of fields">
         <% end_if %>
     </div>
 </div>
