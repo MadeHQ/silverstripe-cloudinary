@@ -340,7 +340,7 @@ class CloudinaryUploadField extends UploadField
 	protected function customiseCloudinaryFile(CloudinaryFile $file) {
 		$file = $file->customise(array(
 			'UploadFieldThumbnailURL' => $this->getThumbnailURLForCloudinary($file),
-			'UploadFieldImageURL' => $file->hasMethod('getThumbnail') ? $file->getThumbnail(200, 112, 90)->getSourceURL() : $file->Icon(),
+			'UploadFieldImageURL' => $file->hasMethod('getThumbnail') ? $file->Thumbnail(200, 112, 90)->getSourceURL() : $file->Icon(),
 			'UploadFieldEditLink' => $this->getItemHandler($file->ID)->EditLink(),
 			'UploadField' => $this,
             'Sort'        => $this->sort_column && $file->hasField($this->sort_column) ? $file->{$this->sort_column} : 0
@@ -358,8 +358,8 @@ class CloudinaryUploadField extends UploadField
 	protected function getThumbnailURLForCloudinary(CloudinaryFile $file) {
 		$width = $this->getPreviewMaxWidth();
 		$height = $this->getPreviewMaxHeight();
-		if ($file->hasMethod('getThumbnail')) {
-			return $file->getThumbnail($width, $height, 90)->getSourceURL();
+		if ($file->hasMethod('Thumbnail')) {
+			return $file->Thumbnail($width, $height, 90)->getSourceURL();
 		} else {
 			return $file->Icon();
 		}

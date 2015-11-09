@@ -42,7 +42,7 @@ class CloudinaryVideo extends CloudinaryMedia {
      * @param int $iQuality
      * @return CloudinaryImage_Cached|Image_Cached
      */
-    public function getThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60){
+    public function Thumbnail($iWidth, $iHeight, $iQuality = 60){
         return $this->CMSThumbnail($iWidth, $iHeight, $iQuality);
     }
 
