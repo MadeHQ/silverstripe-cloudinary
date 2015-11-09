@@ -1,4 +1,4 @@
-<div class="media-section-video" style="display: none">
+<div class="media-section-video">
     <input type='hidden' class="field_id_value" value='$ID' name='{$Name}[Files][]' />
     <input id="{$ID}" class="text video-attach-field" name="{$Name}__URL" type="text" value="{$URL}"/>
     <input type="hidden" class="video-processUrl" name="{$Name}__Process" value="{$processURL}"/>
