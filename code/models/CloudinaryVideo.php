@@ -66,16 +66,19 @@ class CloudinaryVideo extends CloudinaryMedia {
 	}
 
     /**
-     * @return string
-     */
-    public function getTag() {
-		return cl_video_tag($this->PublicID . '.' . $this->Format);
-	}
-
-    /**
      * @return mixed|null|string
      */
     public function Link() {
         return $this->URL;
     }
+
+    /**
+     * @param $iWidth
+     * @param $iHeight
+     * @return null|string
+     */
+    public function VideoTag($iWidth, $iHeight) {
+        return cl_video_tag($this->PublicID . '.' . $this->Format, array('width' => $iWidth, 'height' => $iHeight, 'controls'));
+    }
+
 } 

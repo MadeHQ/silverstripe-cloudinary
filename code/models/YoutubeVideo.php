@@ -60,4 +60,20 @@ class YoutubeVideo extends CloudinaryVideo {
         return "http://www.youtube.com/embed/" . self::youtube_id_from_url($url);
     }
 
+    /**
+     * @return string
+     */
+    public function VideoEmbedURL() {
+        return self::video_embed_url($this->URL);
+    }
+
+    /**
+     * @param $iWidth
+     * @param $iHeight
+     * @return string
+     */
+    public function VideoTag($iWidth, $iHeight) {
+        return '<iframe src="'.$this->VideoEmbedURL().'" width="'.$iWidth.'" height="'.$iHeight.'" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+    }
+
 }
