@@ -137,18 +137,18 @@ class CloudinaryFile extends DataObject {
             $height = $arrDefinedSizes[$strSize]['height'];
 
         }
-        if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
-            return sprintf('<iframe src="%s" width="%s" height="%s"></iframe>', $file::video_embed_url($file->Link()),
-                ($width) ? $width : $arrDefinedSizes['default']['width'],($height) ? $height : $arrDefinedSizes['default']['height']);
-
+        $arrControls = array(
+            'Width' => ($width) ? $width : $arrDefinedSizes['default']['width'],
+            'Height' => ($height) ? $height : $arrDefinedSizes['default']['height'],
+        );
+        $template = 'IframeVideo';
+        if(in_array($file->ClassName, array('VimeoVideo', 'YoutubeVideo'))) {
+            $arrControls['EmbedURL'] = $file::video_embed_url($file->Link());
+        } elseif($file->ClassName == 'CloudinaryVideo'){
+            $arrControls['EmbedURL'] = $file->Link();
+            $template = 'HTML5Video';
         }
-        elseif($file->ClassName == 'CloudinaryVideo'){
-            return sprintf('<video width="%s" height="%s" controls>
-                         <source src="%s" type="video/mp4"/> </video>', ($width) ? $width : $arrDefinedSizes['default']['width'],
-                ($height) ? $height : $arrDefinedSizes['default']['height'],
-                $file->Link()
-            );
-        }
+        return $file->customise($arrControls)->renderWith($template);
     }
 
 
