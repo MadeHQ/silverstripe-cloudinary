@@ -330,7 +330,17 @@ class CloudinaryUploadField extends UploadField
 		);
 	}
 
-	/**
+    /**
+     * @param string $default
+     * @return string
+     */
+    public function getRelationAutosetClass($default = 'CloudinaryFile') {
+        if(!$this->relationAutoSetting) return $default;
+        return parent::getRelationAutosetClass($default);
+    }
+
+
+    /**
 	 * @param CloudinaryFile $file
 	 * @return ViewableData_Customised
 	 */

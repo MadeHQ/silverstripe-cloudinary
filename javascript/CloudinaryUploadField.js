@@ -22,7 +22,18 @@
             if(typeof MadeUtils != 'undefined' && typeof MadeUtils.ColorSelect != 'undefined'){
                 MadeUtils.ColorSelect.UpdateColorSelectWithSelectionForCloudinary(fileData.fieldname);
             }
+        },
+
+        _adjustMaxNumberOfFiles: function (operand) {
+            if(this.element.hasClass('markdown-popup')) {
+                if ( operand < 0) {
+                    this._disableFileInputButton();
+                }
+            } else {
+                this._super(operand);
+            }
         }
+
     });
 
     $('div.ss-uploadfield.display-logic, div.ss-uploadfield.display-logic-master').entwine({
@@ -64,7 +75,6 @@
                             value: sortField.val()
                         })
                     });
-                    console.log(dom.data('name'));
                     $.ajax({
                         url: items.data('reorder-url'),
                         type: 'POST',

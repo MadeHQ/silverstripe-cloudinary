@@ -12,4 +12,12 @@ class CloudinaryFileField extends CloudinaryUploadField {
         return $ret;
     }
 
+    /**
+     * @param DataList $files
+     * @return DataList
+     */
+    public function addFilterForFiles(DataList $files) {
+        return $files->filter('ClassName', 'CloudinaryFile');
+    }
+
 } 
