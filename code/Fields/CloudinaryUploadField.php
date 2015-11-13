@@ -54,6 +54,7 @@ class CloudinaryUploadField extends UploadField
         $field = parent::Field($properties);
         Requirements::css('cloudinary/css/CloudinaryUploadField.css');
         Requirements::javascript('cloudinary/javascript/CloudinaryUploadField.js');
+        $this->extend('updateFieldJs');
         return $field;
     }
 
