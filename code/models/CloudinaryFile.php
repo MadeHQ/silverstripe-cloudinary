@@ -120,6 +120,32 @@ class CloudinaryFile extends DataObject {
 
     }
 
+	/**
+	 * @param $arguments
+	 * @param null $content
+	 * @param null $parser
+	 * @return string
+	 *
+	 * Parse short codes for the cloudinary tags
+	 */
+	static public function cloudinary_markdown($arguments, $content = null, $parser = null) {
+		if(!isset($arguments['id']) || !is_numeric($arguments['id'])) return;
+		$file = CloudinaryFile::get()->byID($arguments['id']);
+		if($file){
+			if($file->ClassName == 'CloudinaryImage') {
+				$alt = "";
+				if(isset($arguments['alt']))
+					$alt = $arguments['alt'];
+				if(isset($arguments['width']) && isset($arguments['height'])){
+					return $file->customise(array('width' => $arguments['width'],'height' => $arguments['height'],'alt'=>$alt))->renderWith('MarkDownShortCode');
+				} else {
+					return $file->customise(array('alt' => $alt))->renderWith('MarkDownShortCode');
+				}
+			}
+		}
+
+	}
+
     /**
      * @param $file
      * @param $arguments

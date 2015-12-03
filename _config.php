@@ -19,6 +19,6 @@ CMSMenu::remove_menu_item('CloudinaryFileAddController');
 
 CloudinaryConfigs::ReplaceFileFields();
 ShortcodeParser::get('default')->register('cloudinary', array('CloudinaryFile', 'cloudinary_files'));
-
+ShortcodeParser::get('default')->register('cloudinary_image', array('CloudinaryFile', 'cloudinary_markdown'));
 SiteTree::remove_extension('SiteTreeLinkTracking');
 Object::add_extension('SiteTree', 'CloudinarySiteTreeLinkTracking');
