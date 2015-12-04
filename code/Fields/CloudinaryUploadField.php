@@ -430,6 +430,7 @@ class CloudinaryUploadField_SelectHandler extends UploadField_SelectHandler {
 	 */
 	protected function getListField($folderID) {
 		// Generate the file list field.
+		Requirements::javascript(FRAMEWORK_DIR .'/admin/javascript/LeftAndMain.js');
 		$config = GridFieldConfig::create();
 		$config->addComponent(new GridFieldSortableHeader());
 		$config->addComponent(new GridFieldFilterHeader());
