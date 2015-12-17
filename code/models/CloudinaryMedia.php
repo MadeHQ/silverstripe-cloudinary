@@ -1,12 +1,13 @@
 <?php
 
-class CloudinaryMedia extends CloudinaryFile {
+class CloudinaryMedia extends CloudinaryFile
+{
 
     /**
      * @return bool
      */
-    public function IsVideo() {
+    public function IsVideo()
+    {
         return is_a($this, 'CloudinaryVideo');
     }
-
-} 
+}

@@ -1,6 +1,7 @@
 <?php
 
-class CloudinaryVideoField extends CloudinaryMediaField {
+class CloudinaryVideoField extends CloudinaryMediaField
+{
 
     /**
      * @var string
@@ -10,9 +11,9 @@ class CloudinaryVideoField extends CloudinaryMediaField {
     /**
      * @return array|scalar
      */
-    public function getExtensionsAllowed() {
+    public function getExtensionsAllowed()
+    {
         $strExtensions = CloudinaryVideoField::config()->allowedExtensions;
         return explode(',', $strExtensions);
     }
-
-} 
+}
