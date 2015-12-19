@@ -1,11 +1,13 @@
 <?php
 
-class CloudinaryFileField extends CloudinaryUploadField {
+class CloudinaryFileField extends CloudinaryUploadField
+{
 
     /**
      * @return array|scalar
      */
-    public function getExtensionsAllowed(){
+    public function getExtensionsAllowed()
+    {
         $allCategories = File::config()->app_categories;
         $ret = array_merge($allCategories['zip'], $allCategories['doc']);
         $ret[] = 'zip';
@@ -16,8 +18,8 @@ class CloudinaryFileField extends CloudinaryUploadField {
      * @param DataList $files
      * @return DataList
      */
-    public function addFilterForFiles(DataList $files) {
+    public function addFilterForFiles(DataList $files)
+    {
         return $files->filter('ClassName', 'CloudinaryFile');
     }
-
-} 
+}

@@ -7,10 +7,11 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class CloudinaryControllerExtension extends Extension {
+class CloudinaryControllerExtension extends Extension
+{
 
-	public function onBeforeInit() {
-		CloudinaryFile::SetCloudinaryConfigs();
-	}
-
-} 
+    public function onBeforeInit()
+    {
+        CloudinaryFile::SetCloudinaryConfigs();
+    }
+}

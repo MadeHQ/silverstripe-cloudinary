@@ -1,24 +1,28 @@
 <?php
 
-class YoutubeVideo extends CloudinaryVideo {
+class YoutubeVideo extends CloudinaryVideo
+{
 
 
-    public static function youtube_id_from_url($url) {
+    public static function youtube_id_from_url($url)
+    {
         $regex = '~(?:(?:<iframe [^>]*src=")?|(?:(?:<object .*>)?(?:<param .*</param>)*(?:<embed [^>]*src=")?)?)?(?:https?:\/\/(?:[\w]+\.)*(?:youtu\.be/| youtube\.com| youtube-nocookie\.com)(?:\S*[^\w\-\s])?([\w\-]{11})[^\s]*)"?(?:[^>]*>)?(?:</iframe>|</embed></object>)?~ix';
 
-        if(preg_match($regex, $url, $matches) && !empty($matches)) {
+        if (preg_match($regex, $url, $matches) && !empty($matches)) {
             return $matches[1];
         }
 
         return false;
     }
 
-    public static function is_youtube($url){
+    public static function is_youtube($url)
+    {
         $host = parse_url($url, PHP_URL_HOST);
         return strpos($host, 'youtube') > 0;
     }
 
-    public static function youtube_video_details($id) {
+    public static function youtube_video_details($id)
+    {
         $url = 'https://www.googleapis.com/youtube/v3/videos?';
         $url.= sprintf('key=%s', Config::inst()->get('YoutubeVideo', 'youtube_api_key'));
         $url.= sprintf('&id=%s', $id);
@@ -34,7 +38,7 @@ class YoutubeVideo extends CloudinaryVideo {
             CURLOPT_TIMEOUT => 5
         ));
         $response = Convert::json2obj(curl_exec($ch));
-        if($response){
+        if ($response) {
             $snippet = $response->items[0]->snippet;
             $contentDetails = $response->items[0]->contentDetails;
             curl_close($ch);
@@ -56,14 +60,16 @@ class YoutubeVideo extends CloudinaryVideo {
      * @param $url
      * @return string
      */
-    public static function video_embed_url($url){
+    public static function video_embed_url($url)
+    {
         return "http://www.youtube.com/embed/" . self::youtube_id_from_url($url);
     }
 
     /**
      * @return string
      */
-    public function VideoEmbedURL() {
+    public function VideoEmbedURL()
+    {
         return self::video_embed_url($this->URL);
     }
 
@@ -72,8 +78,8 @@ class YoutubeVideo extends CloudinaryVideo {
      * @param $iHeight
      * @return string
      */
-    public function VideoTag($iWidth, $iHeight) {
+    public function VideoTag($iWidth, $iHeight)
+    {
         return '<iframe src="'.$this->VideoEmbedURL().'" width="'.$iWidth.'" height="'.$iHeight.'" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
     }
-
 }
