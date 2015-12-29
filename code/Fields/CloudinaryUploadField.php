@@ -340,6 +340,84 @@ class CloudinaryUploadField extends UploadField
         return parent::getRelationAutosetClass($default);
     }
 
+    /**
+     * FieldList $fields for the EditForm
+     * @example 'getCMSFields'
+     *
+     * @param CloudinaryFile $file File context to generate fields for
+     * @return FieldList List of form fields
+     */
+    public function getCloudinaryFileEditFields(CloudinaryFile $file) {
+
+        // Empty actions, generate default
+        if(empty($this->fileEditFields)) {
+            $fields = $file->getCMSFields();
+            // Only display main tab, to avoid overly complex interface
+            if($fields->hasTabSet() && ($mainTab = $fields->findOrMakeTab('Root.Main'))) {
+                $fields = $mainTab->Fields();
+            }
+            return $fields;
+        }
+
+        // Fields instance
+        if ($this->fileEditFields instanceof FieldList) return $this->fileEditFields;
+
+        // Method to call on the given file
+        if($file->hasMethod($this->fileEditFields)) {
+            return $file->{$this->fileEditFields}();
+        }
+
+        user_error("Invalid value for UploadField::fileEditFields", E_USER_ERROR);
+    }
+
+    /**
+     * FieldList $actions or string $name (of a method on File to provide a actions) for the EditForm
+     * @example 'getCMSActions'
+     *
+     * @param CloudinaryFile $file File context to generate form actions for
+     * @return FieldList Field list containing FormAction
+     */
+    public function getCloudinaryFileEditActions(CloudinaryFile $file) {
+
+        // Empty actions, generate default
+        if(empty($this->fileEditActions)) {
+            $actions = new FieldList($saveAction = new FormAction('doEdit', _t('UploadField.DOEDIT', 'Save')));
+            $saveAction->addExtraClass('ss-ui-action-constructive icon-accept');
+            return $actions;
+        }
+
+        // Actions instance
+        if ($this->fileEditActions instanceof FieldList) return $this->fileEditActions;
+
+        // Method to call on the given file
+        if($file->hasMethod($this->fileEditActions)) {
+            return $file->{$this->fileEditActions}();
+        }
+
+        user_error("Invalid value for UploadField::fileEditActions", E_USER_ERROR);
+    }
+
+    /**
+     * Determines the validator to use for the edit form
+     * @example 'getCMSValidator'
+     *
+     * @param CloudinaryFile $file File context to generate validator from
+     * @return Validator Validator object
+     */
+    public function getCloudinaryFileEditValidator(CloudinaryFile $file) {
+        // Empty validator
+        if(empty($this->fileEditValidator)) return null;
+
+        // Validator instance
+        if($this->fileEditValidator instanceof Validator) return $this->fileEditValidator;
+
+        // Method to call on the given file
+        if($file->hasMethod($this->fileEditValidator)) {
+            return $file->{$this->fileEditValidator}();
+        }
+
+        user_error("Invalid value for UploadField::fileEditValidator", E_USER_ERROR);
+    }
 
     /**
 	 * @param CloudinaryFile $file
@@ -514,8 +592,23 @@ class CloudinaryUploadField_ItemHandler extends UploadField_ItemHandler {
      * @return Form
      */
     public function EditForm() {
-        $form = parent::EditForm();
-		$form->removeExtraClass('small');
+        $file = $this->getItem();
+        if(!$file) return $this->httpError(404);
+        if($file instanceof Folder) return $this->httpError(403);
+        if(!$file->canEdit()) return $this->httpError(403);
+
+        // Get form components
+        $fields = $this->parent->getCloudinaryFileEditFields($file);
+        $actions = $this->parent->getCloudinaryFileEditActions($file);
+        $validator = $this->parent->getCloudinaryFileEditValidator($file);
+        $form = new Form(
+            $this,
+            __FUNCTION__,
+            $fields,
+            $actions,
+            $validator
+        );
+        $form->loadDataFrom($file);
         return $form;
     }
 
