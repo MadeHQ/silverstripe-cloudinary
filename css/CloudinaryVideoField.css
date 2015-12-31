@@ -74,6 +74,11 @@ input.video-attach-field.text{
     margin-bottom: 5px;
 }
 
+.media-section-video input.video-attach-field{
+    float: left;
+    margin-right: 10px;
+}
+
 label.ss-uploadfield-item-name{
     display: block;
 }
