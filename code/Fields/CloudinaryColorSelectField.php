@@ -1,6 +1,7 @@
 <?php
 
-class CloudinaryColorSelectField extends FormField {
+class CloudinaryColorSelectField extends FormField
+{
 
     /**
      * @var string
@@ -18,19 +19,20 @@ class CloudinaryColorSelectField extends FormField {
      * @var array
      */
     private static $allowed_actions = array(
-		'currentImage',
-	);
+        'currentImage',
+    );
 
     /**
      * @param string $strName
      * @param string $strTitle
      * @param null $strReferenceField
      */
-    public function __construct($strName, $strTitle = '', $objColourSelectSource = null, $strReferenceField = null){
-		$this->setReferenceField($strReferenceField);
-		$this->setColourSelectSource($objColourSelectSource);
-		parent::__construct($strName, $strTitle);
-	}
+    public function __construct($strName, $strTitle = '', $objColourSelectSource = null, $strReferenceField = null)
+    {
+        $this->setReferenceField($strReferenceField);
+        $this->setColourSelectSource($objColourSelectSource);
+        parent::__construct($strName, $strTitle);
+    }
 
     /**
      * @param array $properties
@@ -42,13 +44,13 @@ class CloudinaryColorSelectField extends FormField {
         Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/thirdparty/color-thief.js");
         Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/CloudinaryColorSelectField.js");
         return parent::Field($properties);
-
     }
 
     /**
      * @return null|string
      */
-    public function getReferenceField(){
+    public function getReferenceField()
+    {
         return $this->reference_field;
     }
 
@@ -57,16 +59,18 @@ class CloudinaryColorSelectField extends FormField {
      * @return $this
      * Set the Media (Video / Image) field name
      */
-    public function setReferenceField($strField){
-		$this->reference_field = $strField;
-		return $this;
-	}
+    public function setReferenceField($strField)
+    {
+        $this->reference_field = $strField;
+        return $this;
+    }
 
     /**
      * @return string
      * return source image url for color select
      */
-    public function getColourSelectSource(){
+    public function getColourSelectSource()
+    {
         return $this->source_image_url;
     }
 
@@ -75,30 +79,32 @@ class CloudinaryColorSelectField extends FormField {
      * @return $this
      * Set image url for color select
      */
-    public function setColourSelectSource($objMedia){
-        if($objMedia && !is_a($objMedia, 'CloudinaryImage') && !is_a($objMedia, 'CloudinaryVideo')){
+    public function setColourSelectSource($objMedia)
+    {
+        if ($objMedia && !is_a($objMedia, 'CloudinaryImage') && !is_a($objMedia, 'CloudinaryVideo')) {
             user_error(
                 "setColourSelectSource() accepts only CloudinaryVideo or CloudinaryImage objects.",
                 E_USER_ERROR
             );
         }
-        if($objMedia){
+        if ($objMedia) {
             $this->source_image_url = $objMedia->GetFileImage(200, 140)->getSourceURL();
         }
         return $this;
-	}
+    }
 
     /**
      * @param DataObjectInterface $record
      * @return $this|void
      * if ColorPicker field exists, then convert the value hex to rgb
      */
-    public function saveInto(DataObjectInterface $record){
+    public function saveInto(DataObjectInterface $record)
+    {
         $name = $this->getName();
 
-        if($this->ColorPickerExists() && $record->db($name)) {
+        if ($this->ColorPickerExists() && $record->db($name)) {
             $record->{"{$name}"} = $this->value ? 'rgb('.implode(',', $this->hex2rgb($this->value)).')' : null;
-        }elseif($record->db($name)){
+        } elseif ($record->db($name)) {
             $record->{"{$name}"} = $this->value;
         }
         return $this;
@@ -107,7 +113,8 @@ class CloudinaryColorSelectField extends FormField {
     /**
      * @return array
      */
-    public function getAttributes(){
+    public function getAttributes()
+    {
         return array_merge(
             parent::getAttributes(),
             array('type' => 'hidden')
@@ -118,22 +125,27 @@ class CloudinaryColorSelectField extends FormField {
      * @return String
      * return url for the action which generates the thumbnail for color-thief
      */
-    public function LoadImageURL(){
-		return $this->Link('currentImage');
-	}
+    public function LoadImageURL()
+    {
+        return $this->Link('currentImage');
+    }
 
     /**
      * generates the image in cms for color-thief
      */
-    public function currentImage(){
-        if($imageURL = $this->getCloudinaryImageURL()){
+    public function currentImage()
+    {
+        if ($imageURL = $this->getCloudinaryImageURL()) {
             $strHeader = '';
-            if(substr($imageURL, -strlen('.jpg')) == '.jpg')
+            if (substr($imageURL, -strlen('.jpg')) == '.jpg') {
                 $strHeader = 'Content-type: image/jpeg';
-            if(substr($imageURL, -strlen('.png')) == '.png')
+            }
+            if (substr($imageURL, -strlen('.png')) == '.png') {
                 $strHeader = 'Content-type: image/png';
-            if(substr($imageURL, -strlen('.gif')) == '.gif')
+            }
+            if (substr($imageURL, -strlen('.gif')) == '.gif') {
                 $strHeader = 'Content-type: image/gif';
+            }
 
             header($strHeader);
             $strContent = file_get_contents($imageURL);
@@ -145,12 +157,14 @@ class CloudinaryColorSelectField extends FormField {
      * @return string
      * cloudinary image or video thumbnail url
      */
-    public function getCloudinaryImageURL(){
+    public function getCloudinaryImageURL()
+    {
         $strRet = '';
-        if(isset($_REQUEST['current_image']))
+        if (isset($_REQUEST['current_image'])) {
             $strRet = $_REQUEST['current_image'];
-        else if($this->source_image_url)
+        } elseif ($this->source_image_url) {
             $strRet = $this->source_image_url;
+        }
         return $strRet;
     }
 
@@ -158,8 +172,9 @@ class CloudinaryColorSelectField extends FormField {
      * @return null || string
      * returns custom color picker
      */
-    public function ColorPicker(){
-        if($this->ColorPickerExists()){
+    public function ColorPicker()
+    {
+        if ($this->ColorPickerExists()) {
             return ColourPicker::create($this->name)
                 ->addExtraClass('cloudinarycolorselect')
                 ->setValue($this->value ? $this->rgb2hex(sscanf($this->value, "rgb(%d, %d, %d)")) : '')
@@ -171,7 +186,8 @@ class CloudinaryColorSelectField extends FormField {
     /**
      * @return bool
      */
-    public function ColorPickerExists(){
+    public function ColorPickerExists()
+    {
         return class_exists('ColourPicker');
     }
 
@@ -179,11 +195,12 @@ class CloudinaryColorSelectField extends FormField {
      * @param $hex
      * @return array
      */
-    private function hex2rgb($hex) {
+    private function hex2rgb($hex)
+    {
         $hex = str_replace("#", "", $hex);
-        $r = hexdec(substr($hex,0,2));
-        $g = hexdec(substr($hex,2,2));
-        $b = hexdec(substr($hex,4,2));
+        $r = hexdec(substr($hex, 0, 2));
+        $g = hexdec(substr($hex, 2, 2));
+        $b = hexdec(substr($hex, 4, 2));
         $rgb = array($r, $g, $b);
         return $rgb;
     }
@@ -192,12 +209,12 @@ class CloudinaryColorSelectField extends FormField {
      * @param $rgb
      * @return string
      */
-    private function rgb2hex($rgb) {
+    private function rgb2hex($rgb)
+    {
         $hex = "#";
         $hex .= str_pad(dechex($rgb[0]), 2, "0", STR_PAD_LEFT);
         $hex .= str_pad(dechex($rgb[1]), 2, "0", STR_PAD_LEFT);
         $hex .= str_pad(dechex($rgb[2]), 2, "0", STR_PAD_LEFT);
         return $hex;
     }
-
-} 
+}

@@ -1,6 +1,7 @@
 <?php
 
-class CloudinaryMediaField extends CloudinaryUploadField {
+class CloudinaryMediaField extends CloudinaryUploadField
+{
 
     /**
      * @var array
@@ -14,7 +15,8 @@ class CloudinaryMediaField extends CloudinaryUploadField {
      * @param array $properties
      * @return HTMLText
      */
-    public function Field($properties = array()){
+    public function Field($properties = array())
+    {
         $field = parent::Field($properties);
         Requirements::javascript('cloudinary/javascript/CloudinaryMediaSelect.js');
         Requirements::javascript(CLOUDINARY_RELATIVE . "/javascript/CloudinaryVideoField_downloadtemplate.js");
@@ -26,8 +28,8 @@ class CloudinaryMediaField extends CloudinaryUploadField {
     /**
      * @return string
      */
-    public function process() {
-
+    public function process()
+    {
         if (isset($_POST['SourceURL'])) {
             $sourceURL = $_POST['SourceURL'];
             $bIsCloudinary = CloudinaryVideo::isCloudinary($sourceURL);
@@ -35,22 +37,22 @@ class CloudinaryMediaField extends CloudinaryUploadField {
             $bIsVimeo = VimeoVideo::is_vimeo($sourceURL);
             $video = null;
             if ($bIsYoutube || $bIsVimeo || $bIsCloudinary) {
-                if($bIsCloudinary){
+                if ($bIsCloudinary) {
                     $filterClass = 'CloudinaryVideo';
                     $fileType = 'video';
-                }elseif($bIsYoutube){
+                } elseif ($bIsYoutube) {
                     $filterClass = 'YoutubeVideo';
                     $fileType = 'youtube';
-                }else{
+                } else {
                     $filterClass = 'VimeoVideo';
                     $fileType = 'vimeo';
                 }
 
                 $funcForID = $bIsYoutube ? 'youtube_id_from_url' : 'vimeo_id_from_url';
                 $funcForDetails = $bIsYoutube ? 'youtube_video_details' : 'vimeo_video_details';
-                if($bIsCloudinary){
+                if ($bIsCloudinary) {
                     $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
-                    if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
+                    if (isset($arr['CloudName']) && !empty($arr['CloudName'])) {
                         $arrPieces = explode('/', $sourceURL);
                         $arrFileName = array_slice($arrPieces, 7);
                         $fileName = implode('/', $arrFileName);
@@ -60,30 +62,30 @@ class CloudinaryMediaField extends CloudinaryUploadField {
                             'URL'       => $sourceURL,
                             'PublicID'  => $publicID
                         ))->first();
-                        if(!$video){
+                        if (!$video) {
                             $api = new \Cloudinary\Api();
-                            $resource = $api->resource($publicID, array("resource_type" => "video"));;//qoogjqs9ksyez7ch8sh5
+                            $resource = $api->resource($publicID, array("resource_type" => "video"));
+                            ;//qoogjqs9ksyez7ch8sh5
                             $json = json_encode($resource);
                             $arrResource = Convert::json2array($json);
 
                             $video = new $filterClass(array(
                                 'Title'     => $arrResource['public_id']. '.' .$arrResource['format'],
                                 'PublicID'  => $arrResource['public_id'],
-                                'Version'	=> $arrResource['version'],
-                                'URL'		=> $arrResource['url'],
-                                'SecureURL'	=> $arrResource['secure_url'],
-                                'FileType'	=> $arrResource['resource_type'],
-                                'FileSize'	=> $arrResource['bytes'],
-                                'Format'	=> $arrResource['format'],
-                                'Signature'	=> isset($arrResource['signature']) ? $arrResource['signature'] : '',
+                                'Version'    => $arrResource['version'],
+                                'URL'        => $arrResource['url'],
+                                'SecureURL'    => $arrResource['secure_url'],
+                                'FileType'    => $arrResource['resource_type'],
+                                'FileSize'    => $arrResource['bytes'],
+                                'Format'    => $arrResource['format'],
+                                'Signature'    => isset($arrResource['signature']) ? $arrResource['signature'] : '',
                             ));
                             $video->write();
                         }
                     }
-
-                }else{
+                } else {
                     $video = $filterClass::get()->filter('URL', $sourceURL)->first();
-                    if(!$video){
+                    if (!$video) {
                         $sourceID = $filterClass::$funcForID($sourceURL);
                         $details = $filterClass::$funcForDetails($sourceID);
                         $video = new $filterClass(array(
@@ -115,13 +117,13 @@ class CloudinaryMediaField extends CloudinaryUploadField {
             }
         }
         return Convert::array2json(array());
-
     }
 
     /**
      * remove the media object from the field
      */
-    public function delete_image() {
+    public function delete_image()
+    {
         if ($this->value) {
             $this->value = 0;
         }
@@ -130,40 +132,46 @@ class CloudinaryMediaField extends CloudinaryUploadField {
     /**
      * @return mixed
      */
-    public function VideoURL() {
+    public function VideoURL()
+    {
         $arrFiles = reset($this->value);
         if (isset($arrFiles[0]) && $arrFiles[0]) {
             $video = CloudinaryVideo::get()->byID($arrFiles[0]);
-            if ($video)
+            if ($video) {
                 return $video->getField('URL');
+            }
         }
     }
 
     /**
      * @return string
      */
-    public function ProcessURL() {
+    public function ProcessURL()
+    {
         return $this->Link('process');
     }
 
     /**
      * @return string
      */
-    public function DeleteLink() {
+    public function DeleteLink()
+    {
         return $this->Link('delete_image');
     }
 
     /**
      * @return bool
      */
-    public function IsUploaded() {
+    public function IsUploaded()
+    {
         return !empty($this->value);
     }
 
     /**
      * @return mixed
      */
-    public function Thumbnail() {
+    public function Thumbnail()
+    {
         if ($video = CloudinaryFile::get()->byID($this->value)) {
             return $video->GetFileImage(80, 60, 90);
         }
@@ -172,7 +180,8 @@ class CloudinaryMediaField extends CloudinaryUploadField {
     /**
      * @return mixed
      */
-    public function ColorSelectThumbnail() {
+    public function ColorSelectThumbnail()
+    {
         if ($video = CloudinaryFile::get()->byID($this->value)) {
             return $video->GetFileImage(200, 112, 90);
         }
@@ -182,7 +191,8 @@ class CloudinaryMediaField extends CloudinaryUploadField {
      * @param DataList $files
      * @return DataList
      */
-    public function addFilterForFiles(DataList $files) {
+    public function addFilterForFiles(DataList $files)
+    {
         return $files->filter('ClassName', 'CloudinaryImage');
     }
 
@@ -190,7 +200,8 @@ class CloudinaryMediaField extends CloudinaryUploadField {
      * @param CloudinaryFile $file
      * @return ViewableData_Customised
      */
-    protected function customiseCloudinaryFile(CloudinaryFile $file) {
+    protected function customiseCloudinaryFile(CloudinaryFile $file)
+    {
         $file = parent::customiseCloudinaryFile($file);
         // we do this in a second customise to have the access to the previous customisations
         $template = $file->ClassName == 'CloudinaryImage' ? 'CloudinaryUploadField_FileButtons' : 'CloudinaryVideoField_FileButtons';
@@ -202,11 +213,11 @@ class CloudinaryMediaField extends CloudinaryUploadField {
     /**
      * @return bool
      */
-    private function canUploadMany(){
+    private function canUploadMany()
+    {
         $record = $this->getRecord();
         return ($record instanceof DataObject)
         && $record->hasMethod($this->getName())
         && $record->{$this->getName()}() instanceof RelationList;
     }
-
-} 
+}
