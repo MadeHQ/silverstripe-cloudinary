@@ -167,6 +167,29 @@ class CloudinaryUploadField extends UploadField
 		return $response;
 	}
 
+    public function saveInto(DataObjectInterface $record) {
+        // Check required relation details are available
+        $fieldname = $this->getName();
+        if(!$fieldname) return $this;
+
+        // Get details to save
+        $idList = $this->getItemIDs();
+
+        // Check type of relation
+        $relation = $record->hasMethod($fieldname) ? $record->$fieldname() : null;
+        if($relation && ($relation instanceof RelationList || $relation instanceof UnsavedRelationList)) {
+            // has_many or many_many
+            $relation->setByIDList($idList);
+            if($record->hasMethod('updateFieldsInRecord')) {
+                $record->updateFieldsInRecord();
+            }
+        } elseif($record->hasOneComponent($fieldname)) {
+            // has_one
+            $record->{"{$fieldname}ID"} = $idList ? reset($idList) : 0;
+        }
+        return $this;
+    }
+
 	/**
 	 * @param SS_HTTPRequest $request
 	 * @return SS_HTTPResponse|void
