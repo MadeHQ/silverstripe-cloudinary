@@ -32,6 +32,7 @@ class CloudinaryMediaField extends CloudinaryUploadField {
             $sourceURL = $_POST['SourceURL'];
             $bIsCloudinary = CloudinaryVideo::isCloudinary($sourceURL);
             $bIsYoutube = YoutubeVideo::is_youtube($sourceURL);
+            $sourceURL = $bIsYoutube ? YoutubeVideo::source_url($sourceURL) : $sourceURL;
             $bIsVimeo = VimeoVideo::is_vimeo($sourceURL);
             $video = null;
             if ($bIsYoutube || $bIsVimeo || $bIsCloudinary) {
@@ -204,9 +205,10 @@ class CloudinaryMediaField extends CloudinaryUploadField {
      */
     private function canUploadMany(){
         $record = $this->getRecord();
+        $relation = $record->{$this->getName()}();
         return ($record instanceof DataObject)
         && $record->hasMethod($this->getName())
-        && $record->{$this->getName()}() instanceof RelationList;
+        && ($relation instanceof RelationList || $relation instanceof UnsavedRelationList);
     }
 
 } 

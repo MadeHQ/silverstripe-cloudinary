@@ -2,7 +2,6 @@
 
 class YoutubeVideo extends CloudinaryVideo {
 
-
     public static function youtube_id_from_url($url) {
         $regex = '~(?:(?:<iframe [^>]*src=")?|(?:(?:<object .*>)?(?:<param .*</param>)*(?:<embed [^>]*src=")?)?)?(?:https?:\/\/(?:[\w]+\.)*(?:youtu\.be/| youtube\.com| youtube-nocookie\.com)(?:\S*[^\w\-\s])?([\w\-]{11})[^\s]*)"?(?:[^>]*>)?(?:</iframe>|</embed></object>)?~ix';
 
@@ -13,9 +12,13 @@ class YoutubeVideo extends CloudinaryVideo {
         return false;
     }
 
+    public static function source_url($url) {
+        return 'https://www.youtube.com/watch?v='. self::youtube_id_from_url($url);
+    }
+
     public static function is_youtube($url){
         $host = parse_url($url, PHP_URL_HOST);
-        return strpos($host, 'youtube') > 0;
+        return strpos($host, 'youtube') > 0 || strpos($host, 'youtu.be') == 0;
     }
 
     public static function youtube_video_details($id) {
