@@ -52,10 +52,8 @@ class CloudinaryMediaField extends CloudinaryUploadField {
                 if($bIsCloudinary){
                     $arr = Config::inst()->get('CloudinaryConfigs', 'settings');
                     if(isset($arr['CloudName']) && !empty($arr['CloudName'])){
-                        $arrPieces = explode('/', $sourceURL);
-                        $arrFileName = array_slice($arrPieces, 7);
-                        $fileName = implode('/', $arrFileName);
-                        $publicID = substr($fileName, 0, (strrpos($fileName, '.')));
+                        preg_match('/^.+?\/v\d+\/(.+?)\.(?=[^.]*$)/', $sourceURL, $patterns);
+                        $publicID = isset($patterns[1]) ? $patterns[1] : '';
 
                         $video = $filterClass::get()->filterAny(array(
                             'URL'       => $sourceURL,
@@ -63,7 +61,7 @@ class CloudinaryMediaField extends CloudinaryUploadField {
                         ))->first();
                         if(!$video){
                             $api = new \Cloudinary\Api();
-                            $resource = $api->resource($publicID, array("resource_type" => "video"));;//qoogjqs9ksyez7ch8sh5
+                            $resource = $api->resource($publicID, array("resource_type" => "video"));
                             $json = json_encode($resource);
                             $arrResource = Convert::json2array($json);
 
