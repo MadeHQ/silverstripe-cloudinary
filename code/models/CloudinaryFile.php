@@ -374,16 +374,4 @@ HTML;
 		return FRAMEWORK_DIR . "/images/app_icons/{$ext}_32.gif";
 	}
 
-    /**
-     * @return mixed
-     */
-    public function NameForSummaryField(){
-        if(in_array($this->ClassName, array('VimeoVideo', 'YoutubeVideo'))){
-            $strName = $this->Title;
-        }else{
-            $strName = $this->Title;
-        }
-        return $strName;
-    }
-
 } 

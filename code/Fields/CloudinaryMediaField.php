@@ -87,6 +87,7 @@ class CloudinaryMediaField extends CloudinaryUploadField {
                         $details = $filterClass::$funcForDetails($sourceID);
                         $video = new $filterClass(array(
                             'Title'         => $details['title'],
+                            'FileName'      => $details['title'],
                             'Duration'      => $details['duration'],
                             'URL'           => $sourceURL,
                             'secure_url'    => $sourceURL,
