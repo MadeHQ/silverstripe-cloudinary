@@ -186,6 +186,14 @@ class CloudinaryFile extends DataObject {
 		// Preview
 		$previewField = new LiteralField("ImageFull", $this->CMSThumbnail());
 
+        $strDownloadAttr = 'download';
+        $LinkText = 'Download The File';
+        if(is_a($this, 'CloudinaryVideo')) {
+            $strDownloadAttr = '';
+            $LinkText = 'See The Video';
+        } elseif(is_a($this, 'CloudinaryImage')) {
+            $LinkText = 'Download The Image';
+        }
 		//create the file attributes in a FieldGroup
 		$filePreview = CompositeField::create(
 			CompositeField::create(
@@ -194,8 +202,8 @@ class CloudinaryFile extends DataObject {
 			CompositeField::create(
 				$fileDataField = CompositeField::create(
                     new ReadonlyField("FileType", _t('AssetTableField.TYPE','File type') . ':'),
-					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL') ,
-						sprintf('<a href="%s" target="_blank" download="true">Download the file</a>', $this->Link())
+					$urlField = new ReadonlyField('ClickableURL', _t('AssetTableField.URL','URL:') ,
+						sprintf('<a href="%s" target="_blank" %s>%s</a>', $this->Link(), $strDownloadAttr, $LinkText)
 					),
 					new DateField_Disabled("Created", _t('AssetTableField.CREATED','First uploaded') . ':'),
 					new DateField_Disabled("LastEdited", _t('AssetTableField.LASTEDIT','Last changed') . ':')
