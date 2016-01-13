@@ -118,8 +118,8 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 		$columns = $gridField->getConfig()->getComponentByType('GridFieldDataColumns');
 		$columns->setDisplayFields(array(
 			'StripThumbnail' 	    => '',
-			'NameForSummaryField'   => _t('File.Name'),
-			'Created' 			    => _t('AssetAdmin.CREATED', 'Date'),
+			'FileName'              => _t('File.Name'),
+            'Created' 			    => _t('AssetAdmin.CREATED', 'Date'),
 			'getSize' 			    => _t('AssetAdmin.SIZE', 'Size'),
 		));
 		$columns->setFieldCasting(array(
