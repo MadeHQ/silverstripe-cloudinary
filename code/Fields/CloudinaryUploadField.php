@@ -19,7 +19,13 @@ class CloudinaryUploadField extends UploadField
      */
     private $sort_column = null;
 
-	/**
+    /**
+     * @var true
+     */
+    private $isAttachment = true;
+
+
+    /**
 	 * @var array
 	 */
 	private static $allowed_actions = array(
@@ -37,7 +43,7 @@ class CloudinaryUploadField extends UploadField
      * @param SS_List $items
      * @param null $sortColumn
      */
-    public function __construct($name, $title = null, SS_List $items = null, $sortColumn = null) {
+    public function __construct($name, $title = null, SS_List $items = null, $sortColumn = null, $isAttachment = true) {
         parent::__construct($name, $title, $items);
         $this->setSortColumn($sortColumn);
         $arrExtensions = array_merge(array_filter($this->getExtensionsAllowed()), array('svg'));
@@ -71,6 +77,23 @@ class CloudinaryUploadField extends UploadField
      */
     public function getSortColumn() {
         return $this->sort_column;
+    }
+
+    /**
+     * @param $sortColumn
+     * @return $this
+     * set attachment enable option
+     */
+    public function setIsAttachment($attachment) {
+        $this->isAttachment = $attachment;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsAttachment() {
+        return $this->isAttachment;
     }
 
     /**

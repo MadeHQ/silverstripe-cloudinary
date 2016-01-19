@@ -7,8 +7,9 @@
             <% _t('UploadField.FROMCOMPUTER', 'Upload') %>
             <input id="$id" name="{$Name}[Uploads][]" class="$extraClass ss-uploadfield-fromcomputer-fileinput" data-config="$configString" type="file"<% if $multiple %> multiple="multiple"<% end_if %> />
         </label>
-
-        <button data-id="{$ID}" class="video-attach-button">Attach</button>
+        <% if $isAttachment %>
+            <button data-id="{$ID}" class="video-attach-button">Attach</button>
+        <% end_if %>
 
     <% else %>
         <input id="$id" name="{$Name}[Uploads][]" class="$extraClass ss-uploadfield-fromcomputer-fileinput" data-config="$configString" type="hidden" />
