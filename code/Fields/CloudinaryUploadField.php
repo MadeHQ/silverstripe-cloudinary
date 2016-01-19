@@ -20,12 +20,6 @@ class CloudinaryUploadField extends UploadField
     private $sort_column = null;
 
     /**
-     * @var true
-     */
-    private $isAttachment = true;
-
-
-    /**
 	 * @var array
 	 */
 	private static $allowed_actions = array(
@@ -77,23 +71,6 @@ class CloudinaryUploadField extends UploadField
      */
     public function getSortColumn() {
         return $this->sort_column;
-    }
-
-    /**
-     * @param $sortColumn
-     * @return $this
-     * set attachment enable option
-     */
-    public function setIsAttachment($attachment) {
-        $this->isAttachment = $attachment;
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function getIsAttachment() {
-        return $this->isAttachment;
     }
 
     /**
