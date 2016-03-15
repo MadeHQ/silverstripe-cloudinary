@@ -85,6 +85,10 @@ class CloudinaryImage extends CloudinaryMedia {
 		return $this->MakeCloudinaryCached($iWidth, $iHeight, 'fill', $iQuality, $strGravity, 'auto');
 	}
 
+	public function Image( $iWidth, $iHeight, $strGravity = 'center', $strFill = 'fill', $iQuality = 70 ) {
+		return $this->MakeCloudinaryCached($iWidth, $iHeight, $strFill, $iQuality, $strGravity, 'auto');
+	}
+
 	/**
 	 * @param $iWidth
 	 * @param $iHeight
