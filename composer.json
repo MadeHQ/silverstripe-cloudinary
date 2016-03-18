@@ -23,13 +23,14 @@
     ],
     "support": {
         "email": "developers@mademedia.co.uk",
-        "issues": "https://github.com/MadeHQ/silverstripe-markdown/issues",
-        "wiki": "https://github.com/MadeHQ/silverstripe-markdown/wiki",
-        "source": "https://github.com/MadeHQ/silverstripe-markdown"
+        "issues": "https://github.com/MadeHQ/silverstripe-cloudinary/issues",
+        "wiki": "https://github.com/MadeHQ/silverstripe-cloudinary/wiki",
+        "source": "https://github.com/MadeHQ/silverstripe-cloudinary"
     },
     "require": {
         "silverstripe/framework": ">=3.1",
-        "composer/installers": "*"
+        "composer/installers": "*",
+        "cloudinary/cloudinary_php": "1.3.0"
     },
     "extra": {
         "installer-name": "cloudinary"

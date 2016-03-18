@@ -11,10 +11,6 @@ define('CLOUDINARY_BASE', dirname(__FILE__));
 define('CLOUDINARY_RELATIVE', basename(dirname(__FILE__)));
 
 
-require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Cloudinary.php';
-require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Uploader.php';
-require_once CLOUDINARY_BASE . '/thirdparty/Cloudinary/Api.php';
-
 CMSMenu::remove_menu_item('CloudinaryFileAddController');
 
 CloudinaryConfigs::ReplaceFileFields();
