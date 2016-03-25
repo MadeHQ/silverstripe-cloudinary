@@ -1,30 +1,18 @@
-<div id="assetadmin-cms-content" class="cms-content center cms-tabset $BaseCSSClasses" data-layout-type="border" data-pjax-fragment="Content">
+<div id="cloudinary-cms-content" class="cms-content center cms-tabset $BaseCSSClasses" data-layout-type="border" data-pjax-fragment="Content">
 
-    <% with $EditForm %>
-        <div class="cms-content-header north">
-            <div class="cms-content-header-info">
-                <% include BackLink_Button %>
-                <% with $Controller %>
-                    <% include CMSBreadcrumbs %>
-                <% end_with %>
+    <div class="cms-content-header north">
+        <div class="cms-content-header-info">
+            <div class="breadcrumbs-wrapper" data-pjax-fragment="Breadcrumbs">
+                <h2 id="page-title-heading">
+                    <span class="cms-panel-link crumb last">Cloudinary Uploader</span>
+                </h2>
             </div>
-            <% if $Fields.hasTabset %>
-                <% with $Fields.fieldByName('Root') %>
-                    <div class="cms-content-header-tabs">
-                        <ul class="cms-tabset-nav-primary">
-                            <% loop $Tabs %>
-                                <li<% if $extraClass %> class="$extraClass"<% end_if %>><a href="#$id">$Title</a></li>
-                            <% end_loop %>
-                        </ul>
-                    </div>
-                <% end_with %>
-            <% end_if %>
         </div>
 
-        <div class="cms-content-fields center ui-widget-content" data-layout-type="border">
-            $Top.Tools
-            $forTemplate
-        </div>
-    <% end_with %>
+    </div>
+
+    <div class="cms-content-fields center ui-widget-content" data-layout-type="border">
+        {$EditForm}
+    </div>
 
 </div>

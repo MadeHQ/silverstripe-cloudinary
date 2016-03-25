@@ -5,58 +5,13 @@ After: 'framework/*','cms/*'
 # YAML configuration for SilverStripe
 # See http://doc.silverstripe.org/framework/en/topics/configuration
 # Caution: Indentation through two spaces, not tabs
-DataObject:
-  extensions:
-    - CloudinaryConfigs
-Controller:
-  extensions:
-    - CloudinaryControllerExtension
 ReportAdmin:
   extensions:
     - SS_ReportExtension
-CloudinaryConfigs:
-  editor_image_sizes:
-    small:
-      width: 100
-      height: 100
-    large:
-      width: 400
-      height: 150
-    banner:
-      width: 720
-      height: 120
-  editor_video_sizes:
-      default:
-        width: 16
-        height: 9
-      small:
-        width: 100
-        height: 100
-      large:
-        width: 400
-        height: 200
-      banner:
-        width: 720
-        height: 300
+CloudinaryUtils:
   settings:
     CloudName: ''
     APIKey: ''
     APISecret: ''
     Quality: 70
-
-YoutubeVideo:
-  youtube_api_key: ''
-
-CloudinaryVideoField:
-  defaultConfig:
-    autoUpload: true
-    allowedMaxFileNumber:
-    canUpload: true
-    canAttachExisting: 'CMS_ACCESS_AssetAdmin'
-    canPreviewFolder: true
-    previewMaxWidth: 80
-    previewMaxHeight: 60
-    uploadTemplateName: 'ss-uploadfield-uploadtemplate'
-    downloadTemplateName: 'ss-cloudinary-videofield-downloadtemplate'
-    overwriteWarning: true # Warning before overwriting existing file (only relevant when Upload: replaceFile is true)
-  allowedExtensions: mpeg,mpg,m1v,mp2,mpa,mpe,ifo,vob,avi,wmv,asf,m2v,qt,ogv,webm,mp4
+    UploadPreset: ''

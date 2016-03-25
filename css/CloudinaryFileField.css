@@ -1,0 +1,69 @@
+.cloudinary {
+
+}
+
+.cloudinary__url {
+    overflow: hidden;
+}
+
+.cloudinary__fields {
+    display: none;
+}
+
+.cloudinary__fields--expanded {
+    display: block;
+}
+
+.cloudinary__fields__field {
+
+}
+
+.cloudinary__fields__field .field label.left {
+    display: block;
+    float: none;
+}
+
+.cloudinary__fields__field .field .middleColumn {
+    margin: 0;
+}
+
+.cloudinary__browser__window {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    -o-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.cloudinary__browser__window__item {
+    position: relative;
+    float: left;
+    font-size: 0;
+    line-height: 0;
+    width: 20%;
+    box-sizing: border-box;
+    padding: 5px;
+    border: 1px solid white;
+}
+
+.cloudinary__browser__window__item:hover {
+    background: #d3d3d3;
+}
+
+.cloudinary__browser__window__item.selected {
+    background: #b3b3b3;
+}
+
+.cloudinary__browser__window__item .image {
+   width: 100%;
+}
+
+.cloudinary__browser__window__item .image img {
+    width: 100%;
+    height: auto;
+}
