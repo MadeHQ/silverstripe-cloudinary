@@ -24,14 +24,14 @@
             if(window.cloudinary){
                 try {
                     cloudinary.openUploadWidget({
-                        cloud_name          : this.data('cloud_name'),
-                        upload_preset       : this.data('upload_preset'),
-                        cropping            : 'server',
-                        folder              : $('input[name="UploadPath"]').val(),
-                        keep_widget_open    : true,
-                        resource_type       : 'raw',
-                        sources             : ['local', 'url'],
-                        theme               : 'minimal'
+                        'cloud_name'        : this.data('cloud_name'),
+                        'upload_preset'     : this.data('upload_preset'),
+                        'cropping'          : 'server',
+                        'folder'            : $('input[name="UploadPath"]').val(),
+                        'keep_widget_open'  : true,
+                        'resource_type'     : 'raw',
+                        'sources'           : ['local', 'url'],
+                        'theme'             : 'minimal'
                     }, function(error, result) {
                         console.log(error, result);
                     });
