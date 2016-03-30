@@ -4,16 +4,9 @@
         $.getJSON('admin/cloudinary/folders', {
             parent : path
         },function(data){
-
-            if(data.IsLeaf){
-                $('input[name="UploadPath"]').val(path);
-                dom.after(data.Button);
-            }
-            else {
-                $('input[name="UploadPath"]').val('');
-                dom.after(data.Dropdown);
-            }
-
+            $('input[name="UploadPath"]').val(path);
+            dom.after(data.Dropdown);
+            $(data.Button).insertBefore('input[name="UploadPath"]');
         });
     };
 
@@ -55,6 +48,7 @@
             $('._js-start_upload').remove();
 
             fetchSubFoldersOrCloudinaryButton(this.val(), field);
+            this.closest('form').removeClass('changed');
         }
 
     });

@@ -60,12 +60,12 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 		}
 		else {
 			$return['IsLeaf'] = true;
-			$return['Button'] = '<a href="#"
+		}
+		$return['Button'] = '<a href="#"
 				data-cloud_name="' . CloudinaryUtils::cloud_name() . '"
 				data-upload_preset="' . CloudinaryUtils::upload_preset() . '"
 				class="_js-start_upload ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all new new-link ui-button-text-icon-primary"
 				>Upload</a>';
-		}
 
 		return Convert::array2json($return);
 	}
@@ -119,6 +119,11 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 				->addExtraClass('_js-root-folder _js-folder-select'),
 			LiteralField::create('ChildFolders', '<div id="Child_Folders"></div>'),
 			HiddenField::create('UploadPath', 'UploadPath'),
+			LiteralField::create('UploadButton', '<a href="#"
+				data-cloud_name="' . CloudinaryUtils::cloud_name() . '"
+				data-upload_preset="' . CloudinaryUtils::upload_preset() . '"
+				class="_js-start_upload ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all new new-link ui-button-text-icon-primary"
+				>Upload</a>'),
 			LiteralField::create('ManageInCloudinary', '<p>or manage your images in <a href="https://cloudinary.com/console/" target="_blank">Cloudinary</a></p>')
 		));
 
