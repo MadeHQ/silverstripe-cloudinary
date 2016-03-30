@@ -166,13 +166,18 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 
 		if($publicID){
 			$api = CloudinaryUtils::api();
-			$resource = $api->resource($publicID)->getArrayCopy();
+			$resource = null;
+			try {
+				$resource = $api->resource($publicID, array('resource_type', 'auto'))->getArrayCopy();
+			} catch (Exception $e) {}
 
-			if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['caption'])) {
-				$caption = 	$resource['context']['custom']['caption'];
-			}
-			if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['credit'])) {
-				$credit = 	$resource['context']['custom']['credit'];
+			if($resource) {
+				if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['caption'])) {
+					$caption = 	$resource['context']['custom']['caption'];
+				}
+				if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['credit'])) {
+					$credit = 	$resource['context']['custom']['credit'];
+				}
 			}
 		}
 

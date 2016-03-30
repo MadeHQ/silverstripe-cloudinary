@@ -22,7 +22,7 @@
                         'cropping'          : 'server',
                         'folder'            : $('input[name="UploadPath"]').val(),
                         'keep_widget_open'  : true,
-                        'resource_type'     : 'raw',
+                        'resource_type'     : 'auto',
                         'sources'           : ['local', 'url'],
                         'theme'             : 'minimal'
                     }, function(error, result) {
