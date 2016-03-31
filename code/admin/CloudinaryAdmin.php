@@ -177,6 +177,8 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 				}
 				if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['credit'])) {
 					$credit = 	$resource['context']['custom']['credit'];
+				} elseif (isset($resource['exif']) && isset($resource['exif']['Copyright'])) {
+					$credit = 	$resource['exif']['Copyright'];
 				}
 			}
 		}
