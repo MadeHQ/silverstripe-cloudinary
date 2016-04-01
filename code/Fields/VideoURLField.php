@@ -28,9 +28,9 @@ class VideoURLField extends TextField {
     public function validate($validator) {
         $this->value = trim($this->value);
 
-        if($this->value && !VideoVarchar::vimeoId($this->value) && !VideoVarchar::youtubeId($this->value)) {
+        if($this->value && !VideoVarchar::vimeoId($this->value) && !VideoVarchar::youtubeId($this->value) && !VideoVarchar::cloudinaryId($this->value)) {
             $validator->validationError(
-                $this->name, _t('URLField.VALIDATION', 'Please enter a valid youtube or vimeo video URL'), 'validation'
+                $this->name, _t('URLField.VALIDATION', 'Please enter a valid video url (cloudinary, youtube or vimeo'), 'validation'
             );
 
             return false;

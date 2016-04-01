@@ -20,11 +20,15 @@ class CloudinaryFileField extends FormField
 
 		foreach($frontEndFields as $field)
 		{
-			if($field->getName() == 'CloudinaryID'){
+			if ($field->getName() == 'URL') {
 				$field->addExtraClass('_js-cloudinary-url');
-			}
-			else {
+			} else {
 				$field->addExtraClass('_js-attribute');
+			}
+
+			if (in_array($field->getName(), array('FileSize', 'Format'))) {
+
+				$field->addExtraClass('show_field');
 			}
 
 			$field->setName($name . "[" . $field->getName() . "]");
@@ -45,14 +49,14 @@ class CloudinaryFileField extends FormField
 
 	public function getURLField()
 	{
-		return $this->children->dataFieldByName($this->getName() . "[CloudinaryID]");
+		return $this->children->dataFieldByName($this->getName() . "[URL]");
 	}
 
 	public function DataFields()
 	{
 		$dataFields = new FieldList();
 		foreach($this->children as $field){
-			if(strpos($field->getName(), 'CloudinaryID') === false){
+			if(strpos($field->getName(), 'URL') === false){
 				$dataFields->push($field);
 			}
 		}
@@ -91,7 +95,7 @@ class CloudinaryFileField extends FormField
 			if(($record instanceof DataObject) && $record->hasMethod($this->getName())) {
 				$data = $record->{$this->getName()}();
 				if($data && $data->exists()){
-					$this->children->dataFieldByName($this->getName() . "[CloudinaryID]")->setValue($data->CloudinaryID);
+					$this->children->dataFieldByName($this->getName() . "[URL]")->setValue($data->URL);
 					$this->children->dataFieldByName($this->getName() . "[Caption]")->setValue($data->Caption);
 					$this->children->dataFieldByName($this->getName() . "[Credit]")->setValue($data->Credit);
 					$this->children->dataFieldByName($this->getName() . "[Gravity]")->setValue($data->Gravity);
@@ -116,12 +120,13 @@ class CloudinaryFileField extends FormField
 				$file = new CloudinaryFile();
 			}
 
-			if($value['CloudinaryID']){
-				$cloudinaryId = CloudinaryUtils::is_url($value['CloudinaryID']) ? CloudinaryUtils::public_id($value['CloudinaryID']) : $value['CloudinaryID'];
+			if($value['URL']){
+				$cloudinaryUrl = $value['URL'];
 				$file->Caption = $value['Caption'];
 				$file->Credit = $value['Credit'];
 				$file->Gravity = $value['Gravity'];
-				$file->CloudinaryID = $cloudinaryId;
+				$file->URL = $cloudinaryUrl;
+				$file->Format = CloudinaryUtils::file_format($value['URL']);
 				$file->write();
 
 				$record->setCastedField($this->name . 'ID', $file->ID);
@@ -137,5 +142,7 @@ class CloudinaryFileField extends FormField
 
 		}
 	}
+
+
 
 } 

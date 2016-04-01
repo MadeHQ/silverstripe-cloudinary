@@ -122,7 +122,10 @@
                     }, function(data) {
                         holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
                         holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
-                        holder.find('.cloudinary__fields').show();
+                        holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
+                        if(data.IsRaw) {
+                            holder.find('.cloudinary__fields').show();
+                        }
                     });
                 }
                 else {

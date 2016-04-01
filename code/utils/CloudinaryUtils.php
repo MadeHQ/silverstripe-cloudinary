@@ -80,7 +80,21 @@ class CloudinaryUtils extends Object
 	public static function public_id($url)
 	{
 		preg_match('/^.+?\/v\d+\/(.+?)\.(?=[^.]*$)/', $url, $patterns);
-		return isset($patterns[1]) ? $patterns[1] : '';
+		return $patterns[1] ? $patterns[1] : '';
+	}
+
+	public static function file_format($url)
+	{
+		$arrPathInfo = pathinfo($url);
+		if (isset($arrPathInfo['extension'])) {
+			return $arrPathInfo['extension'];
+		}
+	}
+
+	public static function resource_type($url)
+	{
+		$settings = Config::inst()->get('CloudinaryUtils', 'settings');
+		return StringUtils::between($url, $settings['CloudName']. '/', '/upload');
 	}
 
 } 

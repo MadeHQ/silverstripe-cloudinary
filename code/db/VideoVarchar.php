@@ -17,8 +17,8 @@ class VideoVarchar extends Varchar
             'height'   	 	=> $height,
             'crop'      	=> 'fill',
             'start_offset'	=> 0,
-            'resource_type'	=> 'image',
-            'type'			=> $this->getVideoType(),
+            'resource_type'	=> $this->isCloudinary() ? 'video' : 'image',
+            'type'			=> in_array($this->getVideoType(), array('youtube', 'vimeo')) ? $this->getVideoType() : '',
             'quality'		=> $quality
         );
         return Cloudinary::cloudinary_url(
@@ -36,6 +36,8 @@ class VideoVarchar extends Varchar
             return self::youtubeId($this->value);
         } elseif ($this->isVimeo()) {
             return self::vimeoId($this->value);
+        } elseif ($this->isCloudinary()) {
+            return self::cloudinaryId($this->value);
         }
         return 0;
     }
@@ -48,7 +50,9 @@ class VideoVarchar extends Varchar
         if ($this->isYoutube()) {
             return 'youtube';
         } elseif ($this->isVimeo()) {
-            return 'vimeo';
+            echo strpos(parse_url($this->value, PHP_URL_HOST), 'vimeo') !== 0;die();
+        } elseif ($this->isCloudinary()) {
+            return 'cloudinary';
         }
         return null;
     }
@@ -59,7 +63,7 @@ class VideoVarchar extends Varchar
     public function isYoutube()
     {
         $host = parse_url($this->value, PHP_URL_HOST);
-        return (strpos($host, 'youtube') > 0) || (strpos($host, 'youtu.be') === 0);
+        return (strpos($host, 'youtube') !== false) || (strpos($host, 'youtu.be') !== false);
     }
 
     /**
@@ -68,7 +72,16 @@ class VideoVarchar extends Varchar
     public function isVimeo()
     {
         $host = parse_url($this->value, PHP_URL_HOST);
-        return strpos($host, 'vimeo') >= 0;
+        return strpos($host, 'vimeo') !== false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCloudinary()
+    {
+        $host = parse_url($this->value, PHP_URL_HOST);
+        return strpos($host, 'cloudinary') !== false;
     }
 
     /**
@@ -88,7 +101,8 @@ class VideoVarchar extends Varchar
     /**
      * @return bool
      */
-    public static function vimeoId($url) {
+    public static function vimeoId($url)
+    {
         $regex = '~(?:<iframe [^>]*src=")?(?:https?:\/\/(?:[\w]+\.)*vimeo\.com(?:[\/\w]*\/videos?)?\/([0-9]+)[^\s]*)"?(?:[^>]*></iframe>)?(?:<p>.*</p>)?~ix';
 
         if(preg_match($regex, $url, $matches) && !empty($matches)) {
@@ -96,6 +110,15 @@ class VideoVarchar extends Varchar
         }
 
         return false;
+    }
+
+    /**
+     * @param $url
+     * @return string
+     */
+    public static function cloudinaryId($url)
+    {
+        return CloudinaryUtils::public_id($url);
     }
 
 }
