@@ -17,7 +17,7 @@ class CloudinaryFile extends DataObject
 	);
 
 	private static $summary_fields = array(
-		'Title'				=> 'Title'
+		'getTitle'			=> 'Title'
 	);
 
 	public function getTitle()
@@ -44,8 +44,11 @@ class CloudinaryFile extends DataObject
 
 		$fields = parent::getCMSFields();
 
-		$titleField = $fields->dataFieldByName('URL');
-		$titleField->addExtraClass('_js-cloudinary-url _js-cms-fields');
+		$fields->dataFieldByName('URL')
+			->addExtraClass('_js-cloudinary-url _js-cms-fields');
+
+		$fields->dataFieldByName('FileTitle')->setTitle('Title');
+		$fields->dataFieldByName('FileDescription')->setTitle('Description');
 
 		if(CloudinaryUtils::resource_type($this->URL) == 'raw') {
 			foreach (array('Credit', 'Caption', 'Gravity') as $fieldName){
