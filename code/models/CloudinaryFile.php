@@ -6,18 +6,77 @@ class CloudinaryFile extends DataObject
 	protected $sourceURL = '';
 
 	private static $db = array(
-		'URL'				=> 'Text',
+		'URL'				=> 'Varchar(500)',
 		'Credit'			=> 'Varchar(200)',
 		'Caption'			=> 'Varchar(200)',
 		'Gravity'			=> 'Enum("Face,Faces,Centre,N,S,E,W,NE,NW,SE,SW")',
 		'FileSize'			=> 'Varchar(50)',
 		'Format'			=> 'Varchar(50)',
+		'FileTitle'			=> 'Varchar(200)',
+		'FileDescription'	=> 'Varchar(300)'
 	);
 
 
 	public function getTitle()
 	{
 		return $this->Caption;
+	}
+
+	public function getCMSFields()
+	{
+
+
+		Requirements::css('cloudinary/css/CloudinaryFileField.css');
+		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
+		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
+		Requirements::javascript('cloudinary/javascript/CloudinaryFile.CMSFields.js');
+
+
+		$fields = parent::getCMSFields();
+
+		$titleField = $fields->dataFieldByName('URL');
+		$titleField->addExtraClass('_js-cloudinary-url _js-cms-fields');
+
+		if(CloudinaryUtils::resource_type($this->URL) == 'raw') {
+			foreach (array('Credit', 'Caption', 'Gravity') as $fieldName){
+				if($field = $fields->dataFieldByName($fieldName)) {
+					$field->addExtraClass('_js-hide-on-load');
+				}
+			}
+		}
+		else {
+			foreach (array('FileTitle', 'FileDescription') as $fieldName){
+				if($field = $fields->dataFieldByName($fieldName)) {
+					$field->addExtraClass('_js-hide-on-load');
+				}
+			}
+		}
+		
+
+		$cloudName = CloudinaryUtils::cloud_name();
+		$apiKey = CloudinaryUtils::api_key();
+
+		$fields->addFieldToTab('Root.Main', LiteralField::create('Browser', <<<HTML
+<div class="field _js-cloudinary_holer" data-cloudname="{$cloudName}" data-api="{$apiKey}">
+	<div class="middleColumn">
+		<a href="#" class="_js-attach-image-object ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all new new-link ui-button-text-icon-primary">Choose Image</a>
+	</div>
+</div>
+HTML
+), 'Credit');
+
+		// $fields->makeFieldReadonly('FileSize');
+		//$fields->makeFieldReadonly('Format');
+
+		$fields->replaceField('FileSize', HiddenField::create('FileSize'));
+		$fields->replaceField('Format', HiddenField::create('Format'));
+
+		$fields->addFieldsToTab('Root.Main', array(
+			TextField::create('FileSize_ReadOnly', 'FileSize')->setValue($this->FileSize)->setDisabled(true),
+			TextField::create('Format_ReadOnly', 'Format')->setValue($this->Format)->setDisabled(true)
+		));
+
+		return $fields;
 	}
 
 	public function getFrontEndFields($params = null)

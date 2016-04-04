@@ -14,7 +14,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 	private static $allowed_actions = array(
 		'folders',
 		'getimagelist',
-		'getimagedata'
+		'getfiledata'
 	);
 
 	public function init()
@@ -148,9 +148,9 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 	}
 
 
-	public function getimagedata()
+	public function getfiledata()
 	{
-		$url = $_GET['imageurl'];
+		$url = $_GET['fileurl'];
 		$publicID = CloudinaryUtils::public_id($url);
 
 		$caption = "";
@@ -186,7 +186,8 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			'Caption'		=> $caption,
 			'Credit'		=> $credit,
 			'IsRaw'			=> $isRaw,
-			'FileSize'		=> $fileSize
+			'FileSize'		=> $fileSize,
+			'Format'		=> CloudinaryUtils::file_format($url)
 		));
 
 	}

@@ -1,8 +1,17 @@
 (function($){
 
     var cloudinaryURLField = null;
+    var cloudinaryCMSFields = false;
 
     $.entwine('ss', function($) {
+
+        var updateCMSFieldsBrowser = function(isCMS) {
+            cloudinaryCMSFields = isCMS;
+        };
+
+        var setCloudinaryURLField = function(field) {
+            cloudinaryURLField = field;
+        };
 
         var loadImages = function(){
 
@@ -88,12 +97,11 @@
 
                 if(cloudinaryURLField){
                     cloudinaryURLField.val(this.data('url'));
+                    cloudinaryURLField.data('url', this.data('url'));
                     cloudinaryURLField.urlChanged();
                     cloudinaryURLField = null;
+                    $('._js-cloudinary-browser-holder').dialog('close');
                 }
-
-
-                $('._js-cloudinary-browser-holder').dialog('close');
 
                 return false;
             }
@@ -102,6 +110,7 @@
         $('._js-cloudinary-url').entwine({
 
             onmatch: function() {
+                this.data('url', this.val());
                 var holder = this.closest('.field.cloudinaryfile');
                 if($(this).data('isRaw')) {
                     holder.find('.cloudinary__fields').hide();
@@ -114,25 +123,71 @@
             },
 
             onfocusout : function() {
-                this.urlChanged();
+                if(this.data('url') != this.val()) {
+                    this.urlChanged();
+                }
             },
 
             urlChanged: function() {
+
+                $('#Form_ItemEditForm').addClass('loading');
+
                 this.clearInfo();
 
-                var holder = this.closest('.field.cloudinaryfile');
-                var url = this.val();
+                var input = this;
+                var holder = input.closest('.field.cloudinaryfile');
+                var url = input.val();
 
                 if(url){
-                    $.getJSON('admin/cloudinary/getimagedata', {
-                        'imageurl'       : url
+                    $.getJSON('admin/cloudinary/getfiledata', {
+                        'fileurl'       : url
                     }, function(data) {
-                        holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
-                        holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
-                        holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                        if(!data.IsRaw) {
-                            holder.find('.cloudinary__fields').show();
+
+
+                        if(cloudinaryCMSFields || input.hasClass('_js-cms-fields')){
+                            // FileSize
+                            $('#Form_ItemEditForm_FileSize_ReadOnly, #Form_ItemEditForm_FileSize').val(data.FileSize);
+                            $('#Form_ItemEditForm_Format_ReadOnly, #Form_ItemEditForm_Format').val(data.Format);
+
+
+                            if(data.IsRaw === false) {
+                                $('#Form_ItemEditForm_FileTitle_Holder').hide().val('');
+                                $('#Form_ItemEditForm_FileDescription_Holder').hide().val('');
+
+                                $('#Form_ItemEditForm_Gravity_Holder').show();
+                                $('#Form_ItemEditForm_Credit_Holder').show();
+                                $('#Form_ItemEditForm_Caption_Holder').show();
+                                $('#Form_ItemEditForm_Credit').val(data.Credit);
+                                $('#Form_ItemEditForm_Caption').val(data.Caption);
+                            }
+                            else {
+
+                                $('#Form_ItemEditForm_Gravity_Holder').hide();
+                                $('#Form_ItemEditForm_Credit_Holder').hide();
+                                $('#Form_ItemEditForm_Caption_Holder').hide();
+
+                                $('#Form_ItemEditForm_Credit').val('');
+                                $('#Form_ItemEditForm_Caption').val('');
+
+
+                                $('#Form_ItemEditForm_FileTitle_Holder').show();
+                                $('#Form_ItemEditForm_FileDescription_Holder').show();
+
+                            }
+
+
                         }
+                        else {
+                            holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
+                            holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
+                            holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
+                            if(!data.IsRaw) {
+                                holder.find('.cloudinary__fields').show();
+                            }
+                        }
+
+                        updateCMSFieldsBrowser(false);
+                        $('#Form_ItemEditForm').removeClass('loading');
                     });
                 }
                 else {
@@ -152,6 +207,12 @@
             }
 
         });
+
+
+        ss.updateCMSFieldsBrowser = updateCMSFieldsBrowser;
+        ss.openCloudinaryBrowser = openCloudinaryBrowser;
+        ss.loadImages = loadImages;
+        ss.setCloudinaryURLField = setCloudinaryURLField;
 
     });
 
