@@ -27,8 +27,15 @@ class CloudinaryFileField extends FormField
 			}
 
 			if (in_array($field->getName(), array('FileSize', 'Format'))) {
-
 				$field->addExtraClass('show_field');
+			}
+
+			if(in_array($field->getName(), array('FileTitle', 'FileDescription'))) {
+				// $field->addClass('_js-raw-file-field');
+				$field->RawFileField = true;
+			}
+			else if ($field->getName() == 'URL') {
+				$field->CommonField = true;
 			}
 
 			$field->setName($name . "[" . $field->getName() . "]");

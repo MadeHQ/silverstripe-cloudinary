@@ -107,6 +107,19 @@
             }
         });
 
+        $('._js-cloudinary_holer').entwine({
+            onmatch : function() {
+
+                if(this.data('type') == 'raw'){
+                    this.find('._js-image-data').hide();
+                }
+                else {
+                    this.find('._js-raw-data').hide();
+                }
+
+            }
+        });
+
         $('._js-cloudinary-url').entwine({
 
             onmatch: function() {
@@ -117,6 +130,21 @@
                 }
             },
 
+            onkeyup: function(e) {
+                var code = e.keyCode || e.which;
+                if(code == 13) {
+                    e.preventDefault();
+
+                    if(this.data('url') != this.val()) {
+                        this.urlChanged();
+                        this.data('url', this.val());
+                    }
+
+                    return false;
+                }
+                return true;
+            },
+
             clearInfo: function() {
                 var holder = this.closest('.field.cloudinaryfile');
                 holder.find('input._js-attribute').val('');
@@ -125,20 +153,17 @@
             onfocusout : function() {
                 if(this.data('url') != this.val()) {
                     this.urlChanged();
+                    this.data('url', this.val());
                 }
             },
 
             urlChanged: function() {
-
-                $('#Form_ItemEditForm').addClass('loading');
-
                 this.clearInfo();
-
                 var input = this;
-                var holder = input.closest('.field.cloudinaryfile');
+                var holder = input.closest('._js-cloudinary_holer');
                 var url = input.val();
-
                 if(url){
+                    $('#Form_ItemEditForm, #Form_EditForm').addClass('loading');
                     $.getJSON('admin/cloudinary/getfiledata', {
                         'fileurl'       : url
                     }, function(data) {
@@ -178,16 +203,28 @@
 
                         }
                         else {
-                            holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
-                            holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
-                            holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                            if(!data.IsRaw) {
-                                holder.find('.cloudinary__fields').show();
+                            if(data.IsRaw === false) {
+
+                                holder.find('._js-raw-data').hide();
+                                holder.find('._js-image-data').show();
+                                holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
+                                holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
+                                holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
+
+
+                            }
+                            else {
+                                holder.find('._js-image-data').hide();
+                                holder.find('._js-raw-data').show();
+
+                                holder.find('._js-attribute[name*="Credit"]').val('');
+                                holder.find('._js-attribute[name*="Caption"]').val('');
+                                holder.find('._js-attribute[name*="FileSize"]').val('');
                             }
                         }
 
                         updateCMSFieldsBrowser(false);
-                        $('#Form_ItemEditForm').removeClass('loading');
+                        $('#Form_ItemEditForm, #Form_EditForm').removeClass('loading');
                     });
                 }
                 else {

@@ -16,6 +16,9 @@ class CloudinaryFile extends DataObject
 		'FileDescription'	=> 'Varchar(300)'
 	);
 
+	private static $summary_fields = array(
+		'Title'				=> 'Title'
+	);
 
 	public function getTitle()
 	{
@@ -136,7 +139,11 @@ HTML
 			return $this->sourceURL;
 		}
 
-		return Cloudinary::cloudinary_url(CloudinaryUtils::public_id($this->URL). '.' .$this->Format);
+		$options = array(
+			'resource_type'  => CloudinaryUtils::resource_type($this->URL)
+		);
+
+		return Cloudinary::cloudinary_url(CloudinaryUtils::public_id($this->URL). '.' .$this->Format, $options);
 	}
 
 	/**
