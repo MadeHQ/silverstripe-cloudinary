@@ -5,11 +5,25 @@ class CloudinaryFile extends DataObject
 
 	protected $sourceURL = '';
 
+	private static $arr_gravity = array(
+		'face'			=> 'Face',
+		'faces'			=> 'Faces',
+		'center'		=> 'Center',
+		'north_east'	=> 'NE',
+		'north'			=> 'N',
+		'north_west'	=> 'NW',
+		'west'			=> 'W',
+		'south_west'	=> 'SW',
+		'south'			=> 'S',
+		'south_east'	=> 'SE',
+		'east'			=> 'E'
+	);
+
 	private static $db = array(
 		'URL'				=> 'Varchar(500)',
 		'Credit'			=> 'Varchar(200)',
 		'Caption'			=> 'Varchar(200)',
-		'Gravity'			=> 'Enum("Face,Faces,Centre,N,S,E,W,NE,NW,SE,SW")',
+		'Gravity'			=> 'Enum("face,faces,center,north_east,north,north_west,west,south_west,south,south_east,east")',
 		'FileSize'			=> 'Varchar(50)',
 		'Format'			=> 'Varchar(50)',
 		'FileTitle'			=> 'Varchar(200)',
@@ -49,6 +63,7 @@ class CloudinaryFile extends DataObject
 
 		$fields->dataFieldByName('FileTitle')->setTitle('Title');
 		$fields->dataFieldByName('FileDescription')->setTitle('Description');
+		$fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
 
 		if(CloudinaryUtils::resource_type($this->URL) == 'raw') {
 			foreach (array('Credit', 'Caption', 'Gravity') as $fieldName){
@@ -96,6 +111,8 @@ HTML
 	{
 		$fields = parent::getFrontEndFields($params);
 
+		$fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
+
 		$fields->replaceField('URL', TextField::create('URL')->setAttribute('placeholder', 'https://')->setTitle(""));
 		$fields->replaceField('FileSize', HiddenField::create('FileSize'));
 		$fields->replaceField('Format', HiddenField::create('Format'));
@@ -104,7 +121,7 @@ HTML
 		return $fields;
 	}
 
-	public function Image( $width, $height, $crop = '', $quality = 0, $gravity = '' )
+	public function Image( $width, $height, $crop, $quality, $gravity )
 	{
 		return $this->MakeCloudinaryCached($width, $height, $crop, $quality, $gravity);
 	}
@@ -177,22 +194,8 @@ HTML
 	 */
 	public function CMSThumbnail($iWidth = 80, $iHeight = 60, $crop = 'fill', $iQuality = 80)
 	{
-		return $this->GetFileImage($iWidth, $iHeight, $crop, $iQuality);
+		return $this->Image($iWidth, $iHeight, $crop, $iQuality, 'faces');
 	}
-
-	/**
-	 * @param $iWidth
-	 * @param $iHeight
-	 * @param string $crop
-	 * @param int $iQuality
-	 * @param string $gravity
-	 * @return CloudinaryImage_Cached
-	 */
-	public function GetFileImage($iWidth, $iHeight, $crop = 'fill', $iQuality = 70, $gravity = 'faces')
-	{
-		return $this->MakeCloudinaryCached($iWidth, $iHeight, $crop, $iQuality, $gravity);
-	}
-
 
 	/**
 	 * @return mixed|null
