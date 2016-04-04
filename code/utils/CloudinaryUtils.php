@@ -80,7 +80,7 @@ class CloudinaryUtils extends Object
 	public static function public_id($url)
 	{
 		preg_match('/^.+?\/v\d+\/(.+?)\.(?=[^.]*$)/', $url, $patterns);
-		return $patterns[1] ? $patterns[1] : '';
+		return isset($patterns[1]) ? $patterns[1] : '';
 	}
 
 	public static function file_format($url)
