@@ -58,6 +58,19 @@ class VideoVarchar extends Varchar
     }
 
     /**
+     * @param $iWidth
+     * @param $iHeight
+     * @return null|string
+     */
+    public function VideoTag($iWidth, $iHeight) {
+        if ($this->isCloudinary()) {
+            return cl_video_tag(self::cloudinaryId($this->value) . '.' . $this->Format, array('width' => $iWidth, 'height' => $iHeight, 'controls'));
+        } else {
+            return '<iframe src="'.$this->VideoEmbedURL().'" width="'.$iWidth.'" height="'.$iHeight.'" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+        }
+    }
+
+    /**
      * @return bool
      */
     public function isYoutube()
