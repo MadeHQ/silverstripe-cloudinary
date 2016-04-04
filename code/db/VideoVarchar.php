@@ -62,11 +62,24 @@ class VideoVarchar extends Varchar
      * @param $iHeight
      * @return null|string
      */
-    public function VideoTag($iWidth, $iHeight) {
+    public function VideoTag($iWidth, $iHeight)
+    {
         if ($this->isCloudinary()) {
             return cl_video_tag(self::cloudinaryId($this->value) . '.' . $this->Format, array('width' => $iWidth, 'height' => $iHeight, 'controls'));
         } else {
             return '<iframe src="'.$this->VideoEmbedURL().'" width="'.$iWidth.'" height="'.$iHeight.'" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function videoEmbedURL()
+    {
+        if ($this->isYoutube()) {
+            return "http://www.youtube.com/embed/" . self::youtubeId($this->value);
+        } elseif ($this->isVimeo()) {
+            return "http://player.vimeo.com/video/" . self::vimeoId($this->value);
         }
     }
 
