@@ -130,10 +130,11 @@
                 }
             },
 
-            onkeyup: function(e) {
+            onkeydown: function(e) {
                 var code = e.keyCode || e.which;
                 if(code == 13) {
                     e.preventDefault();
+                    e.stopPropagation();
 
                     if(this.data('url') != this.val()) {
                         this.urlChanged();
