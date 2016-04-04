@@ -101,6 +101,13 @@
 
         $('._js-cloudinary-url').entwine({
 
+            onmatch: function() {
+                var holder = this.closest('.field.cloudinaryfile');
+                if($(this).data('isRaw')) {
+                    holder.find('.cloudinary__fields').hide();
+                }
+            },
+
             clearInfo: function() {
                 var holder = this.closest('.field.cloudinaryfile');
                 holder.find('input._js-attribute').val('');
@@ -123,7 +130,7 @@
                         holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
                         holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
                         holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                        if(data.IsRaw) {
+                        if(!data.IsRaw) {
                             holder.find('.cloudinary__fields').show();
                         }
                     });

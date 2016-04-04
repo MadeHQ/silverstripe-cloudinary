@@ -10,7 +10,7 @@ class CloudinaryFile extends DataObject
 		'Credit'			=> 'Varchar(200)',
 		'Caption'			=> 'Varchar(200)',
 		'Gravity'			=> 'Enum("Face,Faces,Centre,N,S,E,W,NE,NW,SE,SW")',
-		'FileSize'			=> 'Float',
+		'FileSize'			=> 'Varchar(50)',
 		'Format'			=> 'Varchar(50)',
 	);
 

@@ -94,7 +94,9 @@ class CloudinaryUtils extends Object
 	public static function resource_type($url)
 	{
 		$settings = Config::inst()->get('CloudinaryUtils', 'settings');
-		return StringUtils::between($url, $settings['CloudName']. '/', '/upload');
+		if($url) {
+			return StringUtils::between($url, $settings['CloudName']. '/', '/upload');
+		}
 	}
 
 } 

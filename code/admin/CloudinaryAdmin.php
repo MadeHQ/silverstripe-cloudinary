@@ -164,8 +164,10 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			try {
 				$resourceType = CloudinaryUtils::resource_type($url);
 				$isRaw = $resourceType == 'raw';
+				$publicID .= $isRaw ? '.'.CloudinaryUtils::file_format($url) : '';
 				$resource = $api->resource($publicID, array('resource_type' => $resourceType))->getArrayCopy();
-				$fileSize = isset($resource['FileSize']) ? $resource['FileSize'] : $fileSize;
+				$fileSize = isset($resource['bytes']) ? $resource['bytes'] : $fileSize;
+				$fileSize = File::format_size($fileSize);
 			} catch (Exception $e) {}
 
 			if($resource) {

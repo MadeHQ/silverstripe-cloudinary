@@ -49,7 +49,8 @@ class CloudinaryFileField extends FormField
 
 	public function getURLField()
 	{
-		return $this->children->dataFieldByName($this->getName() . "[URL]");
+		$isRaw = $this->isRaw();
+		return $this->children->dataFieldByName($this->getName() . "[URL]")->setAttribute('data-is-raw', "$isRaw");
 	}
 
 	public function DataFields()
@@ -70,6 +71,7 @@ class CloudinaryFileField extends FormField
 
 		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
 		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
+
 		return $this->renderWith('CloudinaryFileField');
 
 	}
@@ -99,6 +101,7 @@ class CloudinaryFileField extends FormField
 					$this->children->dataFieldByName($this->getName() . "[Caption]")->setValue($data->Caption);
 					$this->children->dataFieldByName($this->getName() . "[Credit]")->setValue($data->Credit);
 					$this->children->dataFieldByName($this->getName() . "[Gravity]")->setValue($data->Gravity);
+					$this->children->dataFieldByName($this->getName() . "[FileSize]")->setValue($data->FileSize);
 					$this->children->dataFieldByName($this->getName() . "[ObjectID]")->setValue($data->ID);
 					$this->objectID = $data->ID;
 				}
@@ -127,6 +130,7 @@ class CloudinaryFileField extends FormField
 				$file->Gravity = $value['Gravity'];
 				$file->URL = $cloudinaryUrl;
 				$file->Format = CloudinaryUtils::file_format($value['URL']);
+				$file->FileSize = $value['FileSize'];
 				$file->write();
 
 				$record->setCastedField($this->name . 'ID', $file->ID);
@@ -143,6 +147,11 @@ class CloudinaryFileField extends FormField
 		}
 	}
 
-
+	public function IsRaw()
+	{
+		if($field = $this->children->dataFieldByName($this->getName() . "[URL]")) {
+			return CloudinaryUtils::resource_type($field->value) == 'raw';
+		}
+	}
 
 } 
