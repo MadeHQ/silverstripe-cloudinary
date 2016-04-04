@@ -90,7 +90,7 @@ HTML
 	{
 		$fields = parent::getFrontEndFields($params);
 
-		$fields->replaceField('URL', TextField::create('URL')->setAttribute('laceholder', 'https://')->setTitle(""));
+		$fields->replaceField('URL', TextField::create('URL')->setAttribute('placeholder', 'https://')->setTitle(""));
 		$fields->replaceField('FileSize', HiddenField::create('FileSize'));
 		$fields->replaceField('Format', HiddenField::create('Format'));
 		$fields->removeByName('ParentID');
@@ -161,12 +161,13 @@ HTML
 	/**
 	 * @param int $iWidth
 	 * @param int $iHeight
+	 * @param string $crop
 	 * @param int $iQuality
-	 * @return Image_Cached
+	 * @return CloudinaryImage_Cached
 	 */
-	public function CMSThumbnail($iWidth = 132, $iHeight = 128, $iQuality = 60)
+	public function CMSThumbnail($iWidth = 80, $iHeight = 60, $crop = 'fill', $iQuality = 80)
 	{
-		return $this->GetFileImage($iWidth, $iHeight, $iQuality);
+		return $this->GetFileImage($iWidth, $iHeight, $crop, $iQuality);
 	}
 
 	/**
