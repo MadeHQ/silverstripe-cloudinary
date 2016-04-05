@@ -141,7 +141,9 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 		$api = CloudinaryUtils::api();
 		$respond = $api->resources(array(
 			'max_results'		=> 100,
-			'direction'			=> -1
+			'direction'			=> -1,
+			'resource_type'		=> 'image',
+			'type'				=> 'upload'
 		));
 		$images = $respond->getArrayCopy();
 		return Convert::array2json($images['resources']);
