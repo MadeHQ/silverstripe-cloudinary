@@ -126,7 +126,7 @@ HTML
 		return $fields;
 	}
 
-	public function Image( $width, $height, $crop, $quality, $gravity )
+	public function Image( $width, $height, $crop, $quality, $gravity = false)
 	{
 		return $this->MakeCloudinaryCached($width, $height, $crop, $quality, $gravity);
 	}
