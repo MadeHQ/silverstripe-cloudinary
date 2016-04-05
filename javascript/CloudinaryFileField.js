@@ -188,65 +188,69 @@
                     $.getJSON('admin/cloudinary/getfiledata', {
                         'fileurl'       : url
                     }, function(data) {
+                        if(!data.Error) {
+                            holder.find('.cloudinary__fields').addClass('cloudinary__fields--expanded');
 
-                        holder.find('.cloudinary__fields').addClass('cloudinary__fields--expanded');
-
-                        if(cloudinaryCMSFields || input.hasClass('_js-cms-fields')){
-                            // FileSize
-                            $('#Form_ItemEditForm_FileSize_ReadOnly, #Form_ItemEditForm_FileSize').val(data.FileSize);
-                            $('#Form_ItemEditForm_Format_ReadOnly, #Form_ItemEditForm_Format').val(data.Format);
-
-
-                            if(data.IsRaw === false) {
-                                $('#Form_ItemEditForm_FileTitle_Holder').hide().val('');
-                                $('#Form_ItemEditForm_FileDescription_Holder').hide().val('');
-
-                                $('#Form_ItemEditForm_Gravity_Holder').show();
-                                $('#Form_ItemEditForm_Credit_Holder').show();
-                                $('#Form_ItemEditForm_Caption_Holder').show();
-                                $('#Form_ItemEditForm_Credit').val(data.Credit);
-                                $('#Form_ItemEditForm_Caption').val(data.Caption);
-                            }
-                            else {
-
-                                $('#Form_ItemEditForm_Gravity_Holder').hide();
-                                $('#Form_ItemEditForm_Credit_Holder').hide();
-                                $('#Form_ItemEditForm_Caption_Holder').hide();
-
-                                $('#Form_ItemEditForm_Credit').val('');
-                                $('#Form_ItemEditForm_Caption').val('');
+                            if(cloudinaryCMSFields || input.hasClass('_js-cms-fields')){
+                                // FileSize
+                                $('#Form_ItemEditForm_FileSize_ReadOnly, #Form_ItemEditForm_FileSize').val(data.FileSize);
+                                $('#Form_ItemEditForm_Format_ReadOnly, #Form_ItemEditForm_Format').val(data.Format);
 
 
-                                $('#Form_ItemEditForm_FileTitle_Holder').show();
-                                $('#Form_ItemEditForm_FileDescription_Holder').show();
+                                if(data.IsRaw === false) {
+                                    $('#Form_ItemEditForm_FileTitle_Holder').hide().val('');
+                                    $('#Form_ItemEditForm_FileDescription_Holder').hide().val('');
 
-                            }
+                                    $('#Form_ItemEditForm_Gravity_Holder').show();
+                                    $('#Form_ItemEditForm_Credit_Holder').show();
+                                    $('#Form_ItemEditForm_Caption_Holder').show();
+                                    $('#Form_ItemEditForm_Credit').val(data.Credit);
+                                    $('#Form_ItemEditForm_Caption').val(data.Caption);
+                                }
+                                else {
+
+                                    $('#Form_ItemEditForm_Gravity_Holder').hide();
+                                    $('#Form_ItemEditForm_Credit_Holder').hide();
+                                    $('#Form_ItemEditForm_Caption_Holder').hide();
+
+                                    $('#Form_ItemEditForm_Credit').val('');
+                                    $('#Form_ItemEditForm_Caption').val('');
 
 
-                        }
-                        else {
+                                    $('#Form_ItemEditForm_FileTitle_Holder').show();
+                                    $('#Form_ItemEditForm_FileDescription_Holder').show();
 
-                            if(data.IsRaw === false) {
-                                holder.find('._js-raw-data').hide();
-                                holder.find('._js-image-data').show();
-                                holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
-                                holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
-                                holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
+                                }
 
 
                             }
                             else {
-                                holder.find('._js-image-data').hide();
-                                holder.find('._js-raw-data').show();
 
-                                holder.find('._js-attribute[name*="Credit"]').val('');
-                                holder.find('._js-attribute[name*="Caption"]').val('');
-                                holder.find('._js-attribute[name*="FileSize"]').val('');
+                                if(data.IsRaw === false) {
+                                    holder.find('._js-raw-data').hide();
+                                    holder.find('._js-image-data').show();
+                                    holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
+                                    holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
+                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
+
+
+                                }
+                                else {
+                                    holder.find('._js-image-data').hide();
+                                    holder.find('._js-raw-data').show();
+
+                                    holder.find('._js-attribute[name*="Credit"]').val('');
+                                    holder.find('._js-attribute[name*="Caption"]').val('');
+                                    holder.find('._js-attribute[name*="FileSize"]').val('');
+                                }
                             }
+                        } else {
+                            alert(data.Error);
+                            input.val('');
                         }
-
                         updateCMSFieldsBrowser(false);
                         $('#Form_ItemEditForm, #Form_EditForm').removeClass('loading');
+                        $('#Form_ItemEditForm, #Form_EditForm').addClass('changed');
                     });
                 }
                 else {

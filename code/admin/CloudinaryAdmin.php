@@ -159,6 +159,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 		$credit = "";
 		$isRaw = false;
 		$fileSize = 0;
+		$error = "";
 
 		if($publicID){
 			$api = CloudinaryUtils::api();
@@ -167,7 +168,10 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 				$resourceType = CloudinaryUtils::resource_type($url);
 				$isRaw = $resourceType == 'raw';
 				$publicID .= $isRaw ? '.'.CloudinaryUtils::file_format($url) : '';
-				$resource = $api->resource($publicID, array('resource_type' => $resourceType))->getArrayCopy();
+				$resource = $api->resource($publicID, array(
+					'resource_type' 	=> $resourceType,
+					'exif'				=> true
+				))->getArrayCopy();
 				$fileSize = isset($resource['bytes']) ? $resource['bytes'] : $fileSize;
 			} catch (Exception $e) {}
 
@@ -181,6 +185,8 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 					$credit = 	$resource['exif']['Copyright'];
 				}
 			}
+		} else {
+			$error = "Please enter a valid cloudinary source url.";
 		}
 
 		return Convert::array2json(array(
@@ -188,7 +194,8 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			'Credit'		=> $credit,
 			'IsRaw'			=> $isRaw,
 			'FileSize'		=> $fileSize,
-			'Format'		=> CloudinaryUtils::file_format($url)
+			'Format'		=> CloudinaryUtils::file_format($url),
+			'Error'			=> $error
 		));
 
 	}
