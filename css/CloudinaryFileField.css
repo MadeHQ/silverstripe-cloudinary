@@ -38,6 +38,11 @@
     -o-box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
+    background: url('../../../framework/admin/images/spinner.gif') center no-repeat;
+}
+
+.cloudinary__browser__window.loaded {
+    background: transparent;
 }
 
 .cloudinary__browser__window__item {
@@ -49,6 +54,7 @@
     box-sizing: border-box;
     padding: 5px;
     border: 1px solid white;
+    cursor: pointer;
 }
 
 .cloudinary__browser__window__item:hover {
@@ -64,6 +70,84 @@
 }
 
 .cloudinary__browser__window__item .image img {
-    width: 100%;
+    width: 120px;
+    height: 120px;
     height: auto;
+    opacity: 0;
+    transition: all 0.5s linear;
+    -o-transition: all 0.5s linear;
+    -moz-transition: all 0.5s linear;
+    -webkit-transition: all 0.5s linear;
+}
+
+.cloudinary__browser__window__item.loaded .image img {
+    opacity: 1;
+}
+
+.cloudinary__browser__window__item .plus {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 30px;
+    height: 30px;
+    font-size: 25px;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    z-index: 20;
+    color: #fff;
+    display: none;
+    background-color: #22385b;
+    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…pZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+    background-size: 100%;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #304e80), color-stop(100%, #142136));
+    background-image: -moz-linear-gradient(#304e80, #142136);
+    background-image: -webkit-linear-gradient(#304e80, #142136);
+    background-image: linear-gradient(#304e80, #142136);
+    cursor: pointer;
+}
+
+.cloudinary__browser__window__item:hover .plus {
+    display: block;
+}
+
+.cloudinary__browser__window__item .popup {
+
+    display: none;
+    position: absolute;
+    font-size: 12px;
+    line-height: 14px;
+    background: #f1f1f1;
+    z-index: 10;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    -o-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    margin-top: -25px;
+    left: 25%;
+    -webkit-box-shadow: 9px 9px 14px -4px rgba(227,227,227,0.79);
+    -moz-box-shadow: 9px 9px 14px -4px rgba(227,227,227,0.79);
+    box-shadow: 9px 9px 14px -4px rgba(227,227,227,0.79);
+    min-width: 250px;
+}
+
+.cloudinary__browser__window__item:nth-child(5n + 4) .popup,
+.cloudinary__browser__window__item:nth-child(5n + 5) .popup {
+    left: auto;
+    right: 25%;
+}
+
+.cloudinary__browser__window__item .popup time {
+    font-weight: bold;
+}
+
+.cloudinary__browser__window__item .popup p {
+    margin: 0;
+}
+
+.cloudinary__browser__window__item:hover .popup {
+    display: block;
 }

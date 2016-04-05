@@ -36,23 +36,40 @@
             }
 
             if(load){
-                browserWindow.html('');
+                browserWindow.html('').removeClass('loaded');
                 $.getJSON('admin/cloudinary/getimagelist', function(data){
                     $.each(data, function(){
-                        image = this;
+                        var image = this;
                         image.thubmnail_url = jQuery.cloudinary.image(image.public_id + '.' + image.format, {
                             width       : 150,
                             height      : 150,
                             crop        : 'fill',
                             quality     : 50
                         });
-                        var html = $('<div class="cloudinary__browser__window__item" data-url="' + this.url +'"><div class="image">/div></div>');
-                        html.find('.image').html(image.thubmnail_url);
-                        browserWindow.append(html);
+
+                        var date = new Date(image.created_at);
+
+                        var html = '<div class="cloudinary__browser__window__item" data-url="' + this.url +'">' +
+                            '<div class="plus">+</div>' +
+                            '<div class="image"></div>' +
+                            '<div class="popup">' +
+                                '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
+                                '<p>' +  image.public_id+ '</p>'
+                            '</div>'
+                            '</div>';
+
+
+                        var dom = $(html);
+                        dom.imagesLoaded(function(){
+                            dom.addClass('loaded');
+                        });
+                        dom.find('.image').html(image.thubmnail_url);
+                        browserWindow.append(dom);
                     });
 
                     var now = new Date();
                     browserWindow.data('lastUpdated', now);
+                    browserWindow.addClass('loaded');
 
                 });
             }
@@ -169,6 +186,7 @@
                         'fileurl'       : url
                     }, function(data) {
 
+                        holder.find('.cloudinary__fields').addClass('cloudinary__fields--expanded');
 
                         if(cloudinaryCMSFields || input.hasClass('_js-cms-fields')){
                             // FileSize
@@ -204,8 +222,8 @@
 
                         }
                         else {
-                            if(data.IsRaw === false) {
 
+                            if(data.IsRaw === false) {
                                 holder.find('._js-raw-data').hide();
                                 holder.find('._js-image-data').show();
                                 holder.find('._js-attribute[name*="Credit"]').val(data.Credit);

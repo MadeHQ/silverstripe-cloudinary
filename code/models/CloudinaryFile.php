@@ -182,7 +182,7 @@ HTML
 	 */
 	public function StripThumbnail()
 	{
-		return $this->CMSThumbnail(100, 100, 60);
+		return $this->CMSThumbnail(100, 100, 'fill', 60);
 	}
 
 	/**
