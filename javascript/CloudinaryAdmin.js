@@ -34,12 +34,6 @@
                                 .addClass('good')
                                 .text('"'+result[0].original_filename+'" was successfully uploaded.')
                                 .show();
-                        } else if(error) {
-                            form
-                                .find('.message')
-                                .addClass('bad')
-                                .text(error)
-                                .show();
                         }
                     });
                 } catch(e){}
