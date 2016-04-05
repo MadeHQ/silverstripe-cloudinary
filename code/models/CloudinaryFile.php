@@ -6,9 +6,9 @@ class CloudinaryFile extends DataObject
 	protected $sourceURL = '';
 
 	private static $arr_gravity = array(
+		'center'		=> 'Center',
 		'face'			=> 'Face',
 		'faces'			=> 'Faces',
-		'center'		=> 'Center',
 		'north_east'	=> 'NE',
 		'north'			=> 'N',
 		'north_west'	=> 'NW',
@@ -23,7 +23,7 @@ class CloudinaryFile extends DataObject
 		'URL'				=> 'Varchar(500)',
 		'Credit'			=> 'Varchar(200)',
 		'Caption'			=> 'Varchar(200)',
-		'Gravity'			=> 'Enum("face,faces,center,north_east,north,north_west,west,south_west,south,south_east,east")',
+		'Gravity'			=> 'Enum("center,face,faces,north_east,north,north_west,west,south_west,south,south_east,east", "center")',
 		'FileSize'			=> 'Varchar(50)',
 		'Format'			=> 'Varchar(50)',
 		'FileTitle'			=> 'Varchar(200)',
