@@ -234,6 +234,41 @@ HTML
 		return ($this->FileSize) ? File::format_size($this->FileSize) : false;
 	}
 
+	/**
+	 * @param $arguments
+	 * @param null $content
+	 * @param null $parser
+	 * @return string
+	 *
+	 * Parse short codes for the cloudinary tags
+	 */
+	static public function cloudinary_markdown($arguments, $content = null, $parser = null) {
+		if(!isset($arguments['id'])) return;
+		$options = array(
+			'resource_type' => 'image',
+			'crop'			=> 'fill',
+			'quality'		=> 90,
+			'gravity'		=> $arguments['gravity']
+		);
+		if(isset($arguments['width']) && isset($arguments['height'])){
+			$options['width'] = $arguments['width'];
+			$options['height'] = $arguments['height'];
+		}
+
+		$created = new SS_Datetime();
+		$created->setValue($arguments['created']);
+		$fileName = $arguments['id'];
+		$file = new CloudinaryFile(array(
+			'URL'		=> Cloudinary::cloudinary_url($fileName, $options),
+			'AltText'	=> isset($arguments['alt']) ? $arguments['alt'] : null,
+			'Credit'	=> isset($arguments['credit']) ? $arguments['credit'] : null,
+			'Caption'	=> isset($arguments['caption']) ? $arguments['caption'] : null,
+			'Created'	=> $created
+		));
+		return $file->renderWith('MarkDownShortCode');
+
+	}
+
 }
 
 

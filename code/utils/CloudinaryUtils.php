@@ -91,6 +91,14 @@ class CloudinaryUtils extends Object
 		}
 	}
 
+	public static function file_name($url)
+	{
+		$arrPathInfo = pathinfo($url);
+		if (isset($arrPathInfo['basename'])) {
+			return $arrPathInfo['basename'];
+		}
+	}
+
 	public static function resource_type($url)
 	{
 		$settings = Config::inst()->get('CloudinaryUtils', 'settings');

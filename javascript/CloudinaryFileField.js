@@ -148,7 +148,10 @@
 
                 var $self = this;
                 $($self).on('input', function(){
-                    $self.urlChanged();
+                    if($self.data('url') != $self.val()) {
+                        $self.urlChanged();
+                        $self.data('url', $self.val());
+                    }
                 });
 
             },
@@ -158,7 +161,10 @@
                 if(code == 13) {
                     e.preventDefault();
                     e.stopPropagation();
-                    this.urlChanged();
+                    if(this.data('url') != this.val()) {
+                        this.urlChanged();
+                        this.data('url', this.val());
+                    }
                     return false;
                 }
                 return true;
@@ -170,21 +176,21 @@
             },
 
             onblur : function() {
-                this.urlChanged();
+                if(this.data('url') != this.val()) {
+                    this.urlChanged();
+                    this.data('url', this.val());
+                }
             },
 
             urlChanged: function() {
-
-                if(this.data('url') == this.val()) {
-                    return false;
-                }
 
                 this.clearInfo();
                 var input = this;
                 var holder = input.closest('._js-cloudinary_holer');
                 var url = input.val();
+                var form = this.closest('form');
                 if(url){
-                    $('#Form_ItemEditForm, #Form_EditForm').addClass('loading');
+                    form.addClass('loading');
                     $.getJSON('admin/cloudinary/getfiledata', {
                         'fileurl'       : url
                     }, function(data) {
@@ -249,15 +255,13 @@
                             input.val('');
                         }
                         updateCMSFieldsBrowser(false);
-                        $('#Form_ItemEditForm, #Form_EditForm').removeClass('loading');
-                        $('#Form_ItemEditForm, #Form_EditForm').addClass('changed');
+                        form.removeClass('loading');
+                        form.addClass('changed');
                     });
                 }
                 else {
                     holder.find('.cloudinary__fields').hide();
                 }
-
-                this.data('url', this.val());
             }
 
         });
