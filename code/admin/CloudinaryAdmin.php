@@ -53,7 +53,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			$dropdown = DropdownField::create('Folders_' . $previousPathID, '&nbsp;')
 				->setSource($children)
 				->addExtraClass('_js-folder-select')
-				->setEmptyString('')
+				->setEmptyString('Upload to this folder')
 			;
 			$return['Dropdown'] = $dropdown->FieldHolder()->forTemplate();
 
@@ -115,7 +115,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			HeaderField::create('UploadImages', 'Upload images to cloudinary')->setHeadingLevel(2),
 			LiteralField::create('ChooseAFolder', '<p>Choose a folder to upload to</p>'),
 			DropdownField::create('RootFolders', 'Folder')->setSource($this->fetchFoldersFromAPI())
-				->setEmptyString('')
+				->setEmptyString('Upload to this folder')
 				->addExtraClass('_js-root-folder _js-folder-select'),
 			LiteralField::create('ChildFolders', '<div id="Child_Folders"></div>'),
 			HiddenField::create('UploadPath', 'UploadPath'),
