@@ -96,7 +96,7 @@ HTML
 		$fields->replaceField('Format', HiddenField::create('Format'));
 
 		$fields->addFieldsToTab('Root.Main', array(
-			TextField::create('FileSize_ReadOnly', 'FileSize')->setValue($this->FileSize)->setDisabled(true),
+			TextField::create('FileSize_ReadOnly', 'Size')->setValue($this->getSize())->setDisabled(true),
 			TextField::create('Format_ReadOnly', 'Format')->setValue($this->Format)->setDisabled(true)
 		));
 
