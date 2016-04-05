@@ -14,6 +14,7 @@
     $('a._js-start_upload').entwine({
 
         onclick: function(event){
+            var form = $(this).closest('form');
             if(window.cloudinary){
                 try {
                     cloudinary.openUploadWidget({
@@ -21,12 +22,25 @@
                         'upload_preset'     : this.data('upload_preset'),
                         'cropping'          : 'server',
                         'folder'            : $('input[name="UploadPath"]').val(),
-                        'keep_widget_open'  : true,
                         'resource_type'     : 'auto',
                         'sources'           : ['local', 'url'],
                         'theme'             : 'minimal'
                     }, function(error, result) {
-                        console.log(error, result);
+                        console.log(result);
+                        if(!error && result.length) {
+                            console.log('test');
+                            form
+                                .find('.message')
+                                .addClass('good')
+                                .text('"'+result[0].original_filename+'" was successfully uploaded.')
+                                .show();
+                        } else if(error) {
+                            form
+                                .find('.message')
+                                .addClass('bad')
+                                .text(error)
+                                .show();
+                        }
                     });
                 } catch(e){}
             }
