@@ -51,6 +51,7 @@ class CloudinaryFile extends DataObject
 
 
 		Requirements::css('cloudinary/css/CloudinaryFileField.css');
+		Requirements::javascript('cloudinary/javascript/thirdparty/imagesloaded.js');
 		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
 		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
 		Requirements::javascript('cloudinary/javascript/CloudinaryFile.CMSFields.js');
@@ -65,21 +66,16 @@ class CloudinaryFile extends DataObject
 		$fields->dataFieldByName('FileDescription')->setTitle('Description');
 		$fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
 
-		if(CloudinaryUtils::resource_type($this->URL) == 'raw') {
-			foreach (array('Credit', 'Caption', 'Gravity') as $fieldName){
-				if($field = $fields->dataFieldByName($fieldName)) {
-					$field->addExtraClass('_js-hide-on-load');
-				}
+		if (!$this->ID) {
+			$this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity', 'FileTitle', 'FileDescription'));
+		} else {
+			if(CloudinaryUtils::resource_type($this->URL) == 'raw') {
+				$this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity'));
+			}
+			else {
+				$this->hideCMSFields($fields, array('FileTitle', 'FileDescription'));
 			}
 		}
-		else {
-			foreach (array('FileTitle', 'FileDescription') as $fieldName){
-				if($field = $fields->dataFieldByName($fieldName)) {
-					$field->addExtraClass('_js-hide-on-load');
-				}
-			}
-		}
-		
 
 		$cloudName = CloudinaryUtils::cloud_name();
 		$apiKey = CloudinaryUtils::api_key();
@@ -105,6 +101,15 @@ HTML
 		));
 
 		return $fields;
+	}
+
+	private function hideCMSFields(FieldList $fields, $arrFieldsToHide)
+	{
+		foreach ($arrFieldsToHide as $fieldName){
+			if($field = $fields->dataFieldByName($fieldName)) {
+				$field->addExtraClass('_js-hide-on-load');
+			}
+		}
 	}
 
 	public function getFrontEndFields($params = null)

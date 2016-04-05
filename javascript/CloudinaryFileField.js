@@ -54,7 +54,7 @@
                             '<div class="image"></div>' +
                             '<div class="popup">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
-                                '<p>' +  image.public_id+ '</p>'
+                                '<p>' +  image.public_id+ '.' +  image.format+ '</p>'
                             '</div>'
                             '</div>';
 
