@@ -26,9 +26,7 @@
                         'sources'           : ['local', 'url'],
                         'theme'             : 'minimal'
                     }, function(error, result) {
-                        console.log(result);
                         if(!error && result.length) {
-                            console.log('test');
                             form
                                 .find('.message')
                                 .addClass('good')

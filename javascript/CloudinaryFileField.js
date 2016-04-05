@@ -145,6 +145,12 @@
                 if($(this).data('isRaw')) {
                     holder.find('.cloudinary__fields').hide();
                 }
+
+                var $self = this;
+                $($self).on('input', function(){
+                    $self.urlChanged();
+                });
+
             },
 
             onkeydown: function(e) {
@@ -152,12 +158,7 @@
                 if(code == 13) {
                     e.preventDefault();
                     e.stopPropagation();
-
-                    if(this.data('url') != this.val()) {
-                        this.urlChanged();
-                        this.data('url', this.val());
-                    }
-
+                    this.urlChanged();
                     return false;
                 }
                 return true;
@@ -168,14 +169,16 @@
                 holder.find('input._js-attribute').val('');
             },
 
-            onfocusout : function() {
-                if(this.data('url') != this.val()) {
-                    this.urlChanged();
-                    this.data('url', this.val());
-                }
+            onblur : function() {
+                this.urlChanged();
             },
 
             urlChanged: function() {
+
+                if(this.data('url') == this.val()) {
+                    return false;
+                }
+
                 this.clearInfo();
                 var input = this;
                 var holder = input.closest('._js-cloudinary_holer');
@@ -249,6 +252,8 @@
                 else {
                     holder.find('.cloudinary__fields').hide();
                 }
+
+                this.data('url', this.val());
             }
 
         });
