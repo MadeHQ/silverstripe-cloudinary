@@ -20,7 +20,6 @@
                     cloudinary.openUploadWidget({
                         'cloud_name'        : this.data('cloud_name'),
                         'upload_preset'     : this.data('upload_preset'),
-                        'cropping'          : 'server',
                         'folder'            : $('input[name="UploadPath"]').val(),
                         'resource_type'     : 'auto',
                         'sources'           : ['local', 'url'],
