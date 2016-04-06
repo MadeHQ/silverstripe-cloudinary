@@ -201,4 +201,26 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 	}
 
 
+	public function canView($member = null) {
+		$bCanView = parent::canView($member);
+
+		if(Permission::checkMember($member, "CMS_ACCESS_Cloudinary")) return true;
+
+		return $bCanView;
+	}
+
+	public function providePermissions() {
+		$perms = array(
+			"CMS_ACCESS_Cloudinary" => array(
+				'name' => _t('CMSMain.ACCESSCLOUDINARY', 'Access Cloudinary section'),
+				'category' => _t('Permission.CMS_ACCESS_CATEGORY', 'CMS Access'),
+				'help' => _t('CMSMain.ACCESSALLINTERFACESHELP', 'Overrules more specific access settings.'),
+				'sort' => -100
+			)
+		);
+
+
+		return $perms;
+	}
+
 }
