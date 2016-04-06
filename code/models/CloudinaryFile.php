@@ -148,6 +148,9 @@ HTML
 			$options['gravity'] = $gravity;
 		}
 
+        $options['fetch_format'] = 'auto';
+        $options['secure'] = true;
+
 		$cloudinaryID = CloudinaryUtils::public_id($this->URL);
 		$fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
 		$url = Cloudinary::cloudinary_url($fileName, $options);
