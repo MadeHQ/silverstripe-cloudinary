@@ -124,10 +124,10 @@ class CloudinaryFileField extends FormField
 
 			$file = null;
 			if($value['ObjectID']){
-				$file = CloudinaryFile::get()->byID($value['ObjectID']);
+				$file = CloudinaryImage::get()->byID($value['ObjectID']);
 			}
 			if(!$file){
-				$file = new CloudinaryFile();
+				$file = new CloudinaryImage();
 			}
 
 			if($value['URL']){

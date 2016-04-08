@@ -27,7 +27,7 @@ class CloudinaryFile extends DataObject
 		'FileSize'			=> 'Varchar(50)',
 		'Format'			=> 'Varchar(50)',
 		'FileTitle'			=> 'Varchar(200)',
-		'FileDescription'	=> 'Varchar(300)'
+		'FileDescription'	=> 'Text'
 	);
 
 	private static $summary_fields = array(
@@ -48,68 +48,12 @@ class CloudinaryFile extends DataObject
 
 	public function getCMSFields()
 	{
-
-
-		Requirements::css('cloudinary/css/CloudinaryFileField.css');
-		Requirements::javascript('cloudinary/javascript/thirdparty/imagesloaded.js');
-		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
-		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
-		Requirements::javascript('cloudinary/javascript/CloudinaryFile.CMSFields.js');
-
-
 		$fields = parent::getCMSFields();
-
-		$fields->dataFieldByName('URL')
-			->addExtraClass('_js-cloudinary-url _js-cms-fields');
-
+		$fields->removeByName(array('URL', 'Credit', 'Caption', 'Gravity', 'FileSize', 'Format'));
 		$fields->dataFieldByName('FileTitle')->setTitle('Title');
 		$fields->dataFieldByName('FileDescription')->setTitle('Description');
-		$fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
-
-		if (!$this->ID) {
-			$this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity', 'FileTitle', 'FileDescription'));
-		} else {
-			if(CloudinaryUtils::resource_type($this->URL) == 'raw') {
-				$this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity'));
-			}
-			else {
-				$this->hideCMSFields($fields, array('FileTitle', 'FileDescription'));
-			}
-		}
-
-		$cloudName = CloudinaryUtils::cloud_name();
-		$apiKey = CloudinaryUtils::api_key();
-
-		$fields->addFieldToTab('Root.Main', LiteralField::create('Browser', <<<HTML
-<div class="field _js-cloudinary_holer" data-cloudname="{$cloudName}" data-api="{$apiKey}">
-	<div class="middleColumn">
-		<a href="#" class="_js-attach-image-object ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all new new-link ui-button-text-icon-primary">Choose Image</a>
-	</div>
-</div>
-HTML
-), 'Credit');
-
-		// $fields->makeFieldReadonly('FileSize');
-		//$fields->makeFieldReadonly('Format');
-
-		$fields->replaceField('FileSize', HiddenField::create('FileSize'));
-		$fields->replaceField('Format', HiddenField::create('Format'));
-
-		$fields->addFieldsToTab('Root.Main', array(
-			TextField::create('FileSize_ReadOnly', 'Size')->setValue($this->getSize())->setDisabled(true),
-			TextField::create('Format_ReadOnly', 'Format')->setValue($this->Format)->setDisabled(true)
-		));
 
 		return $fields;
-	}
-
-	private function hideCMSFields(FieldList $fields, $arrFieldsToHide)
-	{
-		foreach ($arrFieldsToHide as $fieldName){
-			if($field = $fields->dataFieldByName($fieldName)) {
-				$field->addExtraClass('_js-hide-on-load');
-			}
-		}
 	}
 
 	public function getFrontEndFields($params = null)

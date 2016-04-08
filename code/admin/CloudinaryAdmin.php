@@ -176,13 +176,16 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			} catch (Exception $e) {}
 
 			if($resource) {
-				if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['caption'])) {
+				if (isset($resource['exif']) && isset($resource['exif']['ImageDescription'])) {
+					$caption = 	$resource['exif']['ImageDescription'];
+				} elseif (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['caption'])) {
 					$caption = 	$resource['context']['custom']['caption'];
 				}
-				if (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['credit'])) {
-					$credit = 	$resource['context']['custom']['credit'];
-				} elseif (isset($resource['exif']) && isset($resource['exif']['Copyright'])) {
+
+				if (isset($resource['exif']) && isset($resource['exif']['Copyright'])) {
 					$credit = 	$resource['exif']['Copyright'];
+				} elseif (isset($resource['context']) && isset($resource['context']['custom']) && isset($resource['context']['custom']['credit'])) {
+					$credit = 	$resource['context']['custom']['credit'];
 				}
 			}
 		} else {

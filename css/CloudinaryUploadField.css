@@ -1,0 +1,143 @@
+/*.field.cloudinaryupload .ss-uploadfield-item-preview span img {*/
+    /*width: 100%;*/
+/*}*/
+
+.fieldHandler {
+    cursor: move;
+}
+
+.field.cloudinarymedia .dropdown.media-select {
+    width: 57%;
+    margin-bottom: 5px;
+    margin-left: 0 !important;
+}
+
+.ss-uploadfield-item-info.media-select-holder {
+    padding: 0 10px 10px 10px !important;
+}
+
+.media-reorder {
+    float: left;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+
+.cloudinarymedia .ss-uploadfield-item {
+    padding: 10px 10px 5px 10px !important;
+}
+.directcloudinaryupload p .or {
+    font-weight: bold;
+    font-style: italic;
+}
+
+.uploadtext__container {
+    display: none;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #FFF;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 512px;
+}
+
+.status-text {
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #FFF;
+    display: block;
+    width: 0%;
+    background-color: #5db4df;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5db4df), color-stop(8%, #5db1dd), color-stop(50%, #439bcb), color-stop(54%, #3f99cd), color-stop(96%, #207db6), color-stop(100%, #1e7cba));
+    background-image: -webkit-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: -moz-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: -o-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+}
+
+/*.cms .ss-ui-button.video-delete-button {*/
+    /*color: #fff;*/
+    /*text-shadow: none;*/
+    /*border: solid 1px #980c10;*/
+    /*background: #d81b21;*/
+    /*background: -webkit-gradient(linear, left top, left bottom, from(#ed1c24), to(#aa1317));*/
+    /*background: -moz-linear-gradient(top, #ed1c24, #aa1317);*/
+/*}*/
+
+.cloudinaryvideo .middleColumn {
+    min-width: 510px;
+    max-width: 600px;
+    width: 100%;
+    margin-left: 0;
+    clear: both;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #b3b3b3;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPiA=');
+    background-size: 100%;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #efefef), color-stop(10%, #ffffff), color-stop(90%, #ffffff), color-stop(100%, #efefef));
+    background-image: -moz-linear-gradient(#efefef, #ffffff 10%, #ffffff 90%, #efefef);
+    background-image: -webkit-linear-gradient(#efefef, #ffffff 10%, #ffffff 90%, #efefef);
+    background-image: linear-gradient(#efefef, #ffffff 10%, #ffffff 90%, #efefef);
+}
+
+.ss-uploadfield-item-info{
+    height: 70px;
+    padding: 10px;
+    margin-left: 105px !important;
+}
+
+.ss-uploadfield-item-info a{
+    display: block;
+    float: left;
+}
+
+input.file-attach-field.text{
+    max-width: 440px !important;
+    margin-bottom: 5px;
+}
+
+.ss-uploadfield-item-attach input.file-attach-field{
+    margin-right: 10px;
+}
+
+label.ss-uploadfield-item-name{
+    display: block;
+}
+
+.uploadtext__container {
+    display: none;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #FFF;
+    margin: 5px 0;
+    width: 100%;
+    max-width: 512px;
+}
+
+.status-text {
+    height: 30px;
+    line-height: 30px;
+    border-radius: 5px;
+    color: #FFF;
+    display: block;
+    width: 0%;
+    background-color: #5db4df;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5db4df), color-stop(8%, #5db1dd), color-stop(50%, #439bcb), color-stop(54%, #3f99cd), color-stop(96%, #207db6), color-stop(100%, #1e7cba));
+    background-image: -webkit-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: -moz-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: -o-linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+    background-image: linear-gradient(top, #5db4df 0%, #5db1dd 8%, #439bcb 50%, #3f99cd 54%, #207db6 96%, #1e7cba 100%);
+}
+
+.ss-uploadfield .ss-uploadfield-item-attach .ss-uploadfield-item-actions {
+    min-height: 28px;
+    overflow: hidden;
+    margin: 6px 0 -6px 0;
+    position: relative;
+}

@@ -15,3 +15,16 @@ CloudinaryUtils:
     APISecret: ''
     Quality: 70
     UploadPreset: ''
+
+CloudinaryUploadField:
+  defaultConfig:
+    autoUpload: true
+    allowedMaxFileNumber: 100
+    canUpload: true
+    canAttachExisting: 'CMS_ACCESS_Cloudinary'
+    canPreviewFolder: true
+    previewMaxWidth: 80
+    previewMaxHeight: 60
+    uploadTemplateName: 'ss-uploadfield-uploadtemplate'
+    downloadTemplateName: 'ss-cloudinary-uploadfield-downloadtemplate'
+    overwriteWarning: true # Warning before overwriting existing file (only relevant when Upload: replaceFile is true)
