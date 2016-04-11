@@ -72,11 +72,6 @@ class CloudinaryFile extends DataObject
 
 	public function Image( $width, $height, $crop, $quality, $gravity = false)
 	{
-		return $this->MakeCloudinaryCached($width, $height, $crop, $quality, $gravity);
-	}
-
-	public function MakeCloudinaryCached($width, $height, $crop, $quality, $gravity)
-	{
 		$options = array(
 			'width' 	=> $width,
 			'height' 	=> $height
@@ -92,18 +87,13 @@ class CloudinaryFile extends DataObject
 			$options['gravity'] = $gravity;
 		}
 
-        $options['fetch_format'] = 'auto';
-        $options['secure'] = true;
+		$options['fetch_format'] = 'auto';
+		$options['secure'] = true;
 
 		$cloudinaryID = CloudinaryUtils::public_id($this->URL);
 		$fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
-		$url = Cloudinary::cloudinary_url($fileName, $options);
-		$cached = new CloudinaryImage_Cached();
-		$cached->setSourceURL($url);
-		return $cached;
-
+		return Cloudinary::cloudinary_url($fileName, $options);
 	}
-
 
 	public function Link()
 	{
@@ -146,7 +136,7 @@ class CloudinaryFile extends DataObject
 	 */
 	public function CMSThumbnail($iWidth = 80, $iHeight = 60, $crop = 'fill', $iQuality = 80)
 	{
-		return $this->Image($iWidth, $iHeight, $crop, $iQuality, 'faces');
+		return $this->Icon();
 	}
 
 	/**
@@ -214,17 +204,6 @@ class CloudinaryFile extends DataObject
 		));
 		return $file->renderWith('MarkDownShortCode');
 
-	}
-
-}
-
-
-class CloudinaryImage_Cached extends CloudinaryFile
-{
-
-	public function setSourceURL($url)
-	{
-		$this->sourceURL = $url;
 	}
 
 }

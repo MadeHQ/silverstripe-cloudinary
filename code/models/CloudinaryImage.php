@@ -53,7 +53,12 @@ class CloudinaryImage extends CloudinaryFile
      */
     public function CMSThumbnail($iWidth = 80, $iHeight = 60, $crop = 'fill', $iQuality = 80)
     {
-        return $this->Image($iWidth, $iHeight, $crop, $iQuality, 'faces');
+        $thumbnailUrl = $this->Image($iWidth, $iHeight, $crop, $iQuality, 'faces');
+        $field = new HTMLText();
+        if($thumbnailUrl){
+            $field->setValue("<img src=\"$thumbnailUrl\" alt=\"$this->Title\"/>");
+        }
+        return $field;
     }
 
 }
