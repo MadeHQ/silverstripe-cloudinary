@@ -4,23 +4,6 @@
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "cloudinary"],
     "license": "BSD-3-Clause",
-    "authors": [
-        {
-            "name": "Sealan Cronin",
-            "email": "sealan.cronin@mademedia.co.uk",
-            "role": "Developer"
-        },
-        {
-            "name": "Hiren Patel",
-            "email": "hiren.patel@mademedia.co.uk",
-            "role": "Developer"
-        },
-        {
-            "name": "Nivanka Fonseka",
-            "email": "nivanka.fonseka@mademedia.co.uk",
-            "role": "Developer"
-        }
-    ],
     "support": {
         "email": "developers@mademedia.co.uk",
         "issues": "https://github.com/MadeHQ/silverstripe-cloudinary/issues",
@@ -30,7 +13,7 @@
     "require": {
         "silverstripe/framework": ">=3.1",
         "composer/installers": "*",
-        "cloudinary/cloudinary_php": "1.3.0"
+        "cloudinary/cloudinary_php": "1.4.0"
     },
     "extra": {
         "installer-name": "cloudinary"

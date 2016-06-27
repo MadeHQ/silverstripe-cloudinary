@@ -1,95 +1,70 @@
 # SilverStripe Cloudinary
 
-## Requirements
-
-* SilverStripe 3.1
-* [silverstripe-cloudinary](https://github.com/MadeHQ/silverstripe-cloudinary)
-
-## Description
-
 SilverStripe Module. Replaces SilverStripe's inbuilt asset management with Cloudinary.
 
-## Dependencies
+## Requirements
 
-* [PHP Extension for Cloudinary](https://github.com/cloudinary/cloudinary_php)
+* SilverStripe 3.1+
+
 
 ## Installation with [Composer](https://getcomposer.org/)
 
-```composer require "mademedia/silverstripe-cloudinary"```
+```
+composer require "mademedia/silverstripe-cloudinary"
+```
 
-## DataObjects
-* CloudinaryFile (extends DataObject)
-* CloudinaryImage (extends CloudinaryFile)
-* CloudinaryVideo (extends CloudinaryFile)
-* YoutubeVideo (extends CloudinaryVideo)
-* VimeoVideo (extends CloudinaryVideo)
+## Configuration
 
-## FormFields
-* CloudinaryUploadField (not recommended for initializations)
-* CloudinaryFileField (extends CloudinaryUploadField) - for uploading files.
-* CloudinaryImageField (extends CloudinaryUploadField) - for uploading images.
-* CloudinaryVideoField (extends CloudinaryUploadField) - for uploading videos into cloudinary or attach youtube or vimeo videos.
-* CloudinaryColorSelectField (extends FormField) - For selecting background colours for attached media
+To start using the module you need to configure the following Cloudinary parameters:
 
-## Example usages
+``` yml
+CloudinaryUtils:
+  settings:
+    CloudName: ''
+    APIKey: ''
+    APISecret: ''
+    UploadPreset: ''
+```
 
-    class Page extends SiteTree{
+## Fields
 
-        static $db = array(
-            'BackGroundColor' => 'Varchar'
-        );
+Adds the following field types:
 
-        static $has_one = array(
-            'MainImage' => 'CloudinaryImage',
-            'MainVideo' => 'CloudinaryVideo',
-            'Download'  => 'CloudinaryFile',
-        );
+- `CloudinaryImage`
+- `CloudinaryFile`
 
-        static $many_many = array(
-            'Galleries' => 'CloudinaryImage'
-        );
+## Template Globals
 
-        static $many_many_extraFields = array(
-            'Galleries'        => array('Sort' => 'Int')
-        );
+Implements `TemplateGlobalProvider` and adds the follwing global template methods.
 
-        public function getCMSFields(){
-            $fields = parent::getCMSFields();
+### CloudinaryTwitter
 
-            // for has_one relations
-            $fields->addFieldToTab('Root.Media', CloudinaryImageField::create('MainImage', 'Main Image');
-            $fields->addFieldToTab('Root.Media', CloudinaryVideoField::create('MainVideo', 'Main Video');
-            $fields->addFieldToTab('Root.Media', CloudinaryFileField::create('Download', 'Download');
+Fetch a twitter profile image for a given username.
 
-            // pass the has_one media object and field name that you need to select background color for
-            $fields->insertAfter(CloudinaryColorSelectField::create('BackGroundColor', '', $this->MainImage(), 'MainImage'), 'MainImage')
+| Parameter | Description |
+| --------- | ----------- |
+| `profile` | Twitter profile username |
+| `width` | Width for the image (defaults to 100px) |
 
-            // for has_many | many_many relaitons (pass last two arguments if you need drag and drop reordering)
-            $fields->addFieldToTab('Root.Media', CloudinaryImageField::create('Galleries', 'Galleries', $this->Galleries()->sort('Sort'), 'Sort'));
+Example:
 
-            ....
-        }
+```
+$CloudinaryTwitter('MadeHQ')
+// https://res.cloudinary.com/demo/image/twitter_name/w_100/madehq.jpg
+```
 
-	    ...
+### CloudinaryGravatar
 
-    }
+Fetch a gravatar image for a given email address.
 
+| Parameter | Description |
+| --------- | ----------- |
+| `email` | Email address |
+| `width` | Width for the image (defaults to 100px) |
 
-## License ##
-    Copyright (c) 2015, Made Media Ltd. - www.mademedia.co.uk
-    All rights reserved.
+Example:
 
-    Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-        * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the
-          documentation and/or other materials provided with the distribution.
-        * Neither the name of SilverStripe nor the names of its contributors may be used to endorse or promote products derived from this software
-          without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
-    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-    GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
-    OF SUCH DAMAGE.
+```
+$CloudinaryGravatar('david.rapson@mademedia.co.uk')
+// https://res.cloudinary.com/demo/image/gravatar/w_100/4f5a3902359f77ac02fce57a14fb01c6.jpg
+```
