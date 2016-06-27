@@ -1,15 +1,7 @@
 <?php
-/**
- * Created by Nivanka Fonseka (nivanka@silverstripers.com).
- * User: nivankafonseka
- * Date: 3/25/16
- * Time: 7:39 AM
- * To change this template use File | Settings | File Templates.
- */
 
 class CloudinaryFileField extends FormField
 {
-
 	private $children = null;
 	private $objectID = 0;
 
@@ -49,19 +41,16 @@ class CloudinaryFileField extends FormField
 
 	}
 
-	public function getChildren()
-	{
+	public function getChildren() {
 		return $this->children;
 	}
 
-	public function getURLField()
-	{
+	public function getURLField() {
 		$isRaw = $this->isRaw();
 		return $this->children->dataFieldByName($this->getName() . "[URL]")->setAttribute('data-is-raw', "$isRaw");
 	}
 
-	public function DataFields()
-	{
+	public function DataFields() {
 		$dataFields = new FieldList();
 		foreach($this->children as $field){
 			if(strpos($field->getName(), 'URL') === false){
@@ -71,31 +60,24 @@ class CloudinaryFileField extends FormField
 		return $dataFields;
 	}
 
-
 	public function Field($properties = array()) {
-
 		Requirements::css('cloudinary/css/CloudinaryFileField.css');
 		Requirements::javascript('cloudinary/javascript/thirdparty/imagesloaded.js');
 		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
 		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
 
 		return $this->renderWith('CloudinaryFileField');
-
 	}
 
-
-	public function CloudName()
-	{
+	public function CloudName() {
 		return CloudinaryUtils::cloud_name();
 	}
 
-	public function ApiKey()
-	{
+	public function ApiKey() {
 		return CloudinaryUtils::api_key();
 	}
 
-	public function isPopuplated()
-	{
+	public function isPopuplated() {
 		return $this->objectID !== 0;
 	}
 
@@ -141,16 +123,13 @@ class CloudinaryFileField extends FormField
 				$file->write();
 
 				$record->setCastedField($this->name . 'ID', $file->ID);
-			}
-			else {
-				if($file->exists()){
+			} else {
+				if ($file->exists()) {
 					$file->delete();
 				}
 
 				$record->setCastedField($this->name . 'ID', 0);
 			}
-
-
 		}
 	}
 
@@ -160,5 +139,4 @@ class CloudinaryFileField extends FormField
 			return CloudinaryUtils::resource_type($field->value) == 'raw';
 		}
 	}
-
-} 
+}

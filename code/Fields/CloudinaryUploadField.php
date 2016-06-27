@@ -1,11 +1,4 @@
 <?php
-/**
- * represents a field in a form
- *
- * @package    cloudinary
- * @author     Nivanka Fonseka <nivanka@silverstripers.com>
- * @copyright  Copyright (c) 2014, Made Media Ltd.
- */
 
 class CloudinaryUploadField extends UploadField
 {

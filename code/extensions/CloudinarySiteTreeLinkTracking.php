@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by Nivanka Fonseka (nivanka@silverstripers.com).
- * User: nivankafonseka
- * Date: 7/24/15
- * Time: 1:28 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class CloudinarySiteTreeLinkTracking extends SiteTreeLinkTracking {
 
@@ -156,4 +149,4 @@ class CloudinarySiteTreeLinkTracking extends SiteTreeLinkTracking {
         }
 	}
 
-} 
+}

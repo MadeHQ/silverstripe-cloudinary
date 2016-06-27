@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by Nivanka Fonseka (nivanka@silverstripers.com).
- * User: nivankafonseka
- * Date: 3/24/16
- * Time: 8:51 AM
- * To change this template use File | Settings | File Templates.
- */
 
 use \Cloudinary\Api;
 
@@ -106,5 +99,4 @@ class CloudinaryUtils extends Object
 			return StringUtils::between($url, $settings['CloudName']. '/', '/upload');
 		}
 	}
-
-} 
+}
