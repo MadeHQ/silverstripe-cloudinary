@@ -79,9 +79,9 @@ class VideoVarchar extends Varchar
     public function videoEmbedURL()
     {
         if ($this->isYoutube()) {
-            return "http://www.youtube.com/embed/" . self::youtubeId($this->value);
+            return "https://www.youtube.com/embed/" . self::youtubeId($this->value);
         } elseif ($this->isVimeo()) {
-            return "http://player.vimeo.com/video/" . self::vimeoId($this->value);
+            return "https://player.vimeo.com/video/" . self::vimeoId($this->value);
         }
     }
 
