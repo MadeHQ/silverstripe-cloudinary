@@ -19,11 +19,13 @@ class CloudinaryTemplateProvider implements TemplateGlobalProvider {
         return Cloudinary::cloudinary_url($profile, $options);
     }
 
-    public static function CloudinaryGravatar($email, $width = 100) {
+    public static function CloudinaryGravatar($email, $width = 100, $default = "mm") {
         $options["type"] = "gravatar";
         $options["format"] = "jpg";
         $options["secure"] = true;
         $options["width"] = $width;
+        // See https://en.gravatar.com/site/implement/images/ for available options
+        $options["default_image"] = $default;
         $emailHash = md5(strtolower(trim($email)));
         return Cloudinary::cloudinary_url($emailHash, $options);
     }
