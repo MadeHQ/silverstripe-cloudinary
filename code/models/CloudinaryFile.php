@@ -172,7 +172,9 @@ class CloudinaryFile extends DataObject
      * Parse short codes for the cloudinary tags
      */
     static public function cloudinary_markdown($arguments, $content = null, $parser = null) {
-        if(!isset($arguments['id'])) return;
+        if (!isset($arguments['id'])) {
+            return;
+        }
 
         $options = array(
             'secure' => true,
@@ -187,6 +189,14 @@ class CloudinaryFile extends DataObject
             $options['height'] = $arguments['height'];
         }
 
+        // If we have both a width and a height then we should attempt
+        // to crop this image using the fill method and the provided gravity.
+        if (isset($arguments['width']) && isset($arguments['height'])) {
+            $options['crop'] = 'fill';
+            $options['quality'] = 'auto';
+            $options['gravity'] = $arguments['gravity'];
+        }
+
         $cloudinaryID = $arguments['id'];
         $cloudinaryURL = Cloudinary::cloudinary_url($cloudinaryID, $options);
 
@@ -197,6 +207,11 @@ class CloudinaryFile extends DataObject
             'Caption' => isset($arguments['caption']) ? $arguments['caption'] : null
         ));
 
-        return $file->renderWith('CloudinaryImageShortCode');
+        $data = $file->customise(array(
+            'Width' => isset($arguments['width']) ? $arguments['width'] : null,
+            'Height' => isset($arguments['height']) ? $arguments['height'] : null
+        ));
+
+        return $data->renderWith('CloudinaryImageShortCode');
     }
 }
