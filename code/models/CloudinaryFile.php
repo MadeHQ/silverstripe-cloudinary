@@ -70,7 +70,7 @@ class CloudinaryFile extends DataObject
             'quality' =>  $quality,
             'width' => $width,
             'height' => $height,
-            'gravity' => $gravity || $this->Gravity
+            'gravity' => $gravity ?: $this->Gravity
         );
 
         if($crop){
