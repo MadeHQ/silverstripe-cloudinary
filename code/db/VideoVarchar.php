@@ -10,23 +10,20 @@ class VideoVarchar extends Varchar
      * @param int $quality
      * @return string
      */
-    public function ThumbnailURL($width, $height, $quality = 70)
-    {
+    public function ThumbnailURL($width, $height, $crop = 'fill', $quality = 'auto', $gravity = 'auto') {
         $options = array(
             'secure' => true,
             'width' => $width,
             'height' => $height,
-            'crop' => 'fill',
+            'crop' => $crop,
+            'quality' => $quality,
+            'gravity' => $gravity,
             'start_offset' => 0,
             'resource_type'	=> $this->isCloudinary() ? 'video' : 'image',
-            'type' => in_array($this->getVideoType(), array('youtube', 'vimeo')) ? $this->getVideoType() : '',
-            'quality' => $quality
+            'type' => in_array($this->getVideoType(), array('youtube', 'vimeo')) ? $this->getVideoType() : ''
         );
-
-        return Cloudinary::cloudinary_url(
-            $this->getVideoID() . '.jpg',
-            $options
-        );
+        $cloudinary_id = $this->getVideoID() . '.jpg';
+        return Cloudinary::cloudinary_url($cloudinary_id, $options);
     }
 
     /**
