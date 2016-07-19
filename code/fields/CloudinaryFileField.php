@@ -5,6 +5,8 @@ class CloudinaryFileField extends FormField
 	private $children = null;
 	private $objectID = 0;
 
+	public $FileType = 'File';
+
 	public function __construct($name, $title = null, $value = "", $form = null) {
 
 		$file = singleton('CloudinaryFile');
@@ -23,7 +25,6 @@ class CloudinaryFileField extends FormField
 			}
 
 			if(in_array($field->getName(), array('FileTitle', 'FileDescription'))) {
-				// $field->addClass('_js-raw-file-field');
 				$field->RawFileField = true;
 			}
 			else if ($field->getName() == 'URL') {
@@ -81,57 +82,70 @@ class CloudinaryFileField extends FormField
 		return $this->objectID !== 0;
 	}
 
-	public function setValue($value, $record = null) {
-		if(empty($value) && $record){
-			if(($record instanceof DataObject) && $record->hasMethod($this->getName())) {
-				$data = $record->{$this->getName()}();
-				if($data && $data->exists()){
-					$this->children->dataFieldByName($this->getName() . "[URL]")->setValue($data->URL);
-					$this->children->dataFieldByName($this->getName() . "[Caption]")->setValue($data->Caption);
-					$this->children->dataFieldByName($this->getName() . "[Credit]")->setValue($data->Credit);
-					$this->children->dataFieldByName($this->getName() . "[Gravity]")->setValue($data->Gravity);
-					$this->children->dataFieldByName($this->getName() . "[FileSize]")->setValue($data->FileSize);
-					$this->children->dataFieldByName($this->getName() . "[ObjectID]")->setValue($data->ID);
-					$this->objectID = $data->ID;
-				}
-			}
-		}
+    protected function getSubFields()
+    {
+        return array(
+            'URL',
+            'Caption',
+            'Credit',
+            'FileSize',
+            'ObjectID'
+        );
+    }
 
-		return parent::setValue($value, $record);
-	}
+    public function setValue($value, $record = null) {
+        if(empty($value) && $record){
+            if(($record instanceof DataObject) && $record->hasMethod($this->getName())) {
+                $data = $record->{$this->getName()}();
+                if($data && $data->exists()){
+                    foreach ($this->getSubFields() as $fieldName) {
+                        if($data->$fieldName) {
+                            $this->children->dataFieldByName($this->getName() . '[' . $fieldName . ']')->setValue($data->$fieldName);
+                        }
+                    }
+                    $this->objectID = $data->ID;
+                }
+            }
+        }
 
-	public function saveInto(DataObjectInterface $record) {
-		if($this->name) {
-			$value = $this->dataValue();
+        return parent::setValue($value, $record);
+    }
 
-			$file = null;
-			if($value['ObjectID']){
-				$file = CloudinaryImage::get()->byID($value['ObjectID']);
-			}
-			if(!$file){
-				$file = new CloudinaryImage();
-			}
+    public function saveInto(DataObjectInterface $record) {
+        if($this->name) {
+            $value = $this->dataValue();
 
-			if($value['URL']){
-				$cloudinaryUrl = $value['URL'];
-				$file->Caption = $value['Caption'];
-				$file->Credit = $value['Credit'];
-				$file->Gravity = $value['Gravity'];
-				$file->URL = $cloudinaryUrl;
-				$file->Format = CloudinaryUtils::file_format($value['URL']);
-				$file->FileSize = $value['FileSize'];
-				$file->write();
+            $file = null;
+            if($value['ObjectID']){
+                $file = CloudinaryImage::get()->byID($value['ObjectID']);
+            }
+            if(!$file){
+                $file = new CloudinaryImage();
+            }
 
-				$record->setCastedField($this->name . 'ID', $file->ID);
-			} else {
-				if ($file->exists()) {
-					$file->delete();
-				}
+            if($value['URL']){
+                $cloudinaryUrl = $value['URL'];
+                $file->Caption = $value['Caption'];
+                $file->Credit = $value['Credit'];
+                $file->URL = $cloudinaryUrl;
+                $file->Format = CloudinaryUtils::file_format($value['URL']);
+                $file->FileSize = $value['FileSize'];
+                $this->updateFileBeforeSave($file, $value, $record);
+                $file->write();
 
-				$record->setCastedField($this->name . 'ID', 0);
-			}
-		}
-	}
+                $record->setCastedField($this->name . 'ID', $file->ID);
+            } else {
+                if ($file->exists()) {
+                    $file->delete();
+                }
+
+                $record->setCastedField($this->name . 'ID', 0);
+            }
+        }
+    }
+
+    protected function updateFileBeforeSave(CloudinaryFile &$file, &$value = array(), DataObjectInterface &$record)
+    {}
 
 	public function IsRaw()
 	{

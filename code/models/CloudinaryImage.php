@@ -3,6 +3,23 @@
 class CloudinaryImage extends CloudinaryFile
 {
 
+    private static $arr_gravity = array(
+        'auto' => 'Auto',
+        'center' => 'Center',
+        'north_east' => 'NE',
+        'north' => 'N',
+        'north_west' => 'NW',
+        'west' => 'W',
+        'south_west' => 'SW',
+        'south' => 'S',
+        'south_east' => 'SE',
+        'east' => 'E'
+    );
+
+    private static $db = array(
+        'Gravity' => 'Enum("auto,center,north_east,north,north_west,west,south_west,south,south_east,east", "auto")',
+    );
+
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -14,6 +31,36 @@ class CloudinaryImage extends CloudinaryFile
         }
 
         return $fields;
+    }
+
+    public function getFrontEndFields($params = null)
+    {
+        $fields = parent::getFrontEndFields($params);
+        $fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
+        return $fields;
+    }
+
+    public function Image( $width, $height, $crop, $quality = 'auto', $gravity = false) {
+        $options = array(
+            'secure' => true,
+            'fetch_format' => 'auto',
+            'quality' =>  $quality,
+            'width' => $width,
+            'height' => $height,
+            'gravity' => $gravity ?: $this->Gravity
+        );
+
+        if($crop){
+            $options['crop'] = $crop;
+        }
+
+        if ($gravity) {
+            $options['gravity'] = $gravity;
+        }
+
+        $cloudinaryID = CloudinaryUtils::public_id($this->URL);
+        $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
+        return Cloudinary::cloudinary_url($fileName, $options);
     }
 
     private function hideCMSFields(FieldList $fields, $arrFieldsToHide)

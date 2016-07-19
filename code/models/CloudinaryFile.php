@@ -4,24 +4,10 @@ class CloudinaryFile extends DataObject
 {
     protected $sourceURL = '';
 
-    private static $arr_gravity = array(
-        'auto' => 'Auto',
-        'center' => 'Center',
-        'north_east' => 'NE',
-        'north' => 'N',
-        'north_west' => 'NW',
-        'west' => 'W',
-        'south_west' => 'SW',
-        'south' => 'S',
-        'south_east' => 'SE',
-        'east' => 'E'
-    );
-
     private static $db = array(
         'URL' => 'Varchar(500)',
         'Credit' => 'Varchar(200)',
         'Caption' => 'Varchar(200)',
-        'Gravity' => 'Enum("auto,center,north_east,north,north_west,west,south_west,south,south_east,east", "auto")',
         'FileSize' => 'Varchar(50)',
         'Format' => 'Varchar(50)',
         'FileTitle' => 'Varchar(200)',
@@ -43,7 +29,7 @@ class CloudinaryFile extends DataObject
 
     public function getCMSFields() {
         $fields = parent::getCMSFields();
-        $fields->removeByName(array('URL', 'Credit', 'Caption', 'Gravity', 'FileSize', 'Format'));
+        $fields->removeByName(array('URL', 'Credit', 'Caption', 'FileSize', 'Format'));
         $fields->dataFieldByName('FileTitle')->setTitle('Title');
         $fields->dataFieldByName('FileDescription')->setTitle('Description');
 
@@ -52,38 +38,12 @@ class CloudinaryFile extends DataObject
 
     public function getFrontEndFields($params = null) {
         $fields = parent::getFrontEndFields($params);
-
-        $fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
-
         $fields->replaceField('URL', TextField::create('URL')->setAttribute('placeholder', 'https://')->setTitle(""));
         $fields->replaceField('FileSize', HiddenField::create('FileSize'));
         $fields->replaceField('Format', HiddenField::create('Format'));
         $fields->removeByName('ParentID');
 
         return $fields;
-    }
-
-    public function Image( $width, $height, $crop, $quality = 'auto', $gravity = false) {
-        $options = array(
-            'secure' => true,
-            'fetch_format' => 'auto',
-            'quality' =>  $quality,
-            'width' => $width,
-            'height' => $height,
-            'gravity' => $gravity ?: $this->Gravity
-        );
-
-        if($crop){
-            $options['crop'] = $crop;
-        }
-
-        if ($gravity) {
-            $options['gravity'] = $gravity;
-        }
-
-        $cloudinaryID = CloudinaryUtils::public_id($this->URL);
-        $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
-        return Cloudinary::cloudinary_url($fileName, $options);
     }
 
     public function Link()

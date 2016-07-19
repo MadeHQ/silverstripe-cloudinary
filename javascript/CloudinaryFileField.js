@@ -13,7 +13,36 @@
             cloudinaryURLField = field;
         };
 
-        var loadImages = function(){
+        var loadImages = function () {
+            loadBrowserWindow('image', function (imageData) {
+                return jQuery.cloudinary.image(imageData.public_id + '.' + imageData.format, {
+                    width       : 150,
+                    height      : 150,
+                    crop        : 'fill',
+                    quality     : 50
+                });
+            });
+        }
+
+        var loadVideos = function () {
+            loadBrowserWindow('video', function (imageData) {
+                return '<img src="' + imageData.thumbnail_url + '">';
+            });
+        }
+
+        var loadFiles = function () {
+            loadBrowserWindow('file', function (imageData) {
+                return imageData.thumbnail_url ? '<img src="' + imageData.thumbnail_url + '">' : '';
+            });
+        }
+
+        var loadAudios = function () {
+            loadBrowserWindow('audio', function (imageData) {
+                return '<audio controls src="' + imageData.secure_url + '">Your browser does not support the <code>audio</code> element.</audio>';
+            });
+        }
+
+        var loadBrowserWindow = function(type, previewGenerator){
 
             var firstField = $('._js-cloudinary_holer:first');
             jQuery.cloudinary.config({
@@ -34,25 +63,27 @@
                     load = false;
                 }
             }
-
-            if(load){
+            if (browserWindow.data('loaded-type') !== type) {
+                load = true;
+            }
+            browserWindow.attr('class').split(/\s/).forEach(function(cls) {
+                if (cls.match(/^cloudinary-file-type-/)) {
+                    browserWindow.removeClass(cls);
+                }
+            });
+            browserWindow.addClass('cloudinary-file-type-' + type);
+            if (load) {
                 browserWindow.html('').removeClass('loaded');
-                $.getJSON('admin/cloudinary/getimagelist', function(data){
+                $.getJSON('admin/cloudinary/get' + type + 'list', function(data){
                     $.each(data.resources, function(){
                         var image = this;
-                        image.thubmnail_url = jQuery.cloudinary.image(image.public_id + '.' + image.format, {
-                            width       : 150,
-                            height      : 150,
-                            crop        : 'fill',
-                            quality     : 50
-                        });
+                        image.thubmnail_url = previewGenerator(image);
 
                         var date = new Date(image.created_at);
 
                         var html = '<div class="cloudinary__browser__window__item" data-url="' + this.url +'">' +
-                            '<div class="plus">+</div>' +
-                            '<div class="image"></div>' +
-                            '<div class="popup">' +
+                            '<div class="preview"><div class="plus">+</div></div>' +
+                            '<div class="meta">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
                                 '<p>' +  image.public_id+ '.' +  image.format+ '</p>'
                             '</div>'
@@ -63,7 +94,7 @@
                         dom.imagesLoaded(function(){
                             dom.addClass('loaded');
                         });
-                        dom.find('.image').html(image.thubmnail_url);
+                        dom.find('.preview').append(image.thubmnail_url);
                         browserWindow.append(dom);
                     });
 
@@ -75,7 +106,11 @@
             }
         };
 
-        var openCloudinaryBrowser = function() {
+        var openCloudinaryBrowser = function(callBack) {
+            if (!callBack) {
+                alert('An error occured opening the cloudinary browser\nPlease make a note of the issue and report it');
+                throw 'no callback for cloudinary browser';
+            }
 
             var browser = $('._js-cloudinary-browser-window');
             if(browser.length == 0){
@@ -94,16 +129,10 @@
                     heightRatio: 0.8,
                     resizable: true
                 });
-
-                loadImages();
-
-            }
-            else {
+            } else {
                 $('._js-cloudinary-browser-holder').dialog('open');
-                loadImages();
-
             }
-
+            callBack();
         };
 
 
@@ -266,12 +295,38 @@
 
         });
 
+        function getCallBackFn(jqElem)
+        {
+            fn = false;
+            jqElem.attr('class').split(/\s/).forEach(function (cls) {
+                var type;
+                if (type = cls.match(/^cloudinary-type-(\w+)$/)) {
+                    switch (type[1]) {
+                        case 'File':
+                            fn = loadFiles;
+                            break;
+                        case 'Audio':
+                            fn = loadAudios;
+                            break;
+                        case 'Video':
+                            fn = loadVideos;
+                            break;
+                        case 'Image':
+                            fn = loadImages;
+                            break;
+                    }
+                }
+            });
+            return fn;
+        }
+
         $('._js-cloudinary-browser').entwine({
 
             onclick:  function(event){
                 event.preventDefault();
                 cloudinaryURLField = this.parent().find('._js-cloudinary-url');
-                openCloudinaryBrowser();
+                cb = getCallBackFn(this);
+                openCloudinaryBrowser(cb);
                 return false;
             }
 
@@ -280,7 +335,6 @@
 
         ss.updateCMSFieldsBrowser = updateCMSFieldsBrowser;
         ss.openCloudinaryBrowser = openCloudinaryBrowser;
-        ss.loadImages = loadImages;
         ss.setCloudinaryURLField = setCloudinaryURLField;
 
     });
