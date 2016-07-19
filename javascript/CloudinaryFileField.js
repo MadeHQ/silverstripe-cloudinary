@@ -38,7 +38,7 @@
             if(load){
                 browserWindow.html('').removeClass('loaded');
                 $.getJSON('admin/cloudinary/getimagelist', function(data){
-                    $.each(data, function(){
+                    $.each(data.resources, function(){
                         var image = this;
                         image.thubmnail_url = jQuery.cloudinary.image(image.public_id + '.' + image.format, {
                             width       : 150,

@@ -14,7 +14,10 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 	private static $allowed_actions = array(
 		'folders',
 		'getimagelist',
-		'getfiledata'
+		'getfilelist',
+		'getaudiolist',
+		'getvideolist',
+		'getfiledata',
 	);
 
 	public function init()
@@ -67,11 +70,8 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 				class="_js-start_upload ss-ui-action-constructive ss-ui-button ui-button ui-widget ui-state-default ui-corner-all new new-link ui-button-text-icon-primary"
 				>Upload</a>';
 
-		return Convert::array2json($return);
+		return $this->getJsonResponseFromData($return);
 	}
-
-
-
 
 	public function fetchFoldersFromAPI($parent = null)
 	{
@@ -97,7 +97,6 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 	{
 		return $this->fetchFoldersFromAPI();
 	}
-
 
 	public function getEditForm($id = null, $fields = null) {
 		$form = parent::getEditForm($id, $fields);
@@ -135,20 +134,56 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 		return $form;
 	}
 
-
-	public function getimagelist()
+	public function getaudiolist(SS_HTTPRequest $request)
 	{
-		$api = CloudinaryUtils::api();
-		$respond = $api->resources(array(
-			'max_results'		=> 100,
-			'direction'			=> -1,
-			'resource_type'		=> 'image',
-			'type'				=> 'upload'
-		));
-		$images = $respond->getArrayCopy();
-		return Convert::array2json($images['resources']);
+		$response = $this->getCloudinaryResources('video', $request->getVar('next_cursor'));
+		$response['resources'] = array_filter(
+			$response['resources'],
+			function ($resource) {
+				return array_key_exists('is_audio', $resource) && $resource['is_audio'];
+			}
+		);
+		$response['resources'] = array_values($response['resources']);
+		return $this->getJsonResponseFromData($response);
 	}
 
+	public function getvideolist(SS_HTTPRequest $request)
+	{
+		$response = $this->getCloudinaryResources('video', $request->getVar('next_cursor'));
+		$response['resources'] = array_filter(
+			$response['resources'],
+			function ($resource) {
+				return !array_key_exists('is_audio', $resource) || !$resource['is_audio'];
+			}
+		);
+		$response['resources'] = array_values($response['resources']);
+		foreach ($response['resources'] as &$resource) {
+			$source = CloudinaryUtils::public_id($resource['url']);
+			// Note: Need to pass in a new Array of options each time otherwise the `resource_type` gets set to "image"
+			$gifPreviewParams = array(
+				'video_sampling' => 10,
+				'delay' => 100,
+				'width' => 150,
+				'resource_type' => 'video'
+			);
+			$resource['thumbnail_url'] = Cloudinary::cloudinary_url($resource['public_id'] . '.gif', $gifPreviewParams);
+		}
+		return $this->getJsonResponseFromData($response);
+	}
+
+	public function getimagelist(SS_HTTPRequest $request)
+	{
+		$api = CloudinaryUtils::api();
+		$images = $this->getCloudinaryResources('image', $request->getVar('next_cursor'));
+		return $this->getJsonResponseFromData($images);
+	}
+
+	public function getfilelist(SS_HTTPRequest $request)
+	{
+		$api = CloudinaryUtils::api();
+		$files = $this->getCloudinaryResources('raw', $request->getVar('next_cursor'));
+		return $this->getJsonResponseFromData($files);
+	}
 
 	public function getfiledata()
 	{
@@ -172,6 +207,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 					'resource_type' 	=> $resourceType,
 					'exif'				=> true
 				))->getArrayCopy();
+
 				$fileSize = isset($resource['bytes']) ? $resource['bytes'] : $fileSize;
 			} catch (Exception $e) {}
 
@@ -192,7 +228,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			$error = "Please enter a valid cloudinary source url.";
 		}
 
-		return Convert::array2json(array(
+		return $this->getJsonResponseFromData(array(
 			'Caption'		=> $caption,
 			'Credit'		=> $credit,
 			'IsRaw'			=> $isRaw,
@@ -200,9 +236,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 			'Format'		=> CloudinaryUtils::file_format($url),
 			'Error'			=> $error
 		));
-
 	}
-
 
 	public function canView($member = null) {
 		$bCanView = parent::canView($member);
@@ -221,9 +255,46 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 				'sort' => -100
 			)
 		);
-
-
 		return $perms;
 	}
 
+	/**
+	 * Generates a SS_HTTPResponse Object with JSON Header
+	 * @param Array $data Data to be converted to JSON
+	 * @return SS_HTTPResponse
+	 */
+	private function getJsonResponseFromData($data)
+	{
+		$response = new SS_HTTPResponse();
+		$response->setBody(Convert::array2json($data));
+		$response->addHeader('Content-Type', 'text/json;charset=UTF-8');
+		return $response;
+	}
+
+	/**
+	 * @param String $type Accepted values are (image|video|raw)
+	 * @param String $nextCursor Cloudinary's pagination
+	 * @return Array
+	 */
+	private function getCloudinaryResources($type = 'image', $nextCursor = null)
+	{
+		$api = CloudinaryUtils::api();
+		$respond = $api->resources(array(
+			'max_results' => $this->getMaxResults(),
+			'direction' => -1,
+			'resource_type' => $type,
+			'type' => 'upload',
+			'next_cursor' => $nextCursor
+		));
+		$data = $respond->getArrayCopy();
+		return $data;
+	}
+
+	/**
+	 * @return Int
+	 */
+	private function getMaxResults()
+	{
+		return Config::inst()->get(get_class($this), 'max_results');
+	}
 }

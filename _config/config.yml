@@ -28,3 +28,6 @@ CloudinaryUploadField:
     uploadTemplateName: 'ss-uploadfield-uploadtemplate'
     downloadTemplateName: 'ss-cloudinary-uploadfield-downloadtemplate'
     overwriteWarning: true # Warning before overwriting existing file (only relevant when Upload: replaceFile is true)
+
+CloudinaryAdmin:
+  max_results: 100
