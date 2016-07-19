@@ -48,16 +48,50 @@
 .cloudinary__browser__window__item {
     position: relative;
     box-sizing: border-box;
-    padding: 5px;
+    padding: 2px;
     border: 1px solid white;
     cursor: pointer;
+}
+
+.cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
+.cloudinary-file-type-audio .cloudinary__browser__window__item .meta,
+.cloudinary-file-type-file .cloudinary__browser__window__item .preview,
+.cloudinary-file-type-file .cloudinary__browser__window__item .meta,
+.cloudinary-file-type-video .cloudinary__browser__window__item .preview,
+.cloudinary-file-type-video .cloudinary__browser__window__item .meta {
+    background-color: #F0F3F4;
+}
+
+.cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
+.cloudinary-file-type-video .cloudinary__browser__window__item .preview {
+    padding-left: 35px;
+}
+
+.cloudinary-file-type-audio .cloudinary__browser__window__item:nth-child(odd) .preview,
+.cloudinary-file-type-audio .cloudinary__browser__window__item:nth-child(odd) .meta,
+.cloudinary-file-type-file .cloudinary__browser__window__item:nth-child(odd) .preview,
+.cloudinary-file-type-file .cloudinary__browser__window__item:nth-child(odd) .meta,
+.cloudinary-file-type-video .cloudinary__browser__window__item:nth-child(odd) .preview,
+.cloudinary-file-type-video .cloudinary__browser__window__item:nth-child(odd) .meta {
+    background-color: #E0E3E4;
+}
+
+.cloudinary__browser__window__item img {
+    height: auto;
+    max-width: 100%;
+    width: auto;
 }
 
 .cloudinary-file-type-audio,
 .cloudinary-file-type-file,
 .cloudinary-file-type-video {
+    background-color: #FFF !important;
+    border-collapse: separate;
+    border-spacing: 1px;
     display: table;
-    width: 100%;
+    margin: 20px;
+    padding: 0;
+    width: 90%;
 }
 .cloudinary-file-type-audio .cloudinary__browser__window__item,
 .cloudinary-file-type-file .cloudinary__browser__window__item,
@@ -67,6 +101,7 @@
 .cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
 .cloudinary-file-type-file .cloudinary__browser__window__item .preview,
 .cloudinary-file-type-video .cloudinary__browser__window__item .preview {
+    background-color: #F0F3F4;
     display: table-cell;
     max-width: 33%;
     position: relative;
@@ -76,8 +111,10 @@
     width: 20%;
 }
 
-.cloudinary__browser__window__item:hover {
-    background: #d3d3d3;
+.cloudinary__browser__window__item:hover
+.cloudinary__browser__window__item:hover .preview,
+.cloudinary__browser__window__item:hover .meta {
+    background-color: #d3d3d3 !important;
 }
 
 .cloudinary__browser__window__item.selected {
