@@ -13,6 +13,24 @@
             cloudinaryURLField = field;
         };
 
+        function getDurationFormat(seconds) {
+            var fixed = seconds.toFixed();
+            var hours = (Math.floor(seconds / 3600)).toString();
+            if (hours.length < 2) {
+                hours = '0' + hours;
+            }
+            seconds = seconds - (hours * 3600);
+            var minutes = (Math.floor(seconds / 60)).toString();
+            if (minutes.length < 2) {
+                minutes = '0' + minutes;
+            }
+            seconds = (Math.round(seconds - (minutes * 60))).toString();
+            if (seconds.length < 2) {
+                seconds = '0' + seconds;
+            }
+            return hours + ':' + minutes + ':' + seconds;
+        }
+
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
                 return jQuery.cloudinary.image(imageData.public_id + '.' + imageData.format, {
@@ -158,8 +176,7 @@
 
                 if(this.data('type') == 'raw'){
                     this.find('._js-image-data').hide();
-                }
-                else {
+                } else {
                     this.find('._js-raw-data').hide();
                 }
 
@@ -221,7 +238,7 @@
                 if(url){
                     form.addClass('loading');
                     $.getJSON('admin/cloudinary/getfiledata', {
-                        'fileurl'       : url
+                        'fileurl': url
                     }, function(data) {
                         if(!data.Error) {
                             holder.find('.cloudinary__fields').addClass('cloudinary__fields--expanded');
@@ -230,54 +247,43 @@
                                 // FileSize
                                 $('#Form_ItemEditForm_FileSize_ReadOnly, #Form_ItemEditForm_FileSize').val(data.FileSize);
                                 $('#Form_ItemEditForm_Format_ReadOnly, #Form_ItemEditForm_Format').val(data.Format);
-
+                                var showHide;
 
                                 if(data.IsRaw === false) {
+                                    showHide = 'show';
                                     $('#Form_ItemEditForm_FileTitle_Holder').hide().val('');
                                     $('#Form_ItemEditForm_FileDescription_Holder').hide().val('');
-
-                                    $('#Form_ItemEditForm_Gravity_Holder').show();
-                                    $('#Form_ItemEditForm_Credit_Holder').show();
-                                    $('#Form_ItemEditForm_Caption_Holder').show();
-                                    $('#Form_ItemEditForm_Credit').val(data.Credit);
-                                    $('#Form_ItemEditForm_Caption').val(data.Caption);
-                                }
-                                else {
-
-                                    $('#Form_ItemEditForm_Gravity_Holder').hide();
-                                    $('#Form_ItemEditForm_Credit_Holder').hide();
-                                    $('#Form_ItemEditForm_Caption_Holder').hide();
-
-                                    $('#Form_ItemEditForm_Credit').val('');
-                                    $('#Form_ItemEditForm_Caption').val('');
-
-
+                                } else {
+                                    showHide = 'hide';
                                     $('#Form_ItemEditForm_FileTitle_Holder').show();
                                     $('#Form_ItemEditForm_FileDescription_Holder').show();
-
                                 }
+                                for(var key in data.Meta) {
+                                    if (key === 'Duration' && data.Meta[key]) {
+                                        data.Meta[key] = getDurationFormat(data.Meta[key]);
+                                    }
+                                    $('#Form_ItemEditForm_' + key + '_Holder')[showHide]();
+                                    $('#Form_ItemEditForm_' + key).val(data.Meta[key]);
+                                };
 
 
-                            }
-                            else {
+                            } else {
 
                                 if(data.IsRaw === false) {
                                     holder.find('._js-raw-data').hide();
                                     holder.find('._js-image-data').show();
-                                    holder.find('._js-attribute[name*="Credit"]').val(data.Credit);
-                                    holder.find('._js-attribute[name*="Caption"]').val(data.Caption);
                                     holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-
-
-                                }
-                                else {
+                                } else {
                                     holder.find('._js-image-data').hide();
                                     holder.find('._js-raw-data').show();
-
-                                    holder.find('._js-attribute[name*="Credit"]').val('');
-                                    holder.find('._js-attribute[name*="Caption"]').val('');
                                     holder.find('._js-attribute[name*="FileSize"]').val('');
                                 }
+                                for(var key in data.Meta) {
+                                    if (key === 'Duration' && data.Meta[key]) {
+                                        data.Meta[key] = getDurationFormat(data.Meta[key]);
+                                    }
+                                    holder.find('._js-attribute[name*="' + key + '"]').val(data.Meta[key]);
+                                };
                             }
                         } else {
                             alert(data.Error);

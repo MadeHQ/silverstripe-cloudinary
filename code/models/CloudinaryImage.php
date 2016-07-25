@@ -18,16 +18,24 @@ class CloudinaryImage extends CloudinaryFile
 
     private static $db = array(
         'Gravity' => 'Enum("auto,center,north_east,north,north_west,west,south_west,south,south_east,east", "auto")',
+        'Credit' => 'Varchar(200)',
+        'Caption' => 'Varchar(200)',
     );
+
+    public function getTitle() {
+        if ($this->URL && CloudinaryUtils::resource_type($this->URL) == 'raw') {
+            return $this->FileTitle;
+        }
+        if ($this->URL && CloudinaryUtils::resource_type($this->URL) != 'raw'){
+            return $this->Caption;
+        }
+    }
 
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
         if (!$this->ID) {
-            $this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity', 'FileTitle', 'FileDescription'));
-        } else {
-            $this->hideCMSFields($fields, array('FileTitle', 'FileDescription'));
+            $this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity', 'FileTitle'));
         }
 
         return $fields;
@@ -36,6 +44,8 @@ class CloudinaryImage extends CloudinaryFile
     public function getFrontEndFields($params = null)
     {
         $fields = parent::getFrontEndFields($params);
+        $fields->replaceField('Caption', TextField::create('Caption'));
+        $fields->replaceField('Credit', TextField::create('Credit'));
         $fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
         return $fields;
     }

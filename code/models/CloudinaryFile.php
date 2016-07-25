@@ -6,13 +6,13 @@ class CloudinaryFile extends DataObject
 
     private static $db = array(
         'URL' => 'Varchar(500)',
-        'Credit' => 'Varchar(200)',
-        'Caption' => 'Varchar(200)',
         'FileSize' => 'Varchar(50)',
         'Format' => 'Varchar(50)',
         'FileTitle' => 'Varchar(200)',
         'FileDescription' => 'Text'
     );
+
+    private static $searchable_fields = array('Credit', 'Caption', 'FileTitle', 'FileDescription');
 
     private static $summary_fields = array(
         'getTitle' => 'Title'
@@ -22,16 +22,15 @@ class CloudinaryFile extends DataObject
         if ($this->URL && CloudinaryUtils::resource_type($this->URL) == 'raw') {
             return $this->FileTitle;
         }
-        if ($this->URL && CloudinaryUtils::resource_type($this->URL) != 'raw'){
-            return $this->Caption;
-        }
     }
 
     public function getCMSFields() {
         $fields = parent::getCMSFields();
+        Requirements::javascript('cloudinary/javascript/CloudinaryFile.CMSFields.js');
         $fields->removeByName(array('URL', 'Credit', 'Caption', 'FileSize', 'Format'));
         $fields->dataFieldByName('FileTitle')->setTitle('Title');
         $fields->dataFieldByName('FileDescription')->setTitle('Description');
+        $this->hideCMSFields($fields, array('FileTitle', 'FileDescription'));
 
         return $fields;
     }

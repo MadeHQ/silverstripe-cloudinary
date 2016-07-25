@@ -11,7 +11,6 @@ class CloudinaryFileField extends FormField
 
 		$file = singleton('CloudinaryFile');
 		$frontEndFields = $file->getFrontEndFields();
-
 		foreach($frontEndFields as $field)
 		{
 			if ($field->getName() == 'URL') {
@@ -26,8 +25,7 @@ class CloudinaryFileField extends FormField
 
 			if(in_array($field->getName(), array('FileTitle', 'FileDescription'))) {
 				$field->RawFileField = true;
-			}
-			else if ($field->getName() == 'URL') {
+			} else if ($field->getName() == 'URL') {
 				$field->CommonField = true;
 			}
 
@@ -39,7 +37,6 @@ class CloudinaryFileField extends FormField
 		$this->children->push(new HiddenField($name . "[ObjectID]"));
 
 		parent::__construct($name, $title, $value);
-
 	}
 
 	public function getChildren() {
@@ -66,7 +63,7 @@ class CloudinaryFileField extends FormField
 		Requirements::javascript('cloudinary/javascript/thirdparty/imagesloaded.js');
 		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
 		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
-
+        $this->children->fieldByName($this->Name . '[ObjectID]')->setValue($this->objectID);
 		return $this->renderWith('CloudinaryFileField');
 	}
 
@@ -115,18 +112,18 @@ class CloudinaryFileField extends FormField
         if($this->name) {
             $value = $this->dataValue();
 
+            $className = preg_replace('/(\w+)Field$/', '$1', get_class($this));
+            $reflectionClass = new \ReflectionClass($className);
             $file = null;
             if($value['ObjectID']){
-                $file = CloudinaryImage::get()->byID($value['ObjectID']);
+                $file = call_user_func(array($className, 'get'))->byID($value['ObjectID']);
             }
             if(!$file){
-                $file = new CloudinaryImage();
+                $file = $reflectionClass->newInstance();
             }
 
             if($value['URL']){
                 $cloudinaryUrl = $value['URL'];
-                $file->Caption = $value['Caption'];
-                $file->Credit = $value['Credit'];
                 $file->URL = $cloudinaryUrl;
                 $file->Format = CloudinaryUtils::file_format($value['URL']);
                 $file->FileSize = $value['FileSize'];
