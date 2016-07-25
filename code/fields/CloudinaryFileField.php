@@ -58,14 +58,14 @@ class CloudinaryFileField extends FormField
 		return $dataFields;
 	}
 
-	public function Field($properties = array()) {
-		Requirements::css('cloudinary/css/CloudinaryFileField.css');
-		Requirements::javascript('cloudinary/javascript/thirdparty/imagesloaded.js');
-		Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
-		Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
-        $this->children->fieldByName($this->Name . '[ObjectID]')->setValue($this->objectID);
-		return $this->renderWith('CloudinaryFileField');
-	}
+    public function Field($properties = array()) {
+        Requirements::css('cloudinary/css/CloudinaryFileField.css');
+        Requirements::javascript('cloudinary/javascript/thirdparty/imagesloaded.js');
+        Requirements::javascript('cloudinary/javascript/thirdparty/jquery.cloudinary.js');
+        Requirements::javascript('cloudinary/javascript/CloudinaryFileField.js');
+        // $this->children->fieldByName($this->Name . '[ObjectID]')->setValue($this->objectID);
+        return $this->renderWith('CloudinaryFileField');
+    }
 
 	public function CloudName() {
 		return CloudinaryUtils::cloud_name();
