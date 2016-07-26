@@ -73,15 +73,6 @@ class CloudinaryImage extends CloudinaryFile
         return Cloudinary::cloudinary_url($fileName, $options);
     }
 
-    private function hideCMSFields(FieldList $fields, $arrFieldsToHide)
-    {
-        foreach ($arrFieldsToHide as $fieldName){
-            if($field = $fields->dataFieldByName($fieldName)) {
-                $field->addExtraClass('_js-hide-on-load');
-            }
-        }
-    }
-
     /**
      * @param int $iWidth
      * @param int $iHeight

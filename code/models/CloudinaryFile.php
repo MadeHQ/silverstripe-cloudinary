@@ -35,6 +35,15 @@ class CloudinaryFile extends DataObject
         return $fields;
     }
 
+    protected function hideCMSFields(FieldList $fields, $arrFieldsToHide)
+    {
+        foreach ($arrFieldsToHide as $fieldName){
+            if($field = $fields->dataFieldByName($fieldName)) {
+                $field->addExtraClass('_js-hide-on-load');
+            }
+        }
+    }
+
     public function getFrontEndFields($params = null) {
         $fields = parent::getFrontEndFields($params);
         $fields->replaceField('URL', TextField::create('URL')->setAttribute('placeholder', 'https://')->setTitle(""));

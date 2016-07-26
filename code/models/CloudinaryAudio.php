@@ -3,7 +3,8 @@
 class CloudinaryAudio extends CloudinaryFile
 {
     private static $db = array(
-        'Duration' => 'Time'
+        'Duration' => 'Time',
+        'Caption' => 'Varchar(200)'
     );
 
     public function getCMSFields()
@@ -15,7 +16,13 @@ class CloudinaryAudio extends CloudinaryFile
 
     public function getFrontEndFields($params = null) {
         $fields = parent::getFrontEndFields($params);
+        $fields->replaceField('Caption', TextField::create('Caption'));
         $fields->replaceField('Duration', TimeField::create('Duration')->setInterval(1));
         return $fields;
+    }
+
+    public function getTitle()
+    {
+        return parent::getTitle() ?: $this->Caption;
     }
 }

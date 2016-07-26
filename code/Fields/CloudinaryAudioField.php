@@ -17,16 +17,23 @@ class CloudinaryAudioField extends CloudinaryFileField
             // ->setInterval(2)
             ->setConfig('timeformat', 'HH:mm:ss');
         $this->children->push($lengthField);
+
+        $captionField = $frontEndFields->fieldByName('Caption');
+        $captionField
+            ->setName($name . "[" . $captionField->getName() . "]")
+            ->addExtraClass('_js-attribute');
+        $this->children->push($captionField);
     }
 
     protected function getSubFields()
     {
-        return array_merge(parent::getSubFields(), array('Duration'));
+        return array_merge(parent::getSubFields(), array('Duration', 'Caption'));
     }
 
     protected function updateFileBeforeSave(CloudinaryFile &$file, &$value = array(), DataObjectInterface &$record)
     {
         $file->Duration = $value['Duration'];
+        $file->Caption = $value['Caption'];
         parent::updateFileBeforeSave($file, $value, $record);
     }
 }
