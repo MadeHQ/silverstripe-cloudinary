@@ -2,6 +2,7 @@
 
     var cloudinaryURLField = null;
     var cloudinaryCMSFields = false;
+    var jQueryCloudinary = jQuery.cloudinary;
 
     $.entwine('ss', function($) {
 
@@ -33,7 +34,7 @@
 
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
-                return jQuery.cloudinary.image(imageData.public_id + '.' + imageData.format, {
+                return jQueryCloudinary.image(imageData.public_id + '.' + imageData.format, {
                     width       : 150,
                     height      : 150,
                     crop        : 'fill',
@@ -63,7 +64,7 @@
         var loadBrowserWindow = function(type, previewGenerator){
 
             var firstField = $('._js-cloudinary_holer:first');
-            jQuery.cloudinary.config({
+            jQueryCloudinary.config({
                 cloud_name      : firstField.data('cloudname'),
                 api_key         : firstField.data('api')
             });
