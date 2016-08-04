@@ -61,10 +61,11 @@
     $('#cloudinary-cms-content').entwine({
 
         onmatch : function() {
-            if(!window.cloudinary){
+            var scriptSrc = '//widget.cloudinary.com/global/all.js';
+            if($('script[src="' + scriptSrc + '"]')){
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
-                script.src = '//widget.cloudinary.com/global/all.js';
+                script.src = scriptSrc;
                 document.body.appendChild(script);
             }
         }
