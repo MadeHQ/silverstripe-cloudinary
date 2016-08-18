@@ -177,13 +177,7 @@
 
         $('._js-cloudinary_holer').entwine({
             onmatch : function() {
-
-                if(this.data('type') == 'raw'){
-                    this.find('._js-image-data').hide();
-                } else {
-                    this.find('._js-raw-data').hide();
-                }
-
+                this.find('._js-hidden-data').hide();
             }
         });
 
@@ -192,7 +186,7 @@
             onmatch: function() {
                 this.data('url', this.val());
                 var holder = this.closest('.field.cloudinaryfile');
-                if($(this).data('isRaw')) {
+                if($(this).data('isRaw') && !this.val()) {
                     holder.find('.cloudinary__fields').hide();
                 }
 
@@ -273,14 +267,10 @@
 
                             } else {
 
-                                if(data.IsRaw === false) {
-                                    holder.find('._js-raw-data').hide();
-                                    holder.find('._js-image-data').show();
-                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                                } else {
-                                    holder.find('._js-image-data').hide();
-                                    holder.find('._js-raw-data').show();
+                                if(data.IsRaw) {
                                     holder.find('._js-attribute[name*="FileSize"]').val('');
+                                } else {
+                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
                                 }
                                 for(var key in data.Meta) {
                                     if (key === 'Duration' && data.Meta[key]) {

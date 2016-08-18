@@ -27,6 +27,7 @@ class CloudinaryImageField extends CloudinaryFileField
             ->setName($name . "[" . $creditField->getName() . "]")
             ->addExtraClass('_js-attribute');
         $this->children->push($creditField);
+        $this->getChildren()->dataFieldByName($name . '[FileTitle]')->HiddenFileField = true;
     }
 
     protected function getSubFields()

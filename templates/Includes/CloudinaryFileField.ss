@@ -5,7 +5,7 @@
     </div>
     <div class="cloudinary__fields <% if $isPopuplated %>cloudinary__fields--expanded<% end_if %>">
         <% loop $DataFields %>
-            <div class="cloudinary__fields__field <% if $CommonField %>_js-common<% else_if $RawFileField %>_js-raw-data<% else %>_js-image-data<% end_if %>">
+            <div class="cloudinary__fields__field <% if $CommonField %>_js-common<% else_if $HiddenFileField %>_js-hidden-data<% else %>_js-image-data<% end_if %>">
                 {$FieldHolder}
             </div>
         <% end_loop %>
