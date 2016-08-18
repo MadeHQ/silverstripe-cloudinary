@@ -5,6 +5,9 @@
     var jQueryCloudinary = jQuery.cloudinary;
 
     $.entwine('ss', function($) {
+        function getFileNameFromImageData(imageData) {
+            return imageData.format ? imageData.public_id + '.' + imageData.format : imageData.public_id;
+        }
 
         var updateCMSFieldsBrowser = function(isCMS) {
             cloudinaryCMSFields = isCMS;
@@ -34,7 +37,7 @@
 
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
-                return jQueryCloudinary.image(imageData.public_id + '.' + imageData.format, {
+                return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
                     width       : 150,
                     height      : 150,
                     crop        : 'fill',
@@ -104,7 +107,7 @@
                             '<div class="preview"><div class="plus">+</div></div>' +
                             '<div class="meta">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
-                                '<p>' +  image.public_id+ '.' +  image.format+ '</p>'
+                                '<p>' + getFileNameFromImageData(image) + '</p>'
                             '</div>'
                             '</div>';
 
