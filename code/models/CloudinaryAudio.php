@@ -4,7 +4,7 @@ class CloudinaryAudio extends CloudinaryFile
 {
     private static $db = array(
         'Duration' => 'Time',
-        'Caption' => 'Varchar(200)'
+        'Composer' => 'Varchar(200)',
     );
 
     public function getCMSFields()
@@ -16,13 +16,13 @@ class CloudinaryAudio extends CloudinaryFile
 
     public function getFrontEndFields($params = null) {
         $fields = parent::getFrontEndFields($params);
-        $fields->replaceField('Caption', TextField::create('Caption'));
+        $fields->replaceField('Composer', TextField::create('Composer'));
         $fields->replaceField('Duration', TimeField::create('Duration')->setInterval(1));
         return $fields;
     }
 
     public function getTitle()
     {
-        return parent::getTitle() ?: $this->Caption;
+        return parent::getTitle() ?: $this->Composer . ' - ' . $this->FileDescription;
     }
 }

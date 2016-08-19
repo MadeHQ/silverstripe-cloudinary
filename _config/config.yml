@@ -34,12 +34,16 @@ CloudinaryAdmin:
   # These are the fields that will populate the "Meta" data on the `getfiledata` fall
   #   If there is an array of fields then only the first that returns a value will be used
   metaDataFieldRelations:
-    Caption:
-      - exif.ImageDescription
-      - context.custom.caption
     FileTitle:
       - context.custom.title
       - public_id
+    FileDescription:
+      - context.custom.description
+    Caption:
+      - exif.ImageDescription
+      - context.custom.caption
+    Composer:
+      - context.custom.composer
     Credit:
       - exif.Copyright
       - context.custom.alt
