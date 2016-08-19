@@ -34,8 +34,9 @@ class CloudinaryImage extends CloudinaryFile
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
+        $this->hideCMSFields($fields, array('FileTitle'));
         if (!$this->ID) {
-            $this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity', 'FileTitle'));
+            $this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity'));
         }
 
         return $fields;
@@ -47,6 +48,7 @@ class CloudinaryImage extends CloudinaryFile
         $fields->replaceField('Caption', TextField::create('Caption'));
         $fields->replaceField('Credit', TextField::create('Credit'));
         $fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
+        $fields->replaceField('FileTitle', HiddenField::create('FileTitle'));
         return $fields;
     }
 

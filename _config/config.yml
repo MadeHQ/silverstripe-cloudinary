@@ -37,6 +37,9 @@ CloudinaryAdmin:
     Caption:
       - exif.ImageDescription
       - context.custom.caption
+    FileTitle:
+      - context.custom.title
+      - public_id
     Credit:
       - exif.Copyright
       - context.custom.alt

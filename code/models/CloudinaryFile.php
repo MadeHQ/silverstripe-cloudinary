@@ -30,7 +30,7 @@ class CloudinaryFile extends DataObject
         $fields->removeByName(array('URL', 'Credit', 'Caption', 'FileSize', 'Format'));
         $fields->dataFieldByName('FileTitle')->setTitle('Title');
         $fields->dataFieldByName('FileDescription')->setTitle('Description');
-        $this->hideCMSFields($fields, array('FileTitle', 'FileDescription'));
+        $this->hideCMSFields($fields, array('FileDescription'));
 
         return $fields;
     }

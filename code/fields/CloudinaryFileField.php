@@ -23,8 +23,8 @@ class CloudinaryFileField extends FormField
 				$field->addExtraClass('show_field');
 			}
 
-			if(in_array($field->getName(), array('FileTitle', 'FileDescription'))) {
-				$field->RawFileField = true;
+			if(in_array($field->getName(), array('FileDescription'))) {
+				$field->HiddenFileField = true;
 			} else if ($field->getName() == 'URL') {
 				$field->CommonField = true;
 			}
@@ -48,15 +48,25 @@ class CloudinaryFileField extends FormField
 		return $this->children->dataFieldByName($this->getName() . "[URL]")->setAttribute('data-is-raw', "$isRaw");
 	}
 
-	public function DataFields() {
-		$dataFields = new FieldList();
-		foreach($this->children as $field){
-			if(strpos($field->getName(), 'URL') === false){
-				$dataFields->push($field);
-			}
-		}
-		return $dataFields;
-	}
+    public function DataFields() {
+        $dataFields = new FieldList();
+        $record = $this->getForm()->getRecord();
+        $thisFieldName = $this->Name;
+        $thisField = $record->$thisFieldName();
+
+		foreach($this->getChildren() as $field){
+            $fieldName = $field->getName();
+            preg_match('/\[(\S+)\]/', $fieldName, $matches);
+            $fieldName = $matches[1];
+            if(strpos($fieldName, 'URL') === false){
+                if ($thisField->$fieldName) {
+                    $field->setValue($thisField->$fieldName);
+                }
+                $dataFields->push($field);
+            }
+        }
+        return $dataFields;
+    }
 
     public function Field($properties = array()) {
         Requirements::css('cloudinary/css/CloudinaryFileField.css');
@@ -142,7 +152,9 @@ class CloudinaryFileField extends FormField
     }
 
     protected function updateFileBeforeSave(CloudinaryFile &$file, &$value = array(), DataObjectInterface &$record)
-    {}
+    {
+        $file->FileTitle = $value['FileTitle'];
+    }
 
 	public function IsRaw()
 	{

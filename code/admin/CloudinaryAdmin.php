@@ -214,7 +214,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
                 $error = $e->getMessage();
             }
             if($resource) {
-                $format = $resource['format'];
+                $format = @$resource['format'];
                 foreach ($this->getMetaDataFieldsToReturn() as $key => $lookupKeys) {
                     if (!is_array($lookupKeys)) {
                         $lookupKeys = array($lookupKeys);

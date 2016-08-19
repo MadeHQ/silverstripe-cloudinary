@@ -5,6 +5,9 @@
     var jQueryCloudinary = jQuery.cloudinary;
 
     $.entwine('ss', function($) {
+        function getFileNameFromImageData(imageData) {
+            return imageData.format ? imageData.public_id + '.' + imageData.format : imageData.public_id;
+        }
 
         var updateCMSFieldsBrowser = function(isCMS) {
             cloudinaryCMSFields = isCMS;
@@ -34,7 +37,7 @@
 
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
-                return jQueryCloudinary.image(imageData.public_id + '.' + imageData.format, {
+                return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
                     width       : 150,
                     height      : 150,
                     crop        : 'fill',
@@ -104,7 +107,7 @@
                             '<div class="preview"><div class="plus">+</div></div>' +
                             '<div class="meta">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
-                                '<p>' +  image.public_id+ '.' +  image.format+ '</p>'
+                                '<p>' + getFileNameFromImageData(image) + '</p>'
                             '</div>'
                             '</div>';
 
@@ -174,13 +177,7 @@
 
         $('._js-cloudinary_holer').entwine({
             onmatch : function() {
-
-                if(this.data('type') == 'raw'){
-                    this.find('._js-image-data').hide();
-                } else {
-                    this.find('._js-raw-data').hide();
-                }
-
+                this.find('._js-hidden-data').hide();
             }
         });
 
@@ -189,7 +186,7 @@
             onmatch: function() {
                 this.data('url', this.val());
                 var holder = this.closest('.field.cloudinaryfile');
-                if($(this).data('isRaw')) {
+                if($(this).data('isRaw') && !this.val()) {
                     holder.find('.cloudinary__fields').hide();
                 }
 
@@ -270,14 +267,10 @@
 
                             } else {
 
-                                if(data.IsRaw === false) {
-                                    holder.find('._js-raw-data').hide();
-                                    holder.find('._js-image-data').show();
-                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                                } else {
-                                    holder.find('._js-image-data').hide();
-                                    holder.find('._js-raw-data').show();
+                                if(data.IsRaw) {
                                     holder.find('._js-attribute[name*="FileSize"]').val('');
+                                } else {
+                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
                                 }
                                 for(var key in data.Meta) {
                                     if (key === 'Duration' && data.Meta[key]) {
