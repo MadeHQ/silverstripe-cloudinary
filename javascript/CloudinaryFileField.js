@@ -240,11 +240,10 @@
                     }, function(data) {
                         if(!data.Error) {
                             holder.find('.cloudinary__fields').addClass('cloudinary__fields--expanded');
-
+                            holder.find('._js-attribute[name$="[FileSize]"]').val(data.FileSize);
+                            holder.find('._js-attribute[name$="[Format]"]').val(data.Format);
                             if(cloudinaryCMSFields || input.hasClass('_js-cms-fields')){
                                 // FileSize
-                                $('#Form_ItemEditForm_FileSize_ReadOnly, #Form_ItemEditForm_FileSize').val(data.FileSize);
-                                $('#Form_ItemEditForm_Format_ReadOnly, #Form_ItemEditForm_Format').val(data.Format);
                                 var showHide;
 
                                 if(data.IsRaw === false) {
@@ -266,12 +265,6 @@
 
 
                             } else {
-
-                                if(data.IsRaw) {
-                                    holder.find('._js-attribute[name*="FileSize"]').val('');
-                                } else {
-                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                                }
                                 for(var key in data.Meta) {
                                     if (key === 'Duration' && data.Meta[key]) {
                                         data.Meta[key] = getDurationFormat(data.Meta[key]);
