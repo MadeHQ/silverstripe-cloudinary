@@ -51,6 +51,8 @@ class CloudinaryImage extends CloudinaryFile
         $fields->replaceField('Credit', TextField::create('Credit'));
         $fields->dataFieldByName('Gravity')->setSource(self::$arr_gravity);
         $fields->replaceField('FileTitle', HiddenField::create('FileTitle'));
+        $fields->replaceField('Height', TextField::create('Height'));
+        $fields->replaceField('Width', TextField::create('Width'));
         return $fields;
     }
 
