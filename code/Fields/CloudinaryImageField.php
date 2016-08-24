@@ -27,7 +27,22 @@ class CloudinaryImageField extends CloudinaryFileField
             ->setName($name . "[" . $creditField->getName() . "]")
             ->addExtraClass('_js-attribute');
         $this->children->push($creditField);
+
+        $heightField = $frontEndFields->fieldByName('Height');
+        $heightField->HiddenFileField = true;
+        $heightField
+            ->setName($name . "[" . $heightField->getName() . "]")
+            ->addExtraClass('_js-attribute');
+        $this->children->push($heightField);
+
+        $widthField = $frontEndFields->fieldByName('Width');
+        $widthField->HiddenFileField = true;
+        $widthField
+            ->setName($name . "[" . $widthField->getName() . "]")
+            ->addExtraClass('_js-attribute');
+        $this->children->push($widthField);
         $this->getChildren()->dataFieldByName($name . '[FileTitle]')->HiddenFileField = true;
+
     }
 
     protected function getSubFields()
@@ -40,6 +55,8 @@ class CloudinaryImageField extends CloudinaryFileField
         $file->Gravity = $value['Gravity'];
         $file->Caption = $value['Caption'];
         $file->Credit = $value['Credit'];
+        $file->Width = $value['Width'];
+        $file->Height = $value['Height'];
         parent::updateFileBeforeSave($file, $value, $record);
     }
 }

@@ -20,6 +20,8 @@ class CloudinaryImage extends CloudinaryFile
         'Gravity' => 'Enum("auto,center,north_east,north,north_west,west,south_west,south,south_east,east", "auto")',
         'Credit' => 'Varchar(200)',
         'Caption' => 'Varchar(200)',
+        'Width' => 'Int',
+        'Height' => 'Int',
     );
 
     public function getTitle() {
@@ -34,7 +36,7 @@ class CloudinaryImage extends CloudinaryFile
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $this->hideCMSFields($fields, array('FileTitle'));
+        $this->hideCMSFields($fields, array('FileTitle', 'Width', 'Height'));
         if (!$this->ID) {
             $this->hideCMSFields($fields, array('Credit', 'Caption', 'Gravity'));
         }

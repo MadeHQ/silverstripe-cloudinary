@@ -78,6 +78,8 @@ By default the following meta fields for each of the field types
  * CloudinaryImage:
    * Caption: Uses the `ImageDescription` from the image `exif` data then the `caption` meta data field.
    * Credit: Uses the `Copyright` from the image `exif` data then the `alt` meta data field.
+   * Width: Uses the `ExifImageWidth` from `image_metadata` then then `ExifImageWidth` from `exif` and then the `width`
+   * Height:  Uses the `ExifImageHeight` from `image_metadata` and then the `height`
  * CloudinaryAudio:
    * Composer: Uses the `composer` value
    * duration: Uses the duration returned from cloudinary
