@@ -6,7 +6,7 @@
 
     $.entwine('ss', function($) {
         function getFileNameFromImageData(imageData) {
-            return imageData.format ? imageData.public_id + '.' + imageData.format : imageData.public_id;
+            return imageData.public_id;
         }
 
         var updateCMSFieldsBrowser = function(isCMS) {
@@ -38,17 +38,24 @@
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
                 return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
-                    width       : 150,
-                    height      : 150,
-                    crop        : 'fill',
-                    quality     : 50
+                    width: 150,
+                    height: 150,
+                    crop: 'fill',
+                    quality: 5,
+                    format: 'jpg'
                 });
             });
         }
 
         var loadVideos = function () {
             loadBrowserWindow('video', function (imageData) {
-                return '<img src="' + imageData.thumbnail_url + '">';
+                return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
+                    width: 150,
+                    height: 150,
+                    crop: 'fill',
+                    format: 'gif',
+                    resource_type: 'video'
+                });
             });
         }
 
@@ -107,8 +114,9 @@
                             '<div class="preview"><div class="plus">+</div></div>' +
                             '<div class="meta">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
-                                '<p>' + getFileNameFromImageData(image) + '</p>'
-                            '</div>'
+                                '<p>' + getFileNameFromImageData(image) + '</p>' +
+                                (image.format ? '<p class="format">' + image.format + '</p>' : '') +
+                            '</div>' +
                             '</div>';
 
 
