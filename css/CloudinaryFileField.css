@@ -201,6 +201,9 @@
     display: table-cell;
     vertical-align: top;
 }
+.cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(5n + 1) {
+    clear: left;
+}
 .cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(5n + 4) .meta,
 .cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(5n + 5) .meta {
     left: auto;
