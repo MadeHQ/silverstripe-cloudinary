@@ -33,11 +33,18 @@ class CloudinaryFileField extends FormField
 		}
 
 
-		$this->children = $frontEndFields;
-		$this->children->push(new HiddenField($name . "[ObjectID]"));
+        $this->children = $frontEndFields;
+        $this->hideSubFieldByName('ObjectID');
 
-		parent::__construct($name, $title, $value);
-	}
+        parent::__construct($name, $title, $value);
+    }
+
+    public function hideSubFieldByName($fieldName)
+    {
+        $name = $this->getName();
+        $fieldName = $name . '[' . $fieldName . ']';
+        $this->children->replaceField($fieldName, new HiddenField($fieldName));
+    }
 
 	public function getChildren() {
 		return $this->children;
