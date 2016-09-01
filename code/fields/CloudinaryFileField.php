@@ -154,6 +154,7 @@ class CloudinaryFileField extends FormField
     protected function updateFileBeforeSave(CloudinaryFile &$file, &$value = array(), DataObjectInterface &$record)
     {
         $file->FileTitle = $value['FileTitle'];
+        $file->FileDescription = $value['FileDescription'];
     }
 
 	public function IsRaw()

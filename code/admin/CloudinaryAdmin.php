@@ -232,13 +232,23 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
             $error = "Please enter a valid cloudinary source url.";
         }
 
-        return $this->getJsonResponseFromData(array(
+        $response = $this->getJsonResponseFromData(array(
             'IsRaw' => $isRaw,
             'FileSize' => $fileSize,
             'Format' => $format,
             'Error' => $error,
             'Meta' => $metaData,
         ));
+        $this->addCacheHeadersToFileDataResponse($response);
+        return $response;
+    }
+
+    protected function addCacheHeadersToFileDataResponse(SS_HTTPResponse $response)
+    {
+        $cacheLength = Config::inst()->get(get_class($this), 'file_data_cache_length');
+        if ($cacheLength) {
+            $response->addHeader('Cache-Control', sprintf('max-age=%s, public', $cacheLength));
+        }
     }
 
     /**

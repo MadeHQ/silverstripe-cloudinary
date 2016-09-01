@@ -6,7 +6,7 @@
 
     $.entwine('ss', function($) {
         function getFileNameFromImageData(imageData) {
-            return imageData.format ? imageData.public_id + '.' + imageData.format : imageData.public_id;
+            return imageData.public_id;
         }
 
         var updateCMSFieldsBrowser = function(isCMS) {
@@ -38,17 +38,24 @@
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
                 return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
-                    width       : 150,
-                    height      : 150,
-                    crop        : 'fill',
-                    quality     : 50
+                    width: 150,
+                    height: 150,
+                    crop: 'fill',
+                    quality: 5,
+                    format: 'jpg'
                 });
             });
         }
 
         var loadVideos = function () {
             loadBrowserWindow('video', function (imageData) {
-                return '<img src="' + imageData.thumbnail_url + '">';
+                return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
+                    width: 150,
+                    height: 150,
+                    crop: 'fill',
+                    format: 'gif',
+                    resource_type: 'video'
+                });
             });
         }
 
@@ -107,8 +114,9 @@
                             '<div class="preview"><div class="plus">+</div></div>' +
                             '<div class="meta">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
-                                '<p>' + getFileNameFromImageData(image) + '</p>'
-                            '</div>'
+                                '<p>' + getFileNameFromImageData(image) + '</p>' +
+                                (image.format ? '<p class="format">' + image.format + '</p>' : '') +
+                            '</div>' +
                             '</div>';
 
 
@@ -240,11 +248,10 @@
                     }, function(data) {
                         if(!data.Error) {
                             holder.find('.cloudinary__fields').addClass('cloudinary__fields--expanded');
-
+                            holder.find('._js-attribute[name$="[FileSize]"]').val(data.FileSize);
+                            holder.find('._js-attribute[name$="[Format]"]').val(data.Format);
                             if(cloudinaryCMSFields || input.hasClass('_js-cms-fields')){
                                 // FileSize
-                                $('#Form_ItemEditForm_FileSize_ReadOnly, #Form_ItemEditForm_FileSize').val(data.FileSize);
-                                $('#Form_ItemEditForm_Format_ReadOnly, #Form_ItemEditForm_Format').val(data.Format);
                                 var showHide;
 
                                 if(data.IsRaw === false) {
@@ -266,12 +273,6 @@
 
 
                             } else {
-
-                                if(data.IsRaw) {
-                                    holder.find('._js-attribute[name*="FileSize"]').val('');
-                                } else {
-                                    holder.find('._js-attribute[name*="FileSize"]').val(data.FileSize);
-                                }
                                 for(var key in data.Meta) {
                                     if (key === 'Duration' && data.Meta[key]) {
                                         data.Meta[key] = getDurationFormat(data.Meta[key]);
