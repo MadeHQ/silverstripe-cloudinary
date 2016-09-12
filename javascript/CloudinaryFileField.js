@@ -5,6 +5,20 @@
     var jQueryCloudinary = jQuery.cloudinary;
 
     $.entwine('ss', function($) {
+        /**
+         * used for unique ID
+         */
+        function hashCode (str){
+            var hash = 0;
+            if (str.length == 0) return hash;
+            for (i = 0; i < str.length; i++) {
+                char = str.charCodeAt(i);
+                hash = ((hash<<5)-hash)+char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        }
+
         function getFileNameFromImageData(imageData) {
             return imageData.public_id;
         }
@@ -67,11 +81,34 @@
 
         var loadAudios = function () {
             loadBrowserWindow('audio', function (imageData) {
-                return '<audio controls src="' + imageData.secure_url + '">Your browser does not support the <code>audio</code> element.</audio>';
+                return '<div class="cp-jplayer" data-url="'+imageData.secure_url+'" data-hash="'+hashCode(imageData.secure_url)+'"></div>' +
+                '<div id="id_'+hashCode(imageData.secure_url)+'" class="cp-container">' +
+    				'<div class="cp-buffer-holder">' + //<!-- .cp-gt50 only needed when buffer is > than 50% -->
+    					'<div class="cp-buffer-1"></div>' +
+    					'<div class="cp-buffer-2"></div>' +
+    				'</div>' +
+    				'<div class="cp-progress-holder">' + //<!-- .cp-gt50 only needed when progress is > than 50% -->
+    					'<div class="cp-progress-1"></div>' +
+    					'<div class="cp-progress-2"></div>' +
+    				'</div>' +
+    				'<div class="cp-circle-control"></div>' +
+    				'<ul class="cp-controls">' +
+    					'<li><a class="cp-play" tabindex="1">play</a></li>' +
+    					'<li><a class="cp-pause" style="display:none;" tabindex="1">pause</a></li>' + //<!-- Needs the inline style here, or jQuery.show() uses display:inline instead of display:block -->
+    				'</ul>' +
+    			'</div>';
+            }, function () {
+                $('.cp-jplayer').each(function () {
+                    var $this = $(this);
+                    var options = {};
+                    var format = $this.data('format') || $this.data('url').replace(/^.*\.(\S*)/, '$1');
+                    options[format] = $(this).data('url');
+                    new CirclePlayer(this, options, {cssSelectorAncestor: '#id_' + $this.data('hash')});
+                });
             });
         }
 
-        var loadBrowserWindow = function(type, previewGenerator){
+        var loadBrowserWindow = function(type, previewGenerator, postLoadCallback){
 
             var firstField = $('._js-cloudinary_holer:first');
             jQueryCloudinary.config({
@@ -130,6 +167,9 @@
 
                     var now = new Date();
                     browserWindow.data('lastUpdated', now);
+                    if (postLoadCallback) {
+                        postLoadCallback();
+                    }
                     browserWindow.addClass('loaded');
 
                 });
@@ -339,7 +379,4 @@
         ss.setCloudinaryURLField = setCloudinaryURLField;
 
     });
-
-
-
 })(jQuery);

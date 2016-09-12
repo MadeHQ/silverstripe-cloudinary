@@ -1,3 +1,4 @@
+
 .cloudinary {
 
 }
@@ -39,6 +40,23 @@
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     background: url('../../../framework/admin/images/spinner.gif') center no-repeat;
+
+    /***  Prevents long words from causing overflow  ***/
+    /* These are technically the same, but use both */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+
+    -ms-word-break: break-all;
+    /* This is the dangerous one in WebKit, as it breaks things wherever */
+    word-break: break-all;
+    /* Instead use this non-standard one: */
+    word-break: break-word;
+
+    /* Adds a hyphen where the word breaks, if supported (No Blink) */
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
 }
 
 .cloudinary__browser__window.loaded {
@@ -66,7 +84,6 @@
     background-color: #F0F3F4;
 }
 
-.cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
 .cloudinary-file-type-video .cloudinary__browser__window__item .preview {
     padding-left: 35px;
 }
@@ -92,22 +109,24 @@
     background-color: #FFF !important;
     border-collapse: separate;
     border-spacing: 1px;
-    display: table;
-    margin: 20px;
+    display: block;
+    margin: 0;
     padding: 0;
-    width: 90%;
+    width: 100%;
 }
 .cloudinary-file-type-audio .cloudinary__browser__window__item,
 .cloudinary-file-type-file .cloudinary__browser__window__item,
 .cloudinary-file-type-video .cloudinary__browser__window__item {
-    display: table-row;
+    border-bottom: 2px solid #888;
+    border-top: 1px solid #333;
+    display: block;
+    clear: both;
 }
 .cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
 .cloudinary-file-type-file .cloudinary__browser__window__item .preview,
 .cloudinary-file-type-video .cloudinary__browser__window__item .preview {
     background-color: #F0F3F4;
-    display: table-cell;
-    max-width: 33%;
+    display: block;
     position: relative;
 }
 .cloudinary-file-type-image .cloudinary__browser__window__item {
@@ -171,6 +190,9 @@
     left: auto;
     right: -6px;
 }
+.cloudinary-file-type-audio .cloudinary__browser__window__item .plus {
+    left: -99em;
+}
 .cloudinary__browser__window__item:hover .plus {
     display: block;
 }
@@ -198,8 +220,7 @@
 .cloudinary-file-type-audio .cloudinary__browser__window__item .meta,
 .cloudinary-file-type-file .cloudinary__browser__window__item .meta,
 .cloudinary-file-type-video .cloudinary__browser__window__item .meta {
-    display: table-cell;
-    vertical-align: top;
+    display: block;
 }
 .cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(5n + 1) {
     clear: left;
@@ -214,10 +235,40 @@
     font-weight: bold;
 }
 
+.cloudinary-file-type-image .cloudinary__browser__window__item .meta p:last-child {
+    margin-bottom: 0;
+}
 .cloudinary-file-type-image .cloudinary__browser__window__item .meta p {
     margin: 0;
 }
 
 .cloudinary-file-type-image .cloudinary__browser__window__item:hover .meta {
     display: block;
+}
+
+
+/** Custom CSS for CirclePlayer **/
+
+.cp-controls .cp-play {
+    background-size: 200% !important;
+}
+.cp-controls .cp-play:hover {
+    background-position: -25px 0;
+}
+.cp-controls .cp-pause {
+    background-size: 200% !important;
+    background-position: 0 -25px;
+}
+.cp-controls .cp-pause:hover {
+    background-position: -25px -25px;
+}
+.cp-controls li a {
+    height: 25px;
+    left: 13px;
+    top: 13px;
+    width: 25px;
+}
+.cp-container {
+    padding: 0;
+    background-size: contain;
 }
