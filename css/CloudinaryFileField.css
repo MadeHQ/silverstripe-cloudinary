@@ -26,7 +26,9 @@
 .cloudinary__fields__field .field .middleColumn {
     margin: 0;
 }
-
+.cloudinary__no-am-pm::-webkit-datetime-edit-ampm-field {
+   display: none;
+ }
 .cloudinary__browser__window {
     position: absolute;
     width: 100%;
