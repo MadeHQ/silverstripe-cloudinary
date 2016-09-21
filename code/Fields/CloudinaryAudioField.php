@@ -14,7 +14,7 @@ class CloudinaryAudioField extends CloudinaryFileField
         $lengthField
             ->setName($name . "[" . $lengthField->getName() . "]")
             ->addExtraClass('_js-attribute')
-            // ->setInterval(2)
+            ->addExtraClass('cloudinary__no-am-pm')
             ->setConfig('timeformat', 'HH:mm:ss');
         $this->children->push($lengthField);
 
