@@ -132,7 +132,7 @@ class CloudinaryFileField extends FormField
             $className = preg_replace('/(\w+)Field$/', '$1', get_class($this));
             $reflectionClass = new \ReflectionClass($className);
             $file = null;
-            if($value['ObjectID']){
+            if(array_key_exists('ObjectID', $value) && $value['ObjectID']){
                 $file = call_user_func(array($className, 'get'))->byID($value['ObjectID']);
             }
             if(!$file){
