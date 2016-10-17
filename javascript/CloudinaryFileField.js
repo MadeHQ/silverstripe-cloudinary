@@ -110,7 +110,7 @@
 
                         var date = new Date(image.created_at);
 
-                        var html = '<div class="cloudinary__browser__window__item" data-url="' + this.url +'">' +
+                        var html = '<div class="cloudinary__browser__window__item" data-url="' + this.secure_url +'">' +
                             '<div class="preview"><div class="plus">+</div></div>' +
                             '<div class="meta">' +
                                 '<time>Uploaded: ' + date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + '</time>' +
