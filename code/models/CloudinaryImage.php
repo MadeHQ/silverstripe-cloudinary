@@ -73,6 +73,10 @@ class CloudinaryImage extends CloudinaryFile
         if ($gravity) {
             $options['gravity'] = $gravity;
         }
+        // These crops don't support gravity, Cloudinary returns a 400 if passed
+        if (in_array($crop, array('fit', 'limit', 'mfit', 'pad', 'lpad'))) {
+            unset($options['gravity']);
+        }
 
         $cloudinaryID = CloudinaryUtils::public_id($this->URL);
         $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
