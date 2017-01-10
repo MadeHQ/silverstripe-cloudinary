@@ -177,7 +177,8 @@ class CloudinaryFile extends DataObject
 
         $data = $file->customise(array(
             'Width' => isset($arguments['width']) ? $arguments['width'] : null,
-            'Height' => isset($arguments['height']) ? $arguments['height'] : null
+            'Height' => isset($arguments['height']) ? $arguments['height'] : null,
+            'ExtraClass' => isset($arguments['class']) ? $arguments['class'] : null,
         ));
 
         return $data->renderWith('CloudinaryImageShortCode');
