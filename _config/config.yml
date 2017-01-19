@@ -16,6 +16,9 @@ CloudinaryUtils:
     Quality: 70
     UploadPreset: ''
 
+CloudinaryFileField:
+  mustBeSecure: true
+
 CloudinaryUploadField:
   defaultConfig:
     autoUpload: true

@@ -4,6 +4,7 @@ class CloudinaryFileField extends FormField
 {
 	private $children = null;
 	private $objectID = 0;
+    private $mustBeSecure = null;
 
 	public $FileType = 'File';
 
@@ -170,4 +171,36 @@ class CloudinaryFileField extends FormField
 			return CloudinaryUtils::resource_type($field->value) == 'raw';
 		}
 	}
+
+    public function setMustBeSecure($state)
+    {
+        $this->mustBeSecure = $state;
+        return $this;
+    }
+
+    public function clearMustBeSecure()
+    {
+        $this->mustBeSecure = null;
+        return $this;
+    }
+
+    protected function urlMustBeSecure()
+    {
+        if ($this->mustBeSecure === true || $this->mustBeSecure === false) {
+            return $this->mustBeSecure;
+        }
+        return Config::inst()->get(get_class($this), 'mustBeSecure', Config::INHERITED);
+    }
+
+    protected function urlIsSecure()
+    {
+        return preg_match('/^https:\/\//', $this->dataValue()['URL']);
+    }
+
+    public function validate($validator)
+    {
+        if ($this->urlMustBeSecure() && !$this->urlIsSecure()) {
+            $validator->validationError($this->getName(), 'URL must be secure', 'error');
+        }
+    }
 }
