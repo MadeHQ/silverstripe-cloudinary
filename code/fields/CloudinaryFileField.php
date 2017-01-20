@@ -194,7 +194,8 @@ class CloudinaryFileField extends FormField
 
     protected function urlIsSecure()
     {
-        return preg_match('/^https:\/\//', $this->dataValue()['URL']);
+        $url = $this->dataValue()['URL'];
+        return empty($url) || preg_match('/^https:\/\//', $url);
     }
 
     public function validate($validator)
