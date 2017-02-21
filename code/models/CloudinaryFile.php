@@ -19,9 +19,7 @@ class CloudinaryFile extends DataObject
     );
 
     public function getTitle() {
-        if ($this->URL && CloudinaryUtils::resource_type($this->URL) == 'raw') {
-            return $this->FileTitle;
-        }
+        return $this->FileTitle;
     }
 
     public function getCMSFields() {
