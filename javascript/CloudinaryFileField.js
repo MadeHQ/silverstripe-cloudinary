@@ -41,7 +41,7 @@
                     width: 150,
                     height: 150,
                     crop: 'fill',
-                    quality: 5,
+                    quality: 50,
                     format: 'jpg'
                 });
             });
