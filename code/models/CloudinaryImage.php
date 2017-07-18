@@ -56,28 +56,38 @@ class CloudinaryImage extends CloudinaryFile
         return $fields;
     }
 
-    public function Image( $width, $height, $crop, $quality = 'auto', $gravity = false) {
+    private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false) {
         $options = array(
             'secure' => true,
-            'fetch_format' => 'auto',
-            'quality' =>  $quality,
             'width' => $width,
             'height' => $height,
-            'gravity' => $gravity ?: $this->Gravity
+            'fetch_format' => 'auto',
+            'quality' =>  $quality,
+            $gravity ?: $this->Gravity
         );
 
-        if($crop){
+        if ($crop) {
             $options['crop'] = $crop;
         }
 
-        if ($gravity) {
-            $options['gravity'] = $gravity;
-        }
         // These crops don't support gravity, Cloudinary returns a 400 if passed
         if (in_array($crop, array('fit', 'limit', 'mfit', 'pad', 'lpad'))) {
             unset($options['gravity']);
         }
 
+        return $options;
+    }
+
+    public function Image($width, $height, $crop, $quality = 'auto', $gravity = false) {
+        $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity);
+        $cloudinaryID = CloudinaryUtils::public_id($this->URL);
+        $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
+        return Cloudinary::cloudinary_url($fileName, $options);
+    }
+
+    public function LQIPImage($width, $height, $crop) {
+        $options = $this->getDefaultImageOptions($width, $height, $crop,'auto:low');
+        $options['effect'] = 'blur:999999';
         $cloudinaryID = CloudinaryUtils::public_id($this->URL);
         $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
         return Cloudinary::cloudinary_url($fileName, $options);
