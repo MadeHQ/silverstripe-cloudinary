@@ -4,6 +4,7 @@
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "cloudinary"],
     "license": "BSD-3-Clause",
+    "version": "3.0.0",
     "support": {
         "email": "developers@mademedia.co.uk",
         "issues": "https://github.com/MadeHQ/silverstripe-cloudinary/issues",
