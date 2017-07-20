@@ -63,7 +63,7 @@ class CloudinaryImage extends CloudinaryFile
             'height' => $height,
             'fetch_format' => 'auto',
             'quality' =>  $quality,
-            $gravity ?: $this->Gravity
+            'gravity' => $gravity ?: $this->Gravity
         );
 
         if ($crop) {
