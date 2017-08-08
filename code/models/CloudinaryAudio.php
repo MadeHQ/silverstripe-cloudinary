@@ -10,14 +10,14 @@ class CloudinaryAudio extends CloudinaryFile
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $fields->replaceField('Duration', TimeField::create('Length')->setInterval(1));
+        $fields->replaceField('Duration', HTML5TimeField::create('Length')->setInterval(1));
         return $fields;
     }
 
     public function getFrontEndFields($params = null) {
         $fields = parent::getFrontEndFields($params);
         $fields->replaceField('Composer', TextField::create('Composer'));
-        $fields->replaceField('Duration', TimeField::create('Duration')->setInterval(1));
+        $fields->replaceField('Duration', HTML5TimeField::create('Duration')->setInterval(1));
         return $fields;
     }
 
