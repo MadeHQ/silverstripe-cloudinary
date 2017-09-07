@@ -6,18 +6,20 @@ class CloudinaryImage extends CloudinaryFile
     private static $arr_gravity = array(
         'auto' => 'Auto',
         'center' => 'Center',
-        'north_east' => 'NE',
-        'north' => 'N',
-        'north_west' => 'NW',
-        'west' => 'W',
-        'south_west' => 'SW',
-        'south' => 'S',
-        'south_east' => 'SE',
-        'east' => 'E'
+        'faces' => 'Faces',
+
+        'north' => 'Top',
+        'north_east' => 'Top right',
+        'east' => 'Right',
+        'south_east' => 'Bottom right',
+        'south' => 'Bottom',
+        'south_west' => 'Bottom left',
+        'west' => 'Left',
+        'north_west' => 'Top left',
     );
 
     private static $db = array(
-        'Gravity' => 'Enum("auto,center,north_east,north,north_west,west,south_west,south,south_east,east", "auto")',
+        'Gravity' => 'Enum("auto,center,faces,north_east,north,north_west,west,south_west,south,south_east,east", "auto")',
         'Credit' => 'Varchar(200)',
         'Caption' => 'Varchar(200)',
         'Width' => 'Int',
