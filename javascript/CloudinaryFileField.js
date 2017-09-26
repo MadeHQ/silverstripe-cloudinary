@@ -38,10 +38,10 @@
         var loadImages = function () {
             loadBrowserWindow('image', function (imageData) {
                 return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
-                    width: 400,
-                    height: 400,
+                    width: 200,
+                    height: 200,
                     crop: 'fit',
-                    quality: 60,
+                    quality: 65,
                     format: 'jpg'
                 });
             });
@@ -50,8 +50,8 @@
         var loadVideos = function () {
             loadBrowserWindow('video', function (imageData) {
                 return jQueryCloudinary.image(getFileNameFromImageData(imageData), {
-                    width: 400,
-                    height: 400,
+                    width: 200,
+                    height: 200,
                     crop: 'fit',
                     format: 'gif',
                     resource_type: 'video'
