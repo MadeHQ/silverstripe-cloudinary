@@ -290,7 +290,7 @@
                     });
                 }
                 else {
-                    holder.find('.cloudinary__fields').hide();
+                    holder.find('.cloudinary__fields').removeClass('cloudinary__fields--expanded');
                 }
             }
 

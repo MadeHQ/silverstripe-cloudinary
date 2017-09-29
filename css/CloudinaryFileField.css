@@ -1,162 +1,59 @@
-.cloudinary {
-
-}
-
+/**************************
+ * Cloudinary Admin Field *
+ **************************/
 .cloudinary__url {
     overflow: hidden;
 }
-
 .cloudinary__fields {
     display: none;
 }
-
 .cloudinary__fields--expanded {
     display: block;
 }
-
-.cloudinary__fields__field {
-
-}
-
 .cloudinary__fields__field .field label.left {
     display: block;
     float: none;
 }
-
 .cloudinary__fields__field .field .middleColumn {
     margin: 0;
 }
-.cloudinary__no-am-pm::-webkit-datetime-edit-ampm-field {
-   display: none;
- }
+
+
+/*****************************
+ * Cloudinary Browser window *
+ *****************************/
 .cloudinary__browser__window {
     width: 100%;
     height: 486px;
     top: 0;
     left: 0;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: scroll;
     box-sizing: border-box;
     -o-box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    background: url('../../../framework/admin/images/spinner.gif') center no-repeat;
+    background: url(../../../framework/admin/images/spinner.gif) center no-repeat;
 }
-
 .cloudinary__browser__window.loaded {
     background: transparent;
 }
 
+
+/*****************
+ * Asset Browser *
+ *****************/
+._js-cloudinary-browser-window {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-row-gap: 5px;
+    grid-column-gap: 5px;
+}
 .cloudinary__browser__window__item {
-    position: relative;
-    box-sizing: border-box;
+    background: #FFF;
     padding: 3px;
-    cursor: pointer;
-}
-
-.cloudinary__browser__window__item .meta .format {
-    font-weight: bold;
-}
-
-.cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
-.cloudinary-file-type-audio .cloudinary__browser__window__item .meta,
-.cloudinary-file-type-file .cloudinary__browser__window__item .preview,
-.cloudinary-file-type-file .cloudinary__browser__window__item .meta,
-.cloudinary-file-type-video .cloudinary__browser__window__item .preview,
-.cloudinary-file-type-video .cloudinary__browser__window__item .meta {
-    background-color: #F0F3F4;
-}
-
-.cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
-.cloudinary-file-type-video .cloudinary__browser__window__item .preview {
-    padding-left: 35px;
-}
-
-.cloudinary-file-type-audio .cloudinary__browser__window__item:nth-child(odd) .preview,
-.cloudinary-file-type-audio .cloudinary__browser__window__item:nth-child(odd) .meta,
-.cloudinary-file-type-file .cloudinary__browser__window__item:nth-child(odd) .preview,
-.cloudinary-file-type-file .cloudinary__browser__window__item:nth-child(odd) .meta,
-.cloudinary-file-type-video .cloudinary__browser__window__item:nth-child(odd) .preview,
-.cloudinary-file-type-video .cloudinary__browser__window__item:nth-child(odd) .meta {
-    background-color: #E0E3E4;
-}
-
-.cloudinary__browser__window__item img {
-    height: auto;
-    max-width: 100%;
-    width: auto;
-}
-
-.cloudinary-file-type-audio,
-.cloudinary-file-type-file,
-.cloudinary-file-type-video {
-    background-color: #FFF !important;
-    border-collapse: separate;
-    border-spacing: 1px;
-    display: table;
-    margin: 20px;
-    padding: 0;
-    width: 90%;
-}
-.cloudinary-file-type-audio .cloudinary__browser__window__item,
-.cloudinary-file-type-file .cloudinary__browser__window__item,
-.cloudinary-file-type-video .cloudinary__browser__window__item {
-    display: table-row;
-}
-.cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
-.cloudinary-file-type-file .cloudinary__browser__window__item .preview,
-.cloudinary-file-type-video .cloudinary__browser__window__item .preview {
-    background-color: #F0F3F4;
-    display: table-cell;
-    max-width: 33%;
     position: relative;
 }
-.cloudinary-file-type-image .cloudinary__browser__window__item {
-    float: left;
-    width: 169px;
-    height: 169px;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item .preview {
-    width: 100%;
-    height: 100%;
-    border: 1px solid white;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item .preview img {
-    position: relative;
-    top: 50%;
-    left: 50%;
-    max-width: 10%;
-    max-height: 10%;
-    transform: translate(-50%, -50%) scale(10);
-}
-.cloudinary__browser__window__item:hover
-.cloudinary__browser__window__item:hover .preview,
-.cloudinary__browser__window__item:hover .meta {
-    background-color: #d3d3d3 !important;
-}
-
-.cloudinary__browser__window__item.selected {
-    background: #b3b3b3;
-}
-
-.cloudinary__browser__window__item .image {
-   width: 100%;
-}
-
-.cloudinary__browser__window__item .image img {
-    width: 120px;
-    height: 120px;
-    height: auto;
-    opacity: 0;
-    transition: all 0.5s linear;
-    -o-transition: all 0.5s linear;
-    -moz-transition: all 0.5s linear;
-    -webkit-transition: all 0.5s linear;
-}
-
-.cloudinary__browser__window__item.loaded .image img {
-    opacity: 1;
-}
-
 .cloudinary__browser__window__item .plus {
     position: absolute;
     top: -6px;
@@ -172,7 +69,7 @@
     color: #fff;
     display: none;
     background-color: #22385b;
-    background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…pZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgi…pZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==);
     background-size: 100%;
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #304e80), color-stop(100%, #142136));
     background-image: -moz-linear-gradient(#304e80, #142136);
@@ -180,15 +77,30 @@
     background-image: linear-gradient(#304e80, #142136);
     cursor: pointer;
 }
+.cloudinary__browser__window__item:hover .plus {
+    display: block;
+}
+
+
+
+/*****************
+ * Image Browser *
+ *****************/
+._js-cloudinary-browser-window.cloudinary-file-type-image {
+    grid-template-columns: 25% 25% 25% 25%;
+}
+.cloudinary-file-type-image .cloudinary__browser__window__item .preview {
+    height: 100%;
+    text-align: center;
+}
+.cloudinary-file-type-image .cloudinary__browser__window__item img {
+    max-width: 100%;
+}
 .cloudinary-file-type-image .cloudinary__browser__window__item .plus {
     left: auto;
     right: 0;
     top: 0;
 }
-.cloudinary__browser__window__item:hover .plus {
-    display: block;
-}
-
 .cloudinary-file-type-image .cloudinary__browser__window__item .meta {
     background: #f1f1f1;
     display: none;
@@ -206,34 +118,10 @@
     bottom: 0;
     transform: translateY(75%);
 }
-.cloudinary-file-type-audio .cloudinary__browser__window__item .meta,
-.cloudinary-file-type-file .cloudinary__browser__window__item .meta,
-.cloudinary-file-type-video .cloudinary__browser__window__item .meta {
-    display: table-cell;
-    vertical-align: top;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(4n + 1) {
-    clear: left;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(4n + 4) .meta {
-    left: auto;
-    right: 0;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item:nth-last-child(-n+4) .meta {
-    top: 0;
-    bottom: auto;
-    transform: translateY(-75%);
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item .meta time {
-    font-weight: bold;
-}
-
-.cloudinary-file-type-image .cloudinary__browser__window__item .meta p {
-    margin: 0;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item:hover .preview {
-    border: 1px solid #d3d3d3;
-}
 .cloudinary-file-type-image .cloudinary__browser__window__item:hover .meta {
     display: block;
 }
+/*.cloudinary__browser__window__item:hover .cloudinary__browser__window__item:hover .preview,
+.cloudinary__browser__window__item:hover .meta {
+    background-color: #d3d3d3 !important;
+}*/
