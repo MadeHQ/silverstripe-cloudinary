@@ -1,6 +1,10 @@
-/* Silverstripe Cloudinary Module Bundle
+/* Silverstripe Cloudinary Module Admin Bundle
 ===================================================================================================================== */
 
 // Import Variables:
 
 @import "variables";
+
+.invalid-cloudinary {
+    display: block;
+}

@@ -5,7 +5,11 @@ Name: silverstripe-cloudinary
 # Configure Admin Extensions:
 
 SilverStripe\Admin\LeftAndMain:
-  extra_requirements_css:
-    - "mademedia/silverstripe-cloudinary: admin/client/dist/styles/bundle.css"
+  # extra_requirements_css:
+  #   - "mademedia/silverstripe-cloudinary: admin/client/dist/styles/bundle.css"
   extra_requirements_javascript:
     - "mademedia/silverstripe-cloudinary: admin/client/dist/js/bundle.js"
+
+SilverStripe\Control\Director:
+    rules:
+        'admin//cloudinary//api//$Action//$ID': MadeHQ\Cloudinary\Controller\AdminAPI

@@ -2,8 +2,9 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
+use MadeHQ\Cloudinary\Forms\File As FileField;
 use SilverStripe\ORM\DataObject;
-// var_dump(__FILE__);die();
+
 class File extends DataObject
 {
     private static $db = [
@@ -12,4 +13,9 @@ class File extends DataObject
     ];
 
     private static $table_name = 'CloudinaryFile';
+
+    public function scaffoldFormField($title = null, $params = null)
+    {
+        return FileField::create($this->name, $title);
+    }
 }
