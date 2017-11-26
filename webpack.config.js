@@ -1,227 +1,112 @@
-/* Webpack Configuration
-===================================================================================================================== */
-
-// Load Core Modules:
-
-const path = require('path');
+const Path = require('path');
 const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
-
-// Load Plugin Modules:
-
+const webpackConfig = require('@silverstripe/webpack-config');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const {
+  resolveJS,
+  externalJS,
+  moduleJS,
+  pluginJS,
+  moduleCSS,
+  pluginCSS,
+} = webpackConfig;
 
-// Configure Paths:
-
+const ENV = process.env.NODE_ENV;
 const PATHS = {
-  ADMIN: {
-    SRC: path.resolve(__dirname, 'admin/client/src'),
-    DIST: path.resolve(__dirname, 'admin/client/dist'),
-    BUNDLES: path.resolve(__dirname, 'admin/client/src/bundles'),
-    PUBLIC: '/resources/mademedia/silverstripe-cloudinary/admin/client/dist/'
+  MODULES: 'node_modules',
+  THIRDPARTY: 'thirdparty',
+  FILES_PATH: '../',
+  ROOT: Path.resolve(),
+  SRC: Path.resolve('client/src'),
+  DIST: Path.resolve('client/dist'),
+  LEGACY_SRC: Path.resolve('client/src/legacy'),
+};
+
+const config = [
+  {
+    name: 'js',
+    entry: {
+      vendor: `${PATHS.SRC}/js/vendor.js`,
+      bundle: `${PATHS.SRC}/js/app.js`
+      // bundle: `${PATHS.SRC}/bundles/bundle.js`,
+      // vendor: `${PATHS.SRC}/bundles/vendor.js`,
+      // // legacy scripts
+      // 'LeftAndMain.Ping': `${PATHS.LEGACY_SRC}/LeftAndMain.Ping.js`,
+      // leaktools: `${PATHS.LEGACY_SRC}/leaktools.js`,
+      // MemberImportForm: `${PATHS.LEGACY_SRC}/MemberImportForm.js`,
+      // TinyMCE_sslink: `${PATHS.LEGACY_SRC}/TinyMCE_sslink.js`,
+      // 'TinyMCE_sslink-external': `${PATHS.LEGACY_SRC}/TinyMCE_sslink-external.js`,
+      // 'TinyMCE_sslink-email': `${PATHS.LEGACY_SRC}/TinyMCE_sslink-email.js`,
+      // // For IE version 10 and below. These browsers doesn't handle large
+      // // resource files so need to break browser detection and warning code into
+      // // its own file
+      // browserWarning: `${PATHS.SRC}/lib/browserWarning.js`,
+    },
+    output: {
+      path: PATHS.DIST,
+      filename: 'js/[name].js',
+    },
+    devtool: (ENV !== 'production') ? 'source-map' : '',
+    resolve: resolveJS(ENV, PATHS),
+    externals: externalJS(ENV, PATHS),
+    module: moduleJS(ENV, PATHS),
+    plugins: [
+      ...pluginJS(ENV, PATHS),
+      // Most vendor libs are loaded directly into the 'vendor' bundle (through require()
+      // calls in vendor.js). This ensures that any further require() calls in other
+      // bundles aren't duplicating libs.
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        minChunks: module => module.context && module.context.indexOf('/node_modules/') > -1,
+      }),
+    ],
   },
-  MODULE: {
-    SRC: path.resolve(__dirname, 'client/src'),
-    DIST: path.resolve(__dirname, 'client/dist'),
-    BUNDLES: path.resolve(__dirname, 'client/src/bundles'),
-    PUBLIC: '/resources/mademedia/silverstripe-cloudinary/client/dist/',
-  },
-  MODULES: path.resolve(__dirname, 'node_modules')
-};
-
-// Configure Style Loader:
-
-const style = (env, loaders) => {
-  return (env === 'production') ? ExtractTextPlugin.extract({
-    fallback: 'style-loader',
-    use: loaders
-  }) : [{ loader: 'style-loader' }].concat(loaders);
-};
-
-// Configure Rules:
-
-const rules = (env) => {
-  return [
-    {
-      test: /\.js$/,
-      use: [
-        {
-          loader: 'babel-loader'
-        }
-      ],
-      exclude: [ PATHS.MODULES ]
+  // {
+  //   name: 'i18n',
+  //   entry: {
+  //     'i18n': `${PATHS.SRC}/i18n.js`
+  //   },
+  //   output: {
+  //     path: PATHS.DIST,
+  //     filename: 'js/[name].js',
+  //   },
+  //   devtool: (ENV !== 'production') ? 'source-map' : '',
+  //   resolve: resolveJS(ENV, PATHS),
+  //   externals: externalJS(ENV, PATHS),
+  //   module: moduleJS(ENV, PATHS),
+  //   plugins: pluginJS(ENV, PATHS),
+  // },
+  {
+    name: 'css',
+    entry: {
+      bundle: `${PATHS.SRC}/styles/bundle.scss`,
+      // editor: `${PATHS.SRC}/styles/editor.scss`,
+      // GridField_print: `${PATHS.SRC}/styles/legacy/GridField_print.scss`,
+      // // For IE version 10 and below. These browsers doesn't handle large
+      // // resource files so need to break browser detection and warning code into
+      // // its own file
+      // 'browser-warning': `${PATHS.SRC}/styles/browser-warning.scss`,
     },
-    {
-      test: /\.css$/,
-      use: style(env, [
-        {
-          loader: 'css-loader'
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            plugins: [ autoprefixer ] // see "browserslist" in package.json
-          }
-        }
-      ])
-    },
-    {
-      test: /\.scss$/,
-      use: style(env, [
-        {
-          loader: 'css-loader'
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            plugins: [ autoprefixer ] // see "browserslist" in package.json
-          }
-        },
-        {
-          loader: 'sass-loader',
-          options: {
-            includePaths: [
-              path.resolve(process.env.PWD, '../') // allows resolving of framework paths in symlinked modules
-            ]
-          }
-        }
-      ])
-    },
-    {
-      test: /\.(gif|jpg|png)$/,
-      use: [
-        {
-          loader: 'url-loader',
-          options: {
-            name: 'images/[name].[ext]',
-            limit: 10000
-          }
-        }
-      ]
-    }
-  ];
-};
-
-// Configure Devtool:
-
-const devtool = (env) => {
-  return (env === 'production') ? false : 'source-map';
-};
-
-// Configure Plugins:
-
-const plugins = (env, src, dist) => {
-  
-  // Define Common Plugins:
-  
-  var common = [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery'
-    })
-  ];
-  
-  // Define Admin-Only Plugins:
-  
-  if (src === PATHS.ADMIN.SRC) {
-    common.push(
-      new CopyWebpackPlugin([
-        { from: path.resolve(src, 'images/icons'), to: 'images/icons' }
-      ])
-    );
-  }
-  
-  // Answer Common + Environment-Specific Plugins:
-  
-  return common.concat((env === 'production') ? [
-    new CleanWebpackPlugin([ dist ], {
-      verbose: true
-    }),
-    new ExtractTextPlugin({
+    output: {
+      path: PATHS.DIST,
       filename: 'styles/[name].css',
-      allChunks: true
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      output: {
-        beautify: false,
-        comments: false,
-        semicolons: false
-      },
-      compress: {
-        unused: false,
-        warnings: false
-      }
-    })
-  ] : [
-    
-  ]);
-  
-};
-
-// Define Configuration:
-
-const config = (env) => {
-  return [
-    {
-      entry: {
-        'bundle': path.resolve(PATHS.ADMIN.BUNDLES, 'bundle.js')
-      },
-      output: {
-        path: PATHS.ADMIN.DIST,
-        filename: 'js/[name].js',
-        publicPath: PATHS.ADMIN.PUBLIC
-      },
-      module: {
-        rules: rules(env)
-      },
-      devtool: devtool(env),
-      plugins: plugins(env, PATHS.ADMIN.SRC, PATHS.ADMIN.DIST),
-      resolve: {
-        alias: {
-          'silverstripe-admin': path.resolve(process.env.PWD, '../../silverstripe/admin/client/src')
-        },
-        modules: [
-          PATHS.ADMIN.SRC,
-          PATHS.MODULES
-        ]
-      },
-      externals: {
-        jquery: 'jQuery'
-      }
     },
-    {
-      entry: {
-        'bundle': path.resolve(PATHS.MODULE.BUNDLES, 'bundle.js')
-      },
-      output: {
-        path: PATHS.MODULE.DIST,
-        filename: 'js/[name].js',
-        publicPath: PATHS.MODULE.PUBLIC
-      },
-      module: {
-        rules: rules(env)
-      },
-      devtool: devtool(env),
-      plugins: plugins(env, PATHS.MODULE.SRC, PATHS.MODULE.DIST),
-      resolve: {
-        modules: [
-          PATHS.MODULE.SRC,
-          PATHS.MODULES
-        ]
-      },
-      externals: {
-        jquery: 'jQuery'
-      }
-    }
-  ];
-};
+    devtool: (ENV !== 'production') ? 'source-map' : '',
+    module: moduleCSS(ENV, PATHS),
+    plugins: [
+      ...pluginCSS(ENV, PATHS),
+      new CopyWebpackPlugin([
+        {
+          context: `${PATHS.SRC}/images`,
+          from: 'chosen-sprite*.png',
+          to: `${PATHS.DIST}/images`
+        }
+      ]),
+    ],
+  },
+];
 
-// Define Module Exports:
-
-module.exports = (env = {development: true}) => {
-  process.env.NODE_ENV = (env.production ? 'production' : 'development');
-  console.log(`Running in ${process.env.NODE_ENV} mode...`);
-  return config(process.env.NODE_ENV);
-};
+// Use WEBPACK_CHILD=js or WEBPACK_CHILD=css env var to run a single config
+module.exports = (process.env.WEBPACK_CHILD)
+  ? config.find((entry) => entry.name === process.env.WEBPACK_CHILD)
+  : module.exports = config;

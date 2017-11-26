@@ -5,13 +5,14 @@ namespace MadeHQ\Cloudinary\Forms;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\View\ArrayData;
+use SilverStripe\View\Requirements;
 
 class File extends CompositeField
 {
     public function __construct($name, $title = null, $value = null)
     {
+        parent::__construct($this->createFields($name));
         $this->setName($name);
-        parent::__construct($this->getFields());
 
         if ($title === null) {
             $this->title = self::name_to_label($name);
@@ -22,13 +23,16 @@ class File extends CompositeField
         if ($value !== null) {
             $this->setValue($value);
         }
+        Requirements::javascript('resources/mademedia/silverstripe-cloudinary/client/dist/js/vendor.js');
+        Requirements::javascript('resources/mademedia/silverstripe-cloudinary/client/dist/js/bundle.js');
+        Requirements::css('resources/mademedia/silverstripe-cloudinary/client/dist/styles/bundle.css');
     }
 
-    protected function getFields()
+    protected function createFields($name)
     {
         return [
-            TextField::create(sprintf('[%s]URL', $this->getName()), 'URL'),
-            TextField::create(sprintf('[%s]Title', $this->getName()), 'Title'),
+            TextField::create(sprintf('[%s]URL', $name), 'URL'),
+            TextField::create(sprintf('[%s]Title', $name), 'Title'),
         ];
     }
 
@@ -37,6 +41,11 @@ class File extends CompositeField
         /** @skipUpgrade */
         $classes = array(parent::extraClass(), strtolower(str_replace('\\', '-', get_class())));
         return implode(' ', $classes);
+    }
+
+    public function getDataValue()
+    {
+        return '{}';
     }
 
 //     public function FieldList()
