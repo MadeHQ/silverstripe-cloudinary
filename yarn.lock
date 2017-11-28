@@ -1354,6 +1354,10 @@ clone@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.2.tgz#260b7a99ebb1edfe247538175f783243cb19d149"
 
+cloudinary-jquery-file-upload@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/cloudinary-jquery-file-upload/-/cloudinary-jquery-file-upload-2.3.0.tgz#08f5007ab7d1276930e3d8638793ac53464ae319"
+
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"

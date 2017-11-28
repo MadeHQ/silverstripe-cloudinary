@@ -41,11 +41,20 @@
         color: #000;
         font-weight: bold;
         padding: 3px 0;
+        position: relative;
         text-align: center;
+
+        button {
+            bottom: 0;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
     }
 
     .cloudinary-browser-window {
-        max-height: 100%;
+        background-color: #FFF;
+        height: 100%;
         overflow-x: auto;
     }
     .cloudinary-browser-items {
@@ -53,7 +62,6 @@
     }
 
     .cloudinary-browser-item {
-        background-color: #FFF;
         cursor: pointer;
         display: block;
         padding: 5px;
@@ -68,6 +76,59 @@
         }
         &:nth-child(odd) {
             background-color: #EEE;
+        }
+    }
+
+    .cloudinary-browser-window-type-image {
+        .cloudinary-browser-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+
+            @media screen and (min-width: 500px) {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            @media screen and (min-width: 700px) {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            @media screen and (min-width: 1024px) {
+                grid-template-columns: repeat(8, 1fr);
+            }
+        }
+        .cloudinary-browser-item {
+            position: relative;
+
+            img {
+                max-height: 100%;
+                max-width: 100%;
+            }
+            footer {
+                background-color: #CCC;
+                display: none;
+                left: 25%;
+                // max-width: 100%;
+                padding: 3px;
+                position: absolute;
+                top: 90%;
+                z-index: 100;
+
+                dl {
+                    // grid-template-columns: repeat(2, 1fr);
+                    display: block;
+                    white-space: nowrap;
+                    dt {
+                        text-align: left;
+                    }
+                    dd {
+                        text-align: right;
+                    }
+                }
+            }
+            &:hover {
+                footer {
+                    display: block;
+                }
+            }
         }
     }
 }

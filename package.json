@@ -43,6 +43,7 @@
     "bootstrap": "4.0.0-beta",
     "chosen-js": "^1.5.1",
     "classnames": "^2.2.5",
+    "cloudinary-jquery-file-upload": "^2.3.0",
     "deep-equal": "^1.0.1",
     "deep-freeze-strict": "^1.1.1",
     "detect-browser": "^1.12.0",

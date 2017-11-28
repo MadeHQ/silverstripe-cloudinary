@@ -5,17 +5,17 @@ import CloudinaryBrowserItem from './CloudinaryBrowserItem';
 class CloudinaryBrowser extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { items: [] };
+        this.state = { data: { resources: [] } };
     }
     componentDidMount() {
-// fetch('/admin/cloudinary/api/get-' + this.props.type) /* eslint prefer-template: "warn" */
-        fetch('/admin/cloudinary/api/listImages')
+        fetch('/admin/cloudinary/api/' + this.props.fieldType + '-list') /* eslint prefer-template: "warn" */
+        // fetch('/admin/cloudinary/api/listImages')
             .then((res) => { /* eslint arrow-body-style: "warn" */
                 return res.json();
             })
             .then((data) => {
 console.log(data);
-                this.setState({ items: data.resources });
+                this.setState({ data });
             })
             .catch(response => {
 console.log('CloudinaryBrowser::componentDidMount::errorResponse', response);
@@ -24,14 +24,6 @@ console.log('CloudinaryBrowser::componentDidMount::errorResponse', response);
     doSearch() {
 console.log('CloudinaryBrowser::doSearch', this.searchValue);
 console.error('Cloudinary Search is not supported at the moment');
-        // this.setState({
-        //     items: [
-        //         { name: 'item 3' },
-        //         { name: 'item 4' },
-        //         { name: 'item 5' },
-        //         { name: 'item 6' },
-        //     ]
-        // });
     }
     handleChangeSearch(e) {
 console.log('CloudinaryBrowser::handleChangeSearch', this, e);
@@ -39,7 +31,14 @@ console.log('CloudinaryBrowser::handleChangeSearch', this, e);
     }
     renderHeader() {
         return (
-          <div className="cloudinary-browser-header">Cloudinary</div>
+          <div className="cloudinary-browser-header">
+            Cloudinary
+            <button
+              onClick={this.props.doCloseBrowser}
+            >
+              Close
+            </button>
+          </div>
         );
     }
     renderSearch() {
@@ -62,11 +61,8 @@ console.log('CloudinaryBrowser::handleChangeSearch', this, e);
     }
     render() {
         const that = this;
-console.log('CloudinaryBrowser::render', this);
-console.log(this.items);
         const getElementClickHandler = function (data) {
             return function () {
-console.log('BrowserItem Clicked - ', data, this, that);
                 that.props.onSelect(data);
             };
         };
@@ -74,17 +70,17 @@ console.log('BrowserItem Clicked - ', data, this, that);
             return (
               <CloudinaryBrowserItem
                 item={data}
-                type={that.props.type}
+                type={that.props.fieldType}
                 onClick={getElementClickHandler(data)}
               />
             );
         };
-        const getClasses = function() {
+        const getClasses = function () {
             return [
                 'cloudinary-browser-window',
-                'cloudinary-browser-window-type-' + that.props.type
+                'cloudinary-browser-window-type-' + that.props.fieldType
             ];
-        }
+        };
         return (
           <div
             className={getClasses().join(' ')}
@@ -92,7 +88,7 @@ console.log('BrowserItem Clicked - ', data, this, that);
             {this.renderHeader()}
             {this.renderSearch()}
             <div className="cloudinary-browser-items">
-              {this.state.items.map(renderElement)}
+              {this.state.data.resources.map(renderElement)}
             </div>
           </div>
         );
@@ -101,8 +97,9 @@ console.log('BrowserItem Clicked - ', data, this, that);
 
 CloudinaryBrowser.propTypes = {
     onSelect: React.PropTypes.func, /* eslint react/no-unused-prop-types: "warn" */
-    type: React.PropTypes.string,
-    enableSearch: React.PropTypes.boolean,
+    fieldType: React.PropTypes.string,
+    enableSearch: React.PropTypes.bool,
+    doCloseBrowser: React.PropTypes.func,
 };
 
 export default CloudinaryBrowser;

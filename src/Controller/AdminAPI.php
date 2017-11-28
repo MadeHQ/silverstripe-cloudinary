@@ -17,13 +17,60 @@ class AdminAPI extends Controller
 
     public function handleRequest(HTTPRequest $request)
     {
-        $action = $request->param('Action');
+        $action = $this->getActionFromRequest($request);
         if ($this->hasMethod($action)) {
             return $this->$action($request);
         }
+        return $this->httpError(404, sprintf('Action \'%s\' isn\'t available.', $action));
     }
 
-    protected function listVideos(HTTPRequest $request)
+    protected function getActionFromRequest(HTTPRequest $request)
+    {
+        $action = str_replace('-', '', ucwords($request->param('Action'), '-'));
+        return 'get' . $action;
+    }
+
+    protected function getAssetDetails(HTTPRequest $request)
+    {
+        $assetUrl = urldecode($request->getVar('url'));
+        $publicId = urlencode(static::public_id($assetUrl));
+        if (!$publicId) {
+            return $this->httpError(404, 'Public ID needs to be passed as an encoded URL Parameter');
+        }
+        $resource = null;
+        $api = static::getCloudinaryApi();
+        try {
+            $resourceType = static::resource_type($assetUrl);
+            // Raw resources need the extension as well :(
+            $publicId .= $resourceType === 'raw' ? strrchr($assetUrl, '.') : '';
+            $params = array(
+                'resource_type' => $resourceType,
+                'exif' => true,
+                'image_metadata' => true,
+                'max_results' => 0,
+            );
+            $result = $api->resource($publicId, $params)->getArrayCopy();
+        } catch (\Exception $e) {
+// var_dump($assetUrl, $publicId, $params);die();
+            return $this->httpError(400, 'Backend error: ' . $e->getMessage());
+        }
+        return $this->getJsonResponseFromData($result);
+    }
+
+    private static function public_id($url)
+	{
+		preg_match('/^.+?\/v\d+\/(.+?)\.(?=[^.]*$)/', $url, $patterns);
+    	// preg_match('/^.+?\/v\d+\/(.+?[^.]*$)/', $url, $patterns);
+		return isset($patterns[1]) ? $patterns[1] : '';
+	}
+
+    private static function resource_type($url)
+	{
+        preg_match('/\w+\/(\w+)\/upload/', $url, $matches);
+        return count($matches) > 0 ? $matches[1] : '';
+	}
+
+    protected function getVideoList(HTTPRequest $request)
     {
         $search = $request->getVar('search');
         $nextCursor = $request->getVar('next_cursor');
@@ -31,7 +78,7 @@ class AdminAPI extends Controller
         return $this->getJsonResponseFromData($result);
     }
 
-    protected function listFiles(HTTPRequest $request)
+    protected function getFileList(HTTPRequest $request)
     {
         $search = $request->getVar('search');
         $nextCursor = $request->getVar('next_cursor');
@@ -39,7 +86,7 @@ class AdminAPI extends Controller
         return $this->getJsonResponseFromData($result);
     }
 
-    protected function listImages(HTTPRequest $request)
+    protected function getImageList(HTTPRequest $request)
     {
         $search = $request->getVar('search');
         $nextCursor = $request->getVar('next_cursor');

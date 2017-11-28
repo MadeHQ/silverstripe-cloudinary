@@ -1,6 +1,10 @@
 import React from 'react';
+import cloudinary from '../lib/cloudinary';
 
 class CloudinaryBrowserItem extends React.Component {
+    _getPreviewImage() {
+        cloudinary.getImageUrl(this.props.item.secure_url, 150, 150);
+    }
     _renderImageItem() {
         return (
           <div
@@ -8,9 +12,11 @@ class CloudinaryBrowserItem extends React.Component {
             tabIndex="0"
             onClick={this.props.onClick}
           >
-            <img src={this.getPreviewImage()} alt="" />
+            <img src={this._getPreviewImage()} alt="" />
             <footer>
               <dl>
+                <dt>Public ID</dt>
+                <dd>{this.props.item.public_id}</dd>
                 <dt>Created</dt>
                 <dd>{this.props.item.created_at}</dd>
                 <dt>Format</dt>
@@ -51,15 +57,17 @@ class CloudinaryBrowserItem extends React.Component {
         switch (this.props.type) {
             case 'image':
                 element = this._renderImageItem();
+                break;
             case 'audio':
                 element = this._renderAudioItem();
+                break;
             default:
                 element = this._renderFileItem();
         }
         return (
-            <div className="cloudinary-browser-item">
-              {element}
-            </div>
+          <div className="cloudinary-browser-item">
+            {element}
+          </div>
         );
     }
 }

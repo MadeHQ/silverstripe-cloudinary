@@ -9,6 +9,9 @@ class CloudinaryURLField extends React.Component {
         super(props);
         this.state = { value: props.value };
     }
+    componentWillReceiveProps(nextProps) {
+        this.setState(nextProps);
+    }
     getHolderId() {
         return 'Form_EditForm_' + this.props.name + '_URL_Holder';
     }
@@ -19,7 +22,7 @@ class CloudinaryURLField extends React.Component {
         return 'title-Form_EditForm_' + this.props.name + '_URL';
     }
     getInputName() {
-        return '[' + this.props.name + ']URL';
+        return this.props.name + '[URL]';
     }
     getPopUp() {
         let popup = jQuery('#cloudinary-popup-wrapper');
@@ -30,22 +33,25 @@ class CloudinaryURLField extends React.Component {
         return popup;
     }
     _openBrowser() {
-// console.log('CloudinaryURLField::openBrowser', document.body, this);
         const popup = this.getPopUp();
         const itemSelected = (...args) => this._itemSelected(...args);
+        const closeBrowser = (...args) => this._closeBrowser(...args);
+console.log('CloudinaryURLField::_openBrowser', this.props);
         ReactDOM.render(
           <CloudinaryBrowser
             onSelect={itemSelected}
+            doCloseBrowser={closeBrowser}
+            fieldType={this.props.fieldType}
           />,
           popup[0]
         );
     }
-    _itemSelected(item) {
-console.log('CloudinaryURLField::itemSelected', item, this);
-        this.setState({
-            value: item
-        });
+    _closeBrowser() {
         this.getPopUp().remove();
+    }
+    _itemSelected(item) {
+        this.props.onChange(item.secure_url);
+        this._closeBrowser();
     }
     renderRightTitle() {
         return this.props.rightTitle ?
@@ -57,7 +63,6 @@ console.log('CloudinaryURLField::itemSelected', item, this);
     }
     render() {
         const openBrowser = (...args) => this._openBrowser(...args);
-
         return (
           <div
             id={this.getHolderId()}
@@ -73,7 +78,7 @@ console.log('CloudinaryURLField::itemSelected', item, this);
             <div className="form__field-holder">
               <input
                 type="url"
-                name={this.getInputName()}
+                // name={this.getInputName()}
                 className="text"
                 id={this.getInputId()}
                 value={this.state.value ? this.state.value.secure_url : ''}
@@ -88,6 +93,7 @@ console.log('CloudinaryURLField::itemSelected', item, this);
 }
 
 CloudinaryURLField.propTypes = {
+    fieldType: React.PropTypes.string,
     name: React.PropTypes.string,
     rightTitle: React.PropTypes.string,
     onChange: React.PropTypes.func,
