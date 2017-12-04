@@ -30,7 +30,7 @@ class CloudinaryImageField extends CloudinaryField {
         const label = 'Graviry';
         const holderId = 'Form_EditForm_' + this.props.name + '_' + name + '_Holder'; /* eslint prefer-template: "warn" */
         const fieldId = 'Form_EditForm_' + this.props.name + '_' + name; /* eslint prefer-template: "warn" */
-        const fieldName = '[' + this.props.name + ']' + name; /* eslint prefer-template: "warn" */
+        const fieldName = this.props.name + '[' + name + ']'; /* eslint prefer-template: "warn" */
         const labelId = 'title-Form_EditForm_' + this.props.name + '_' + name;
 
         return (

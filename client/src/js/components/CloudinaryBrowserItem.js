@@ -3,7 +3,7 @@ import cloudinary from '../lib/cloudinary';
 
 class CloudinaryBrowserItem extends React.Component {
     _getPreviewImage() {
-        cloudinary.getImageUrl(this.props.item.secure_url, 150, 150);
+        return cloudinary.getImageUrl(this.props.item.secure_url, 150, 150);
     }
     _renderImageItem() {
         return (

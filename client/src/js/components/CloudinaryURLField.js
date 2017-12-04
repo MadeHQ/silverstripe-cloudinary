@@ -78,7 +78,7 @@ console.log('CloudinaryURLField::_openBrowser', this.props);
             <div className="form__field-holder">
               <input
                 type="url"
-                // name={this.getInputName()}
+                name={this.getInputName()}
                 className="text"
                 id={this.getInputId()}
                 value={this.state.value ? this.state.value.secure_url : ''}

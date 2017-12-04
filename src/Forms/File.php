@@ -55,7 +55,9 @@ class File extends CompositeField
         $dbField = $record->getComponent($this->getName());
         $dbField->setCastedField('URL', $this->getUrlField()->dataValue());
         $dbField->setCastedField('Title', $this->getTitleField()->dataValue());
-        $r = $dbField->write();
+// var_dump($dbField);die();
+        $dbField->write();
+        $record->setField($this->getName() . 'ID', $dbField->ID);
     }
 
     /**
@@ -69,9 +71,13 @@ class File extends CompositeField
     public function setValue($value, $data = null)
     {
         if ($value) {
-            $fieldData = @json_decode($value);
-            $this->getUrlField()->setValue(@$fieldData->URL);
-            $this->getTitleField()->setValue(@$fieldData->Title);
+            $this->getUrlField()->setValue(@$value['URL']);
+            $this->getTitleField()->setValue(@$value['Title']);
+// var_dump(
+//     $value,
+//     $this->getUrlField(),
+//     $this->getTitleField()
+// );
         } elseif (is_object($data) && $data->hasMethod('getComponent')) {
             $data = $data->getComponent($this->getName());
             $this->getUrlField()->setValue($data->URL);

@@ -36,7 +36,7 @@ console.log('CloudinaryField::_updateFromURL::errorResponse', url, response);
     renderTextField(name, label, value) {
         const holderId = 'Form_EditForm_' + this.props.name + '_' + name + '_Holder'; /* eslint prefer-template: "warn" */
         const fieldId = 'Form_EditForm_' + this.props.name + '_' + name; /* eslint prefer-template: "warn" */
-        const fieldName = '[' + this.props.name + ']' + name; /* eslint prefer-template: "warn" */
+        const fieldName = this.props.name + '[' + name + ']'; /* eslint prefer-template: "warn" */
         const labelId = 'title-Form_EditForm_' + this.props.name + '_' + name;
 
         return (
@@ -61,16 +61,12 @@ console.log('CloudinaryField::_updateFromURL::errorResponse', url, response);
         const updateFromURL = (...args) => this._updateFromURL(...args);
         const className = 'form-group field CompositeField cloudinary-field-type-' + this.props.fieldType;
         const fieldId = 'Form_EditForm_' + this.props.name + '_Holder'; /* eslint prefer-template: "warn" */
-        const fieldValue = JSON.stringify({
-            URL: this.state.value.secure_url
-        });
 
         return (
           <div
             className={className}
             id={fieldId}
           >
-            <input type="hidden" name={this.props.name} value={fieldValue} />
             <label
               htmlFor={mainLabelForAttrib}
               id={mainLabelIdAttrib}

@@ -28,17 +28,17 @@ class Image extends File
         $dbField->setCastedField('Caption', $this->getCaptionField()->dataValue());
         $dbField->setCastedField('Credit', $this->getCreditField()->dataValue());
         $dbField->setCastedField('Gravity', $this->getGravityField()->dataValue());
-        $r = $dbField->write();
+        $dbField->write();
+        $record->setField($this->getName() . 'ID', $dbField->ID);
     }
 
     public function setValue($value, $data = null)
     {
         if ($value) {
-            $fieldData = @json_decode($value);
-            $this->getUrlField()->setValue(@$fieldData->URL);
-            $this->getCaptionField()->setValue(@$fieldData->Caption);
-            $this->getCreditField()->setValue(@$fieldData->Credit);
-            $this->getGravityField()->setValue(@$fieldData->Gravity);
+            $this->getUrlField()->setValue(@$value['URL']);
+            $this->getCaptionField()->setValue(@$value['Caption']);
+            $this->getCreditField()->setValue(@$value['Credit']);
+            $this->getGravityField()->setValue(@$value['Gravity']);
         } elseif (is_object($data) && $data->hasMethod('getComponent')) {
             $data = $data->getComponent($this->getName());
             $this->getUrlField()->setValue($data->URL);
