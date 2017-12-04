@@ -10,9 +10,19 @@ composer require mademedia/silverstripe-cloudinary
 
 ## Usage
 
+### Setup
+
+```php
+<?php
+
+putenv('CLOUDINARY_URL=cloudinary://<API Key>:<API Secret>@<Cloud name>');
+```
+
 ### Add DataObjects
 
 ```php
+<?php
+
 private static $has_one = [
     '<FileVariableName>' => 'MadeHQ\Cloudinary\Model\File',
     '<ImageVariableName>' => 'MadeHQ\Cloudinary\Model\Image',
@@ -22,6 +32,8 @@ private static $has_one = [
 ### Add CMSFields
 
 ```php
+<?php
+
 use MadeHQ\Cloudinary\Forms\File As CloudinaryFileField;
 use MadeHQ\Cloudinary\Forms\Image As CloudinaryImageField;
 
