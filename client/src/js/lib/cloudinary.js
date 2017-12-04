@@ -14,7 +14,7 @@ const cloudinary = {
             params.push('g_' + parseInt(gravity, 10)); /* eslint prefer-template: "warn" */
         }
         params = '$1' + params.join(',') + '/'; /* eslint prefer-template: "warn" */
-        return url.replace(/(res\.cloudinary\.com\/\w+\/\w+\/upload\/)/, params);
+        return url.replace(/(res\.cloudinary\.com\/[\-\w]+\/\w+\/upload\/)/, params);
     }
 };
 

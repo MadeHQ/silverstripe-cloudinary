@@ -8,6 +8,7 @@ class CloudinaryImageField extends CloudinaryField {
         if (!this.state.value || !this.state.value.secure_url) {
             return this.props.label;
         }
+
         return (
           <div>
             {this.props.label}
