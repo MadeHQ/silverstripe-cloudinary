@@ -21,16 +21,20 @@ class CloudinaryField extends React.Component {
     }
 
     _updateFromURL(url) {
-        fetch('/admin/cloudinary/api/asset-details?url=' + encodeURIComponent(url))
-            .then((res) => { /* eslint arrow-body-style: "warn" */
-                return res.json();
-            })
-            .then((value) => {
-                this.setState({ value });
-            })
-            .catch(response => {
+        if (!url.trim()) {
+            this.setState({ value: false });
+        } else {
+            fetch('/admin/cloudinary/api/asset-details?url=' + encodeURIComponent(url))
+                .then((res) => { /* eslint arrow-body-style: "warn" */
+                    return res.json();
+                })
+                .then((value) => {
+                    this.setState({ value });
+                })
+                .catch(response => {
 console.log('CloudinaryField::_updateFromURL::errorResponse', url, response);
-            });
+                });
+        }
     }
 
     renderTextField(name, label, value) {

@@ -21,14 +21,14 @@ class CloudinaryImageField extends CloudinaryField {
         );
     }
     _renderCaptionField() {
-        return this.renderTextField('Caption', 'Caption');
+        return this.renderTextField('Caption', 'Caption', this.state.value.caption);
     }
     _renderCreditField() {
-        return this.renderTextField('Credit', 'Credit');
+        return this.renderTextField('Credit', 'Credit', this.state.value.credit);
     }
     _renderGravityField() {
         const name = 'Gravity';
-        const label = 'Graviry';
+        const label = 'Gravity';
         const holderId = 'Form_EditForm_' + this.props.name + '_' + name + '_Holder'; /* eslint prefer-template: "warn" */
         const fieldId = 'Form_EditForm_' + this.props.name + '_' + name; /* eslint prefer-template: "warn" */
         const fieldName = this.props.name + '[' + name + ']'; /* eslint prefer-template: "warn" */
@@ -44,7 +44,7 @@ class CloudinaryImageField extends CloudinaryField {
                 name={fieldName}
                 className="text"
                 id={fieldId}
-                value={this.state.value.Gravity}
+                value={this.state.value.gravity}
               >
                 <option value="auto">Auto</option>
                 <option value="center">Center</option>

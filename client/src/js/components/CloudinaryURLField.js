@@ -7,10 +7,10 @@ import jQuery from 'jquery';
 class CloudinaryURLField extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { value: props.value };
+        this.state = { value: props.value ? props.value.secure_url : '' };
     }
     componentWillReceiveProps(nextProps) {
-        this.setState(nextProps);
+        this.setState({ value: nextProps.value ? nextProps.value.secure_url : '' });
     }
     getHolderId() {
         return 'Form_EditForm_' + this.props.name + '_URL_Holder';
@@ -36,7 +36,7 @@ class CloudinaryURLField extends React.Component {
         const popup = this.getPopUp();
         const itemSelected = (...args) => this._itemSelected(...args);
         const closeBrowser = (...args) => this._closeBrowser(...args);
-console.log('CloudinaryURLField::_openBrowser', this.props);
+
         ReactDOM.render(
           <CloudinaryBrowser
             onSelect={itemSelected}
@@ -53,6 +53,12 @@ console.log('CloudinaryURLField::_openBrowser', this.props);
         this.props.onChange(item.secure_url);
         this._closeBrowser();
     }
+    _onChange(event) {
+        this.setState({ value: event.currentTarget.value });
+    }
+    _onBlur() {
+        this.props.onChange(this.state.value);
+    }
     renderRightTitle() {
         return this.props.rightTitle ?
           '<p class="form__field-extra-label" id="extra-label-Form_EditForm_' + /* eslint prefer-template: "warn" */
@@ -63,6 +69,9 @@ console.log('CloudinaryURLField::_openBrowser', this.props);
     }
     render() {
         const openBrowser = (...args) => this._openBrowser(...args);
+        const onChange = (...args) => this._onChange(...args);
+        const onBlur = (...args) => this._onBlur(...args);
+
         return (
           <div
             id={this.getHolderId()}
@@ -81,8 +90,9 @@ console.log('CloudinaryURLField::_openBrowser', this.props);
                 name={this.getInputName()}
                 className="text"
                 id={this.getInputId()}
-                value={this.state.value ? this.state.value.secure_url : ''}
-                onChange={this.props.onChange}
+                value={this.state.value}
+                onChange={onChange}
+                onBlur={onBlur}
               />
               <button onClick={openBrowser}>Browse</button>
             </div>
