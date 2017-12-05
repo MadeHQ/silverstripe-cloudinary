@@ -51,6 +51,44 @@ public function getCMSFields()
 }
 ```
 
+### Output in template
+
+#### Files
+
+Adding files to SilverStripe templates
+
+```ss
+<%-- File URL --%>
+$FileVariableName.URL
+
+<%-- File Title --%>
+$FileVariableName.Title
+```
+
+#### Images
+
+Adding images to SilverStripe templates
+
+```ss
+<%-- Original Image URL --%>
+$ImageVariableName.URL
+
+<%-- Original Image Credit --%>
+$ImageVariableName.Credit
+
+<%-- Original Image Caption --%>
+$ImageVariableName.Caption
+
+<%-- Original Image Gravity --%>
+$ImageVariableName.Gravity
+
+<%-- Original Image at a specific size fill will default to "fill" --%>
+$ImageVariableName.getSource(100, 200)
+
+<%-- Original Image at a specific size with a specific format --%>
+$ImageVariableName.getSource(100, 200, 'fill', 'png')
+```
+
 ## Development
 
 JS Amends are done in `client\src\js` and `client\src\styles`

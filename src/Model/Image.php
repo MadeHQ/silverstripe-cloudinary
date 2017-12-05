@@ -3,6 +3,7 @@
 namespace MadeHQ\Cloudinary\Model;
 
 use MadeHQ\Cloudinary\Forms\File As ImageField;
+use Cloudinary;
 
 class Image extends File
 {
@@ -31,5 +32,22 @@ class Image extends File
     public function scaffoldFormField($title = null, $params = null)
     {
         return ImageField::create($this->name, $title);
+    }
+
+    public function getSource($width, $height, $crop = 'fill', $format = null)
+    {
+        $options = [
+            'cloud_name' => $this->getCloudName(),
+            'format' => $format ?: $this->getFormat(),
+            'secure' => true,
+            'width' => $width,
+            'height' => $height,
+            'crop' => $crop,
+            'gravity' => $this->Gravity,
+        ];
+        return Cloudinary::cloudinary_url(
+            $this->getPublicName(),
+            $options
+        );
     }
 }
