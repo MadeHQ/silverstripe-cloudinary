@@ -19,6 +19,11 @@ class File extends DataObject
         return FileField::create($this->name, $title);
     }
 
+    public function exists()
+    {
+        return parent::exists() && trim($this->URL);
+    }
+
     /**
      * Gets data from the URL using RegEx
      * This means that the site can change cloudname and the old resources will still work

@@ -36,6 +36,9 @@ class Image extends File
 
     public function getSource($width, $height, $crop = 'fill', $format = null)
     {
+        if (!$this->exists()) {
+            return false;
+        }
         $options = [
             'cloud_name' => $this->getCloudName(),
             'format' => $format ?: $this->getFormat(),
