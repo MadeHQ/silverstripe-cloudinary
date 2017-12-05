@@ -8,13 +8,11 @@ class CloudinaryBrowser extends React.Component {
         this.state = { data: { resources: [] } };
     }
     componentDidMount() {
-        fetch('/admin/cloudinary/api/' + this.props.fieldType + '-list') /* eslint prefer-template: "warn" */
-        // fetch('/admin/cloudinary/api/listImages')
+        fetch(`/admin/cloudinary/api/${this.props.fieldType}-list`)
             .then((res) => { /* eslint arrow-body-style: "warn" */
                 return res.json();
             })
             .then((data) => {
-console.log(data);
                 this.setState({ data });
             })
             .catch(response => {
@@ -75,15 +73,9 @@ console.log('CloudinaryBrowser::handleChangeSearch', this, e);
               />
             );
         };
-        const getClasses = function () {
-            return [
-                'cloudinary-browser-window',
-                'cloudinary-browser-window-type-' + that.props.fieldType
-            ];
-        };
         return (
           <div
-            className={getClasses().join(' ')}
+            className={`cloudinary-browser-window cloudinary-browser-window-type-${that.props.fieldType}`}
           >
             {this.renderHeader()}
             {this.renderSearch()}

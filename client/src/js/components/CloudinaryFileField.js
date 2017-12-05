@@ -1,9 +1,17 @@
 import React from 'react';
 import CloudinaryField from './CloudinaryField';
+import TextInputField from './TextInputField';
 
 class CloudinaryFileField extends CloudinaryField {
     _renderTitleField() {
-        return this.renderTextField('Title', 'Title', this.state.value.title);
+        return (
+          <TextInputField
+            parentName={this.props.name}
+            name="Title"
+            label="Title"
+            value={this.state.value.title}
+          />
+        );
     }
 
     renderOtherFields() {

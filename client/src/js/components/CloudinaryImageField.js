@@ -1,10 +1,10 @@
 import React from 'react';
 import CloudinaryField from './CloudinaryField';
+import TextInputField from './TextInputField';
 import cloudinary from '../lib/cloudinary';
 
 class CloudinaryImageField extends CloudinaryField {
     _getFieldLabel() {
-        // return this.props.label + this._getPreviewTag();
         if (!this.state.value || !this.state.value.secure_url) {
             return this.props.label;
         }
@@ -21,18 +21,32 @@ class CloudinaryImageField extends CloudinaryField {
         );
     }
     _renderCaptionField() {
-        return this.renderTextField('Caption', 'Caption', this.state.value.caption);
+        return (
+          <TextInputField
+            parentName={this.props.name}
+            name="Caption"
+            label="Caption"
+            value={this.state.value.caption}
+          />
+        );
     }
     _renderCreditField() {
-        return this.renderTextField('Credit', 'Credit', this.state.value.credit);
+        return (
+          <TextInputField
+            parentName={this.props.name}
+            name="Credit"
+            label="Credit"
+            value={this.state.value.credit}
+          />
+        );
     }
     _renderGravityField() {
         const name = 'Gravity';
         const label = 'Gravity';
-        const holderId = 'Form_EditForm_' + this.props.name + '_' + name + '_Holder'; /* eslint prefer-template: "warn" */
-        const fieldId = 'Form_EditForm_' + this.props.name + '_' + name; /* eslint prefer-template: "warn" */
-        const fieldName = this.props.name + '[' + name + ']'; /* eslint prefer-template: "warn" */
-        const labelId = 'title-Form_EditForm_' + this.props.name + '_' + name;
+        const holderId = `Form_EditForm_${this.props.name}_${name}_Holder`;
+        const fieldId = `Form_EditForm_${this.props.name}_${name}`;
+        const fieldName = `${this.props.name}[${name}]`;
+        const labelId = `title-Form_EditForm_${this.props.name}_${name}`;
 
         return (
           <div id={holderId} className="form-group field text">

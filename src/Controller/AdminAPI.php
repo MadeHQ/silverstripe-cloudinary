@@ -75,6 +75,12 @@ class AdminAPI extends Controller
         $search = $request->getVar('search');
         $nextCursor = $request->getVar('next_cursor');
         $result = $this->getCloudinaryResources('video', $nextCursor, $search);
+        $result['resources'] = array_values(array_filter(
+            $result['resources'],
+            function($resource) {
+                return !array_key_exists('is_audio', $resource) || !$resource['is_audio'];
+            }
+        ));
         return $this->getJsonResponseFromData($result);
     }
 

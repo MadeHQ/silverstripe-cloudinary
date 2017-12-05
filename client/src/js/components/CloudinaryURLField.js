@@ -13,16 +13,16 @@ class CloudinaryURLField extends React.Component {
         this.setState({ value: nextProps.value ? nextProps.value.secure_url : '' });
     }
     getHolderId() {
-        return 'Form_EditForm_' + this.props.name + '_URL_Holder';
+        return `Form_EditForm_${this.props.name}_URL_Holder`;
     }
     getInputId() {
-        return 'Form_EditForm_' + this.props.name + '_URL';
+        return `Form_EditForm_${this.props.name}_URL`;
     }
     getLabelId() {
-        return 'title-Form_EditForm_' + this.props.name + '_URL';
+        return `title-Form_EditForm_${this.props.name}_URL`;
     }
     getInputName() {
-        return this.props.name + '[URL]';
+        return `${this.props.name}[URL]`;
     }
     getPopUp() {
         let popup = jQuery('#cloudinary-popup-wrapper');
@@ -61,11 +61,7 @@ class CloudinaryURLField extends React.Component {
     }
     renderRightTitle() {
         return this.props.rightTitle ?
-          '<p class="form__field-extra-label" id="extra-label-Form_EditForm_' + /* eslint prefer-template: "warn" */
-            this.props.name + /* eslint prefer-template: "warn" */
-            '_URL">' + /* eslint prefer-template: "warn" */
-            this.props.rightTitle + /* eslint prefer-template: "warn" */
-            '</p>' : '';
+          `<p class="form__field-extra-label" id="extra-label-Form_EditForm_${this.props.name}_URL">${this.props.rightTitle}</p>` : '';
     }
     render() {
         const openBrowser = (...args) => this._openBrowser(...args);

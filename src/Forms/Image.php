@@ -2,10 +2,8 @@
 
 namespace MadeHQ\Cloudinary\Forms;
 
-// use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\DataObjectInterface;
-// use SilverStripe\View\Requirements;
 
 class Image extends File
 {

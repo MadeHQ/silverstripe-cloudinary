@@ -24,7 +24,7 @@ class CloudinaryField extends React.Component {
         if (!url.trim()) {
             this.setState({ value: false });
         } else {
-            fetch('/admin/cloudinary/api/asset-details?url=' + encodeURIComponent(url))
+            fetch(`/admin/cloudinary/api/asset-details?url=${encodeURIComponent(url)}`)
                 .then((res) => { /* eslint arrow-body-style: "warn" */
                     return res.json();
                 })
@@ -37,34 +37,16 @@ console.log('CloudinaryField::_updateFromURL::errorResponse', url, response);
         }
     }
 
-    renderTextField(name, label, value) {
-        const holderId = 'Form_EditForm_' + this.props.name + '_' + name + '_Holder'; /* eslint prefer-template: "warn" */
-        const fieldId = 'Form_EditForm_' + this.props.name + '_' + name; /* eslint prefer-template: "warn" */
-        const fieldName = this.props.name + '[' + name + ']'; /* eslint prefer-template: "warn" */
-        const labelId = 'title-Form_EditForm_' + this.props.name + '_' + name;
-
-        return (
-          <div id={holderId} className="form-group field text">
-            <label htmlFor={fieldId} id={labelId} className="form__field-label">
-              {label}
-            </label>
-            <div className="form__field-holder">
-              <input type="text" name={fieldName} className="text" id={fieldId} value={value} />
-            </div>
-          </div>
-        );
-    }
-
     renderOtherFields() {
         throw new Error('Need to implement "::renderOtherFields()"');
     }
 
     render() {
-        const mainLabelForAttrib = 'Form_EditForm_' + this.props.name + 'URL' + this.props.name + 'Title'; /* eslint prefer-template: "warn" */
-        const mainLabelIdAttrib = 'title-Form_EditForm_' + this.props.name + 'URL' + this.props.name + 'Title'; /* eslint prefer-template: "warn" */
+        const mainLabelForAttrib = `Form_EditForm_${this.props.name}URL${this.props.name}Title`;
+        const mainLabelIdAttrib = `title-Form_EditForm_${this.props.name}URL${this.props.name}Title`;
         const updateFromURL = (...args) => this._updateFromURL(...args);
-        const className = 'form-group field CompositeField cloudinary-field-type-' + this.props.fieldType;
-        const fieldId = 'Form_EditForm_' + this.props.name + '_Holder'; /* eslint prefer-template: "warn" */
+        const className = `form-group field CompositeField cloudinary-field-type-${this.props.fieldType}`;
+        const fieldId = `Form_EditForm_${this.props.name}_Holder`;
 
         return (
           <div
