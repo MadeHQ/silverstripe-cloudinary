@@ -97,8 +97,9 @@ const config = [
       ...pluginCSS(ENV, PATHS),
       new CopyWebpackPlugin([
         {
-          context: `${PATHS.SRC}/images`,
-          from: 'chosen-sprite*.png',
+          // context: `${PATHS.SRC}/images`,
+          // from: 'chosen-sprite*.png',
+          from: `${PATHS.SRC}/images`,
           to: `${PATHS.DIST}/images`
         }
       ]),

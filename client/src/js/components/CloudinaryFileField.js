@@ -9,7 +9,7 @@ class CloudinaryFileField extends CloudinaryField {
         }
         const fileFormat = this.state.value.secure_url.match(/\.(\w+)$/)[1];
         const previewProps = {
-            className: `file-type-${fileFormat}`,
+            className: `cloudinary_file-type cloudinary_file-type-${fileFormat}`,
         };
 
         return (
