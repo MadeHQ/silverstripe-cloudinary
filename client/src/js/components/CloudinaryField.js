@@ -32,7 +32,7 @@ class CloudinaryField extends React.Component {
                     this.setState({ value });
                 })
                 .catch(response => {
-console.log('CloudinaryField::_updateFromURL::errorResponse', url, response);
+                    throw new Error(`CloudinaryField::_updateFromURL: ${response}`);
                 });
         }
     }
@@ -72,7 +72,7 @@ console.log('CloudinaryField::_updateFromURL::errorResponse', url, response);
                 value={this.state.value}
                 fieldType={this.props.fieldType}
               />
-              {this.renderOtherFields()}
+              {this.state.value && this.state.value.secure_url ? this.renderOtherFields() : ''}
             </div>
           </div>
         );

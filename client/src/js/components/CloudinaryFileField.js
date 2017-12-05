@@ -3,6 +3,22 @@ import CloudinaryField from './CloudinaryField';
 import TextInputField from './TextInputField';
 
 class CloudinaryFileField extends CloudinaryField {
+    _getFieldLabel() {
+        if (!this.state.value || !this.state.value.secure_url) {
+            return this.props.label;
+        }
+        const fileFormat = this.state.value.secure_url.match(/\.(\w+)$/)[1];
+        const previewProps = {
+            className: `file-type-${fileFormat}`,
+        };
+
+        return (
+          <div>
+            {this.props.label}
+            <div {...previewProps} />
+          </div>
+        );
+    }
     _renderTitleField() {
         return (
           <TextInputField

@@ -16,15 +16,15 @@ class CloudinaryBrowser extends React.Component {
                 this.setState({ data });
             })
             .catch(response => {
-console.log('CloudinaryBrowser::componentDidMount::errorResponse', response);
+                throw new Error(`CloudinaryBrowser::componentDidMount: ${response}`);
             });
     }
     doSearch() {
-console.log('CloudinaryBrowser::doSearch', this.searchValue);
-console.error('Cloudinary Search is not supported at the moment');
+        // console.log('CloudinaryBrowser::doSearch', this.searchValue);
+        throw new Error('Cloudinary Search is not supported at the moment');
     }
     handleChangeSearch(e) {
-console.log('CloudinaryBrowser::handleChangeSearch', this, e);
+        // console.log('CloudinaryBrowser::handleChangeSearch', this, e);
         this.searchValue = e.target.value;
     }
     renderHeader() {
@@ -59,12 +59,12 @@ console.log('CloudinaryBrowser::handleChangeSearch', this, e);
     }
     render() {
         const that = this;
-        const getElementClickHandler = function (data) {
-            return function () {
+        function getElementClickHandler(data) {
+            return function elementClickHandler() {
                 that.props.onSelect(data);
             };
-        };
-        const renderElement = function (data) {
+        }
+        function renderElement(data) {
             return (
               <CloudinaryBrowserItem
                 item={data}
@@ -72,7 +72,7 @@ console.log('CloudinaryBrowser::handleChangeSearch', this, e);
                 onClick={getElementClickHandler(data)}
               />
             );
-        };
+        }
         return (
           <div
             className={`cloudinary-browser-window cloudinary-browser-window-type-${that.props.fieldType}`}

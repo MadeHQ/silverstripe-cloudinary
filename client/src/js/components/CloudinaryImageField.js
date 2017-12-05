@@ -20,6 +20,7 @@ class CloudinaryImageField extends CloudinaryField {
           </div>
         );
     }
+
     _renderCaptionField() {
         return (
           <TextInputField
@@ -30,6 +31,7 @@ class CloudinaryImageField extends CloudinaryField {
           />
         );
     }
+
     _renderCreditField() {
         return (
           <TextInputField
@@ -40,6 +42,7 @@ class CloudinaryImageField extends CloudinaryField {
           />
         );
     }
+
     _renderGravityField() {
         const name = 'Gravity';
         const label = 'Gravity';

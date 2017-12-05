@@ -84,6 +84,20 @@ class AdminAPI extends Controller
         return $this->getJsonResponseFromData($result);
     }
 
+    protected function getAudioList(HTTPRequest $request)
+    {
+        $search = $request->getVar('search');
+        $nextCursor = $request->getVar('next_cursor');
+        $result = $this->getCloudinaryResources('video', $nextCursor, $search);
+        $result['resources'] = array_values(array_filter(
+            $result['resources'],
+            function($resource) {
+                return array_key_exists('is_audio', $resource) && $resource['is_audio'];
+            }
+        ));
+        return $this->getJsonResponseFromData($result);
+    }
+
     protected function getFileList(HTTPRequest $request)
     {
         $search = $request->getVar('search');

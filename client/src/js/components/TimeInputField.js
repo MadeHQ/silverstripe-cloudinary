@@ -22,7 +22,7 @@ class TimeInputField extends TextInputField {
             onChange: onFieldChange,
             value: this.state.value,
         };
-console.log('TimeInputField::render', opts);
+
         return (
           <div id={holderId} className="form-group field text">
             <label htmlFor={fieldId} id={labelId} className="form__field-label">

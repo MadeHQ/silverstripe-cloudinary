@@ -30,7 +30,7 @@ class TextInputField extends React.Component {
             onChange: onFieldChange,
             value: this.state.value,
         };
-console.log('TextInputField::render', opts);
+
         return (
           <div id={holderId} className="form-group field text">
             <label htmlFor={fieldId} id={labelId} className="form__field-label">

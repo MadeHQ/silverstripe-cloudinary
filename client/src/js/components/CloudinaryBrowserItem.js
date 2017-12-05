@@ -1,3 +1,4 @@
+/* eslint jsx-a11y/media-has-caption: "warn" */
 import React from 'react';
 import cloudinary from '../lib/cloudinary';
 
@@ -8,6 +9,32 @@ class CloudinaryBrowserItem extends React.Component {
 
     _getVideoPreview() {
         return cloudinary.getVideoPreview(this.props.item.secure_url, 150, 150, 'gif');
+    }
+
+    _renderAudioItem() {
+        const audioProps = {
+            controls: true,
+            src: this.props.item.secure_url,
+        };
+        return (
+          <div>
+            <div
+              role="button"
+              tabIndex="0"
+              onClick={this.props.onClick}
+            >
+              Add
+            </div>
+            <audio {...audioProps} />
+            <strong>{this.props.item.public_id}</strong>
+            <dl>
+              <dt>Created:</dt>
+              <dd>{this.props.item.created_at}</dd>
+              <dt>Size:</dt>
+              <dd>{this._getHumanReadableSize()}</dd>
+            </dl>
+          </div>
+        );
     }
 
     _renderVideoItem() {
@@ -104,9 +131,9 @@ class CloudinaryBrowserItem extends React.Component {
 }
 
 CloudinaryBrowserItem.propTypes = {
-    item: React.PropTypes.object,
-    type: React.PropTypes.string,
-    onClick: React.PropTypes.func,
+    item: React.PropTypes.object.isRequired,
+    type: React.PropTypes.string.isRequired,
+    onClick: React.PropTypes.func.isRequired,
 };
 
 export default CloudinaryBrowserItem;
