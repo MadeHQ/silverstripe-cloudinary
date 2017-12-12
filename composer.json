@@ -14,7 +14,7 @@
     }
   ],
   "require": {
-    "cloudinary/cloudinary_php": "dev-master",
+    "cloudinary/cloudinary_php": "1.8.0",
     "php": ">=5.6.0",
     "silverstripe/framework": "^4@dev"
   },
