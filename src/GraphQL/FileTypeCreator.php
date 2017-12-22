@@ -21,14 +21,14 @@ class FileTypeCreator extends BaseFileTypeCreator
     {
         $width = UploadField::config()->uninherited('thumbnail_width');
         $height = UploadField::config()->uninherited('thumbnail_height');
-        return cloudinary_url($object->ID, ['width' => $width, 'height' => $height, 'resource_type' => $object->getResourceType()]);
+        return cloudinary_url($object->Title, ['width' => $width, 'height' => $height, 'resource_type' => $object->getResourceType(), 'secure' => true]);
     }
 
     public function resolveThumbnailField($object, array $args, $context, $info)
     {
         $width = AssetAdmin::config()->uninherited('thumbnail_width');
         $height = AssetAdmin::config()->uninherited('thumbnail_height');
-        return cloudinary_url($object->ID, ['width' => $width, 'height' => $height, 'resource_type' => $object->getResourceType()]);
+        return cloudinary_url($object->Title, ['width' => $width, 'height' => $height, 'resource_type' => $object->getResourceType(), 'secure' => true]);
     }
 
     public function resolveUrlField($object, array $args, $context, $info)
