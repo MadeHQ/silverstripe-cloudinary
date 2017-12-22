@@ -1,10 +1,7 @@
 {
-  "name": "silverstripe-admin",
+  "name": "mademedia/silverstripe-cloudinary",
   "version": "4.0.0",
-  "description": "SilverStripe admin interface",
-  "directories": {
-    "test": "tests"
-  },
+  "description": "Replaces the Silverstripe File management with Cloudinary",
   "bin": {
     "webpack": "./node_modules/webpack/webpack.js"
   },
@@ -12,106 +9,19 @@
     "node": "^6.x"
   },
   "scripts": {
-    "build": "yarn && yarn test && NODE_ENV=production webpack -p --bail --progress",
-    "buildNoTest": "NODE_ENV=production webpack -p --bail --progress",
-    "dev": "NODE_ENV=development webpack --progress",
-    "watch": "NODE_ENV=development webpack --watch --progress",
-    "watchProd": "NODE_ENV=production webpack --watch --progress",
-    "css": "WEBPACK_CHILD=css npm run build",
-    "test": "jest",
-    "coverage": "jest --coverage",
-    "lint": "eslint client/src && sass-lint -v",
-    "js-fix": "eslint client/src --fix"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/silverstripe/silverstripe-admin.git"
+    "url": "git@github.com:MadeHQ/silverstripe-cloudinary.git"
   },
   "keywords": [
     "silverstripe",
-    "admin"
+    "cloudinary"
   ],
-  "author": "SilverStripe Ltd",
+  "author": "Made Media Ltd.",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/silverstripe/silverstripe-admin/issues"
+    "url": "https://github.com/MadeHQ/silverstripe-cloudinary/issues"
   },
-  "homepage": "https://github.com/silverstripe/silverstripe-admin",
-  "dependencies": {
-    "apollo-client": "^0.5.5",
-    "babel-polyfill": "^6.26.0",
-    "bootstrap": "4.0.0-beta",
-    "chosen-js": "^1.5.1",
-    "classnames": "^2.2.5",
-    "cloudinary-jquery-file-upload": "^2.3.0",
-    "deep-equal": "^1.0.1",
-    "deep-freeze-strict": "^1.1.1",
-    "detect-browser": "^1.12.0",
-    "es6-promise": "^3.1.2",
-    "graphql-fragments": "^0.1.0",
-    "graphql-tag": "^0.1.17",
-    "history": "^2.1.2",
-    "isomorphic-fetch": "https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz",
-    "jquery": "^3.2.1",
-    "jquery-sizes": "^0.33.0",
-    "json-js": "^1.1.2",
-    "merge": "^1.2.0",
-    "modernizr": "^3.5.0",
-    "moment": "^2.18.1",
-    "page.js": "^4.13.3",
-    "qs": "^6.1.0",
-    "react": "15.3.1",
-    "react-addons-css-transition-group": "15.3.1",
-    "react-addons-test-utils": "15.3.1",
-    "react-apollo": "^0.7.0",
-    "react-bootstrap-ss": "^0.30.10",
-    "react-dnd": "^2.2.3",
-    "react-dnd-html5-backend": "^2.2.3",
-    "react-dom": "15.3.1",
-    "react-redux": "^4.4.1",
-    "react-router": "^2.4.1",
-    "react-router-redux": "^4.0.5",
-    "react-select": "^1.0.0-rc.5",
-    "redux": "https://registry.npmjs.org/redux/-/redux-3.0.5.tgz",
-    "redux-form": "^6.0.2",
-    "redux-thunk": "^2.1.0",
-    "tether": "^1.3.2",
-    "toposort": "^1.0.3",
-    "url": "^0.11.0",
-    "validator": "^6.1.0"
-  },
-  "devDependencies": {
-    "@silverstripe/webpack-config": "^0.4.0",
-    "babel-jest": "^20.0.3",
-    "copy-webpack-plugin": "^4.2.0",
-    "jest-cli": "^19.0.2"
-  },
-  "resolutions": {
-    "eslint": "^4.6.1"
-  },
-  "jest": {
-    "roots": [
-      "client/src"
-    ],
-    "moduleDirectories": [
-      "client/src",
-      "node_modules",
-      "node_modules/@silverstripe/webpack-config/node_modules"
-    ],
-    "testMatch": [
-      "**/tests/**/*-test.js?(x)"
-    ],
-    "transform": {
-      ".*": "babel-jest"
-    }
-  },
-  "babel": {
-    "presets": [
-      "env",
-      "react"
-    ],
-    "plugins": [
-      "transform-object-rest-spread"
-    ]
-  }
+  "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary"
 }

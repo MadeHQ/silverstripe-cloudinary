@@ -1,16 +1,13 @@
 ---
 Name: silverstripe-cloudinary
+After:
+  - '#assetadmingraphql'
 ---
 
-# Configure Admin Extensions:
-
-# SilverStripe\Admin\LeftAndMain:
-#   # This is being added via JS at the moment
-#   # extra_requirements_css:
-#   #   - "mademedia/silverstripe-cloudinary: admin/client/dist/styles/bundle.css"
-#   extra_requirements_javascript:
-#     - "mademedia/silverstripe-cloudinary: client/dist/js/bundle.js"
-
-SilverStripe\Control\Director:
-    rules:
-        'admin//cloudinary//api//$Action//$ID': MadeHQ\Cloudinary\Controller\AdminAPI
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\AssetAdmin\GraphQL\FileTypeCreator:
+    class: MadeHQ\Cloudinary\GraphQL\FileTypeCreator
+  SilverStripe\AssetAdmin\GraphQL\FolderTypeCreator:
+    class: MadeHQ\Cloudinary\GraphQL\FolderTypeCreator
+  SilverStripe\AssetAdmin\GraphQL\ReadFileQueryCreator:
+    class: MadeHQ\Cloudinary\GraphQL\ReadFileQueryCreator
