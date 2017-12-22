@@ -36,6 +36,11 @@ class FileTypeCreator extends BaseFileTypeCreator
         return $object->URL;
     }
 
+    public function resolveSizeField($object, array $args, $context, $info)
+    {
+        return $object->getAbsoluteSize();
+    }
+
     /**
      * @param File $object
      * @param array $args

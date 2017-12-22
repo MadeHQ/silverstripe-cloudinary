@@ -10,6 +10,7 @@ class File extends BaseFile
 
     private $Extension;
     private $ResourceType;
+    private $AbsoluteSize;
 
     public function exists()
     {
@@ -25,6 +26,8 @@ class File extends BaseFile
         $file->URL = $data['secure_url'];
         $file->Extension = array_key_exists('format', $data) ? $data['format'] : self::get_file_extension($data['public_id']);
         $file->ResourceType = $data['resource_type'];
+        $file->AbsoluteSize = $data['bytes'];
+        $file->LastEdited = \DateTime::createFromFormat(\DateTime::ISO8601, $data['created_at'])->format('Y-m-d H:i:s');
         return $file;
     }
 
@@ -36,5 +39,10 @@ class File extends BaseFile
     public function getResourceType()
     {
         return $this->ResourceType;
+    }
+
+    public function getAbsoluteSize()
+    {
+        return $this->AbsoluteSize;
     }
 }
