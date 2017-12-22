@@ -6,6 +6,7 @@ use GraphQL\Type\Definition\Type;
 use SilverStripe\AssetAdmin\GraphQL\FileTypeCreator As BaseFileTypeCreator;
 use SilverStripe\AssetAdmin\Controller\AssetAdmin;
 use SilverStripe\AssetAdmin\Forms\UploadField;
+use MadeHQ\Cloudinary\Assets\AbstractFolder;
 
 class FileTypeCreator extends BaseFileTypeCreator
 {
@@ -44,8 +45,6 @@ class FileTypeCreator extends BaseFileTypeCreator
      */
     public function resolveCategoryField($object, array $args, $context, $info)
     {
-// var_dump(func_get_args());die;
-        return 'image';
-        return $object instanceof Folder ? 'folder' : $object->appCategory();
+        return $object instanceof AbstractFolder ? 'folder' : $object->appCategory();
     }
 }

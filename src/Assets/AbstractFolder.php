@@ -64,7 +64,6 @@ class AbstractFolder extends Folder
     public function Children()
     {
         $data = $this->getResources();
-
         $files = array_reduce($data['resources'], function ($carry, $item) {
             $carry[] = File::createFromCloudinaryData($item);
             return $carry;
