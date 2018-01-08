@@ -58,15 +58,17 @@ class CloudinaryImage extends CloudinaryFile
         return $fields;
     }
 
-    private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false) {
+    private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
         $options = array(
             'secure' => true,
             'width' => $width,
             'height' => $height,
-            'fetch_format' => 'auto',
             'quality' =>  $quality,
             'gravity' => $gravity ?: $this->Gravity
         );
+        if ($fetchFormatAuto) {
+            $options['fetch_format'] = 'auto';
+        }
 
         if ($crop) {
             $options['crop'] = $crop;
@@ -80,15 +82,37 @@ class CloudinaryImage extends CloudinaryFile
         return $options;
     }
 
-    public function Image($width, $height, $crop, $quality = 'auto', $gravity = false) {
-        $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity);
+    /**
+     * Gets the Cloudinary URL for the image at the requested size, crop etc.
+     * NOTE: Uses the `is_bool` check because SS template passes `true`/`false` as string so uses json_decode
+     * @param Int $width
+     * @param Int $height
+     * @param String $crop
+     * @param String $quality
+     * @param String $gravity
+     * @param Boolean $fetchFormatAuto
+     */
+    public function Image($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
+        $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : json_decode($fetchFormatAuto);
+        $gravity = is_bool($gravity) ? $gravity : json_decode($gravity);
+        $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
         $cloudinaryID = CloudinaryUtils::public_id($this->URL);
         $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
         return Cloudinary::cloudinary_url($fileName, $options);
     }
 
-    public function LQIPImage($width, $height, $crop) {
-        $options = $this->getDefaultImageOptions($width, $height, $crop,'auto:low');
+    /**
+     * Gets the Cloudinary URL for the image at the requested size, crop etc.
+     * uses the blur effect and low quality as just a loader image
+     * NOTE: Uses the `is_bool` check because SS template passes `true`/`false` as string so uses json_decode
+     * @param Int $width
+     * @param Int $height
+     * @param String $crop
+     * @param Boolean $fetchFormatAuto
+     */
+    public function LQIPImage($width, $height, $crop, $fetchFormatAuto = true) {
+        $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : json_decode($fetchFormatAuto);
+        $options = $this->getDefaultImageOptions($width, $height, $crop, 'auto:low', false, $fetchFormatAuto);
         $options['effect'] = 'blur:999999';
         $cloudinaryID = CloudinaryUtils::public_id($this->URL);
         $fileName = $this->Format ? $cloudinaryID. '.'. $this->Format : $cloudinaryID;
