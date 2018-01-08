@@ -112,8 +112,8 @@
 }
 .cloudinary-file-type-image .cloudinary__browser__window__item {
     float: left;
-    width: 169px;
-    height: 169px;
+    width: 132px;
+    height: 132px;
 }
 .cloudinary-file-type-image .cloudinary__browser__window__item .preview {
     width: 100%;
@@ -211,9 +211,6 @@
 .cloudinary-file-type-video .cloudinary__browser__window__item .meta {
     display: table-cell;
     vertical-align: top;
-}
-.cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(4n + 1) {
-    clear: left;
 }
 .cloudinary-file-type-image .cloudinary__browser__window__item:nth-child(4n + 4) .meta {
     left: auto;
