@@ -64,8 +64,12 @@ class CloudinaryImage extends CloudinaryFile
             'width' => $width,
             'height' => $height,
             'quality' =>  $quality,
-            'gravity' => $gravity ?: $this->Gravity
         );
+        if ($gravity) {
+            $options['gravity'] = $gravity;
+        } elseif ($this->Gravity !== 'auto') {
+            $options['gravity'] = $this->Gravity;
+        }
         if ($fetchFormatAuto) {
             $options['fetch_format'] = 'auto';
         }
