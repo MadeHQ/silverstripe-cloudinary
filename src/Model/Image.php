@@ -2,10 +2,10 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
-use MadeHQ\Cloudinary\Forms\File As ImageField;
-use Cloudinary;
+use SilverStripe\Assets\File As BaseFile;
+use MadeHQ\Cloudinary\Traits\CloudinaryFileTrait;
 
-class Image extends File
+class Image extends BaseFile
 {
     private static $gravities = [
         'auto' => 'Auto',
@@ -21,36 +21,57 @@ class Image extends File
         'north_west' => 'Top left',
     ];
 
-    private static $db = [
-        'Gravity' => 'Varchar(15)',
-        'Credit' => 'Varchar(200)',
-        'Caption' => 'Varchar(200)',
-    ];
+    use CloudinaryFileTrait;
 
     private static $table_name = 'CloudinaryImage';
 
-    public function scaffoldFormField($title = null, $params = null)
+    /**
+     * Gets the Cloudinary URL for the image at the requested size, crop etc.
+     * NOTE: Uses the `is_bool` check because SS template passes `true`/`false` as string so uses json_decode
+     * @param Int $width
+     * @param Int $height
+     * @param String $crop
+     * @param String $quality
+     * @param String $gravity
+     * @param Boolean $fetchFormatAuto
+     */
+    public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
     {
-        return ImageField::create($this->name, $title);
+var_dump(__METHOD__);
+try {
+        $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
+        $gravity = is_bool($gravity) ? $gravity : @json_decode($gravity);
+        $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
+        $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
+var_dump($fileName);
+        return \Cloudinary::cloudinary_url($fileName, $options);
+} catch (\Exception $e) {
+    var_dump($e);die;
+}
     }
 
-    public function getSource($width, $height, $crop = 'fill', $format = null)
-    {
-        if (!$this->exists()) {
-            return false;
-        }
-        $options = [
-            'cloud_name' => $this->getCloudName(),
-            'format' => $format ?: $this->getFormat(),
+    private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
+        $options = array(
             'secure' => true,
             'width' => $width,
             'height' => $height,
-            'crop' => $crop,
-            'gravity' => $this->Gravity,
-        ];
-        return Cloudinary::cloudinary_url(
-            $this->getPublicName(),
-            $options
+            'quality' =>  $quality,
         );
+        if ($gravity) {
+            $options['gravity'] = $gravity;
+        } elseif ($this->Gravity !== 'auto') {
+            $options['gravity'] = $this->Gravity;
+        }
+        if ($fetchFormatAuto) {
+            $options['fetch_format'] = 'auto';
+        }
+        if ($crop) {
+            $options['crop'] = $crop;
+        }
+        // These crops don't support gravity, Cloudinary returns a 400 if passed
+        if (in_array($crop, array('fit', 'limit', 'mfit', 'pad', 'lpad'))) {
+            unset($options['gravity']);
+        }
+        return $options;
     }
 }

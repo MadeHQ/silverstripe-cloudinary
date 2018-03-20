@@ -1,13 +1,29 @@
 ---
-Name: silverstripe-cloudinary
+Name: silverstripecloudinary
 After:
-  - '#assetadmingraphql'
+  - '#assetscore'
+  - '#assetadmingraphql-dependencies'
+  - '#assetadminthumbnails'
+  - '#assetsfieldtypes'
 ---
 
 SilverStripe\Core\Injector\Injector:
-  SilverStripe\AssetAdmin\GraphQL\FileTypeCreator:
-    class: MadeHQ\Cloudinary\GraphQL\FileTypeCreator
-  SilverStripe\AssetAdmin\GraphQL\FolderTypeCreator:
-    class: MadeHQ\Cloudinary\GraphQL\FolderTypeCreator
-  SilverStripe\AssetAdmin\GraphQL\ReadFileQueryCreator:
-    class: MadeHQ\Cloudinary\GraphQL\ReadFileQueryCreator
+
+  SilverStripe\AssetAdmin\Model\ThumbnailGenerator.graphql:
+    class: MadeHQ\Cloudinary\Model\ThumbnailGenerator
+
+  SilverStripe\AssetAdmin\Model\ThumbnailGenerator.assetadmin:
+    class: MadeHQ\Cloudinary\Model\ThumbnailGenerator
+
+  SilverStripe\Assets\Storage\AssetStore:
+    class: MadeHQ\Cloudinary\Storage\CloudinaryStorage
+
+  SilverStripe\AssetAdmin\Forms\UploadField:
+    class: MadeHQ\Cloudinary\Forms\UploadField
+
+  DBFile:
+    class: MadeHQ\Cloudinary\Storage\DBFile
+
+SilverStripe\AssetAdmin\Forms\FileFormFactory:
+    extensions:
+        - MadeHQ\Cloudinary\Extensions\FileFormFactoryExtension

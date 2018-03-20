@@ -1,0 +1,9 @@
+---
+Name: cloudinaryroutes
+After:
+  - '#rootroutes'
+  - '#coreroutes'
+---
+SilverStripe\Control\Director:
+  rules:
+    'cloudinary-api': 'MadeHQ\Cloudinary\Controllers\APIController'
