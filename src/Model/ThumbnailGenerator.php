@@ -19,7 +19,7 @@ class ThumbnailGenerator extends BaseThumbnailGenerator
             'width' => $width,
             'height' => $height,
             'crop' => 'fit',
-            // 'type' => $file->ResourceType,
+            'type' => $file->Type,
             'secure' => true,
         ];
         return \Cloudinary::cloudinary_url($file->PublicID . '.png', $opts);

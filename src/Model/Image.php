@@ -7,20 +7,6 @@ use MadeHQ\Cloudinary\Traits\CloudinaryFileTrait;
 
 class Image extends BaseFile
 {
-    private static $gravities = [
-        'auto' => 'Auto',
-        'center' => 'Center',
-        'faces' => 'Faces',
-        'north' => 'Top',
-        'north_east' => 'Top right',
-        'east' => 'Right',
-        'south_east' => 'Bottom right',
-        'south' => 'Bottom',
-        'south_west' => 'Bottom left',
-        'west' => 'Left',
-        'north_west' => 'Top left',
-    ];
-
     use CloudinaryFileTrait;
 
     private static $table_name = 'CloudinaryImage';
@@ -37,17 +23,11 @@ class Image extends BaseFile
      */
     public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
     {
-var_dump(__METHOD__);
-try {
         $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
         $gravity = is_bool($gravity) ? $gravity : @json_decode($gravity);
         $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
         $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
-var_dump($fileName);
         return \Cloudinary::cloudinary_url($fileName, $options);
-} catch (\Exception $e) {
-    var_dump($e);die;
-}
     }
 
     private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {

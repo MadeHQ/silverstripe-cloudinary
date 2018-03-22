@@ -54,10 +54,9 @@ class APIController extends Controller
         $options = [
             'max_results' => 100,
         ];
+        $options['start_at'] = date(\DateTime::ISO8601, strtotime('-4 week'));
         if ($cursor) {
             $options['next_cursor'] = $cursor;
-        } else {
-            $options['start_at'] = date('Y-m-d 00:00:00', strtotime('-1 hour'));
         }
         return $api->resources($options);
     }
@@ -76,9 +75,8 @@ class APIController extends Controller
             case 'file':
                 $file = File::getOneByPublicId($resource['public_id']);
             default:
-var_dump('Unhandled Resource Type', $resource);die;
+                throw new \RuntimeException(sprintf('[%s] Resource type is not yet being handled', $resource['resource_type']));
                 break;
         }
-// var_dump(__METHOD__, $resource);die;
     }
 }

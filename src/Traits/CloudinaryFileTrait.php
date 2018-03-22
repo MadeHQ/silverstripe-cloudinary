@@ -14,6 +14,7 @@ trait CloudinaryFileTrait
         'PublicID' => 'Varchar(255)',
         'SecureURL' => 'Varchar(1000)',
         'ResourceType' => 'Varchar',
+        'Type' => 'Varchar',
         'Format' => 'Varchar(10)',
     );
 
@@ -38,6 +39,7 @@ trait CloudinaryFileTrait
         $this->Format = $resource['format'];
         $this->SecureURL = $resource['secure_url'];
         $this->ResourceType = $resource['resource_type'];
+        $this->type = $resource['type'];
         $this->Parent = $parentFolder;
         $this->write();
     }
@@ -72,6 +74,7 @@ trait CloudinaryFileTrait
         $file->Format = $resource['format'];
         $file->SecureURL = $resource['secure_url'];
         $file->ResourceType = $resource['resource_type'];
+        $file->Type = $resource['type'];
         $file->Parent = $parentFolder;
         $file->write();
     }
@@ -80,7 +83,11 @@ trait CloudinaryFileTrait
     {
         $publicId = $resource['public_id'];
         $segments = explode('/', $publicId);
-        return array_pop($segments);
+        $name = array_pop($segments);
+        if (array_key_exists('format', $resource) && $resource['format']) {
+            $name.= '.' . $resource['format'];
+        }
+        return $name;
     }
 
     private static function getParentFolderForResouce($resource)

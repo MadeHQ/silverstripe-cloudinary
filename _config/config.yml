@@ -23,7 +23,3 @@ SilverStripe\Core\Injector\Injector:
 
   DBFile:
     class: MadeHQ\Cloudinary\Storage\DBFile
-
-SilverStripe\AssetAdmin\Forms\FileFormFactory:
-    extensions:
-        - MadeHQ\Cloudinary\Extensions\FileFormFactoryExtension
