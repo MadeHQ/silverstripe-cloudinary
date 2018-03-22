@@ -30,12 +30,26 @@ class Image extends BaseFile
         return \Cloudinary::cloudinary_url($fileName, $options);
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function PreviewLink($action = null)
+    {
+        // Size to width / height
+        $width = (int)$this->config()->get('asset_preview_width');
+        $height = (int)$this->config()->get('asset_preview_height');
+        $link = $this->URL($width, $height, 'fit');
+        $this->extend('updatePreviewLink', $link, $action);
+        return $link;
+    }
+
     private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
         $options = array(
             'secure' => true,
             'width' => $width,
             'height' => $height,
             'quality' =>  $quality,
+            'type' => $this->Type,
         );
         if ($gravity) {
             $options['gravity'] = $gravity;

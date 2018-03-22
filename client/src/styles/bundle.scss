@@ -1,0 +1,10 @@
+@keyframes spinner {
+  to {transform: rotate(-360deg);}
+}
+
+#sync-with-cloudinary-button:before {
+    display: inline-block;
+}
+#sync-with-cloudinary-button.updating:before {
+  animation: spinner 2s linear infinite;
+}
