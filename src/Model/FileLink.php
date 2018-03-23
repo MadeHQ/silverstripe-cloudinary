@@ -29,6 +29,9 @@ class FileLink extends DataObject
      */
     public function __get($prop)
     {
+        if ($prop === 'ID') {
+            return parent::__get($prop);
+        }
         if ($this->hasField($prop) && $val = parent::__get($prop)) {
             return $val;
         }
