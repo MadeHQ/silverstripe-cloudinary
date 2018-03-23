@@ -28,8 +28,6 @@ class UploadFileField extends FormField
             TextareaField::create(sprintf('%s[Description]', $name), 'Description'),
         ];
 
-        Requirements::javascript('resources/mademedia/silverstripe-cloudinary/client/dist/js/bundle.js');
-        Requirements::css('resources/mademedia/silverstripe-cloudinary/client/dist/styles/bundle.css');
         parent::__construct($name, $title, $value);
         $this->setTemplate('UploadFileField');
     }
