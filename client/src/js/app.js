@@ -1,10 +1,14 @@
 /* global ss,fetch */
 import Injector from 'lib/Injector';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+
+import { setErrorMessage } from '../../../../../silverstripe/asset-admin/client/src/state/gallery/GalleryActions';
 
 const SYNC_BUTTON_KEY = 'sync-with-cloudinary-button';
 
-const getCloudinaryEnhancedGalleryToolbar = (GalleryToolbar) => (
+const getCloudinaryEnhancedGalleryToolbar = (GalleryToolbar) => {
     class CloudinaryEnhancedGalleryToolbar extends Component {
         constructor(props) {
             super(props);
@@ -12,18 +16,35 @@ const getCloudinaryEnhancedGalleryToolbar = (GalleryToolbar) => (
         }
 
         handleSyncWithCloudinary() {
-            fetch('/cloudinary-api/sync').then(response => {
-                response.json().then(data => {
-                    this.setState({
-                        updating: false,
-                        updated: data.result.count
-                    });
-                });
+            const opts = { credentials: 'include' };
+            fetch('/cloudinary-api/sync', opts).then(response => {
+                if (response.status === 200) {
+                    response.json().then(this.handleSyncSuccess.bind(this));
+                } else {
+                    response.json().then(this.handleSyncError.bind(this));
+                }
             });
             delete this.state.updated;
             this.setState({
                 updating: true
             });
+        }
+        handleSyncSuccess(data) {
+            this.setState({
+                updating: false,
+                updated: data.result.count
+            });
+        }
+
+        handleSyncError(data) {
+            const { setError } = this.props;
+            this.setState({
+                updating: false
+            });
+            setError(ss.i18n._t(`Cloudinary.SYNC_WITH_CLOUDINARY_${data.error.toUpperCase()}`, data.description));
+            setTimeout(() => {
+                setError(null);
+            }, 3000);
         }
 
         renderButton() {
@@ -39,7 +60,9 @@ const getCloudinaryEnhancedGalleryToolbar = (GalleryToolbar) => (
                 message = ss.i18n.sprintf(ss.i18n._t('Cloudinary.UPDATED_FROM_CLOUDINARY', '%s Synced from Cloudinary'), this.state.updated);
             }
 
-            const handleSyncWithCloudinary = () => { this.handleSyncWithCloudinary(); };
+            const handleSyncWithCloudinary = () => {
+                this.handleSyncWithCloudinary();
+            };
 
             return (
               <button
@@ -66,7 +89,21 @@ const getCloudinaryEnhancedGalleryToolbar = (GalleryToolbar) => (
             );
         }
     }
-);
+
+    function mapStateToProps() {}
+
+    function mapDispatchToProps(dispatch) {
+        return {
+            setError(msg) {
+                dispatch(setErrorMessage(msg));
+            },
+        };
+    }
+
+    return compose(
+        connect(mapStateToProps, mapDispatchToProps)
+    )(CloudinaryEnhancedGalleryToolbar);
+};
 
 Injector.transform(
     'cloudinary-sync-button',
