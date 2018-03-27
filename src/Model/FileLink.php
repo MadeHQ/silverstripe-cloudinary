@@ -35,7 +35,7 @@ class FileLink extends DataObject
         if ($this->hasField($prop) && $val = parent::__get($prop)) {
             return $val;
         }
-        return $this->File()->$prop;
+        return $this->getComponent('File')->$prop;
     }
 
     public function __call($func, $args)
@@ -43,6 +43,11 @@ class FileLink extends DataObject
         if ($func === 'File') {
             return parent::__call($func, $args);
         }
-        return call_user_func_array([$this->File(), $func], $args);
+        return call_user_func_array([$this->getComponent('File'), $func], $args);
+    }
+
+    public function hasMethod($method)
+    {
+        return parent::hasMethod($method) || $this->getComponent('File')->hasMethod($method);
     }
 }
