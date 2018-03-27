@@ -79,6 +79,19 @@ trait CloudinaryFileTrait
         $file->write();
     }
 
+    public function setFromLocalFile($path, $filename = null, $hash = null, $variant = null, $config = array())
+    {
+        $result = parent::setFromLocalFile($path, $filename, $hash, $variant, $config);
+        if ($result) {
+            $this->PublicID = $result['PublicID'];
+            $this->Format = $result['Format'];
+            $this->SecureURL = $result['SecureURL'];
+            $this->ResourceType = $result['ResourceType'];
+            $this->Type = $result['Type'];
+        }
+        return $result;
+    }
+
     private static function getNameForResource($resource)
     {
         $publicId = $resource['public_id'];
