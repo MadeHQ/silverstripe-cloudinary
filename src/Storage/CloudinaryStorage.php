@@ -4,6 +4,7 @@ namespace MadeHQ\Cloudinary\Storage;
 
 use SilverStripe\Assets\Storage\AssetStore;
 use Cloudinary;
+use Cloudinary\Uploader;
 
 class CloudinaryStorage implements AssetStore
 {
@@ -38,7 +39,24 @@ var_dump(__METHOD__);
      */
     public function setFromLocalFile($path, $filename = null, $hash = null, $variant = null, $config = array())
     {
-var_dump(__METHOD__);
+        $filename = str_replace('\\', '/', $filename);
+        $parts = explode('/', $filename);
+        $publicId = explode('.', array_pop($parts));
+        $publicId = $publicId[0];
+        $options = [
+            'public_id' => $publicId,
+            'folder' => implode('/', $parts),
+        ];
+
+        $response = Uploader::upload($path, $options);
+        return [
+            'Filename' => $response['public_id'],
+            'PublicID' => $response['public_id'],
+            'Format' => $response['format'],
+            'SecureURL' => $response['secure_url'],
+            'ResourceType' => $response['resource_type'],
+            'Type' => $response['type'],
+        ];
     }
 
     /**
@@ -139,12 +157,11 @@ var_dump(__METHOD__);
     }
 
     /**
+     * Not able to protect files in Cloudinary
      * @inheritdoc
      */
     public function protect($filename, $hash)
-    {
-var_dump(__METHOD__);
-    }
+    {}
 
     /**
      * @inheritdoc
