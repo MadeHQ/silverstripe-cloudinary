@@ -65,7 +65,7 @@ class APIController extends Controller implements PermissionProvider
         $options = [
             'max_results' => 100,
         ];
-        $options['start_at'] = date(\DateTime::ISO8601, strtotime('-4 week'));
+        // $options['start_at'] = date(\DateTime::ISO8601, strtotime('-4 week'));
         if ($cursor) {
             $options['next_cursor'] = $cursor;
         }
