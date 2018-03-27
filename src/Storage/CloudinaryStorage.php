@@ -46,6 +46,7 @@ var_dump(__METHOD__);
         $options = [
             'public_id' => $publicId,
             'folder' => implode('/', $parts),
+            'type' => 'private',
         ];
 
         $response = Uploader::upload($path, $options);
@@ -121,6 +122,7 @@ var_dump(__METHOD__, func_get_args());die;
      */
     public function exists($filename, $hash, $variant = null)
     {
+        header(sprintf('Checking-%s: %s', $hash, $filename));
         return true;
     }
 
