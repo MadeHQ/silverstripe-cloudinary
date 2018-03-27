@@ -23,9 +23,12 @@ putenv('CLOUDINARY_URL=cloudinary://<API Key>:<API Secret>@<Cloud name>');
 ```php
 <?php
 
+use MadeHQ\Cloudinary\Model\FileLink;
+use MadeHQ\Cloudinary\Model\ImageLink;
+
 private static $has_one = [
-    '<FileVariableName>' => 'MadeHQ\Cloudinary\Model\File',
-    '<ImageVariableName>' => 'MadeHQ\Cloudinary\Model\Image',
+    '<FileVariableName>' => FileLink::class,
+    '<ImageVariableName>' => ImageLink::class,
 ];
 ```
 
@@ -34,8 +37,8 @@ private static $has_one = [
 ```php
 <?php
 
-use MadeHQ\Cloudinary\Forms\File As CloudinaryFileField;
-use MadeHQ\Cloudinary\Forms\Image As CloudinaryImageField;
+use MadeHQ\Cloudinary\Forms\UploadImageField;
+use MadeHQ\Cloudinary\Forms\UploadFileField;
 
 public function getCMSFields()
 {
@@ -43,8 +46,8 @@ public function getCMSFields()
     $fields->addFieldsToTab(
         'Root.Media',
         [
-            CloudinaryFileField::create('FileVariableName'),
-            CloudinaryImageField::create('ImageVariableName'),
+            UploadFileField::create('ImageVariableName'),
+            UploadImageField::create('FileVariableName'),
         ]
     );
     return $fields;
@@ -63,6 +66,9 @@ $FileVariableName.URL
 
 <%-- File Title --%>
 $FileVariableName.Title
+
+<%-- File Title --%>
+$FileVariableName.Description
 ```
 
 #### Images
@@ -71,28 +77,26 @@ Adding images to SilverStripe templates
 
 ```ss
 <%-- Original Image URL --%>
-$ImageVariableName.URL
+$ImageVariableName.URL(<width>, <height>, <crop>)
 
-<%-- Original Image Credit --%>
-$ImageVariableName.Credit
+<%-- Original Image Title --%>
+$ImageVariableName.Title
 
-<%-- Original Image Caption --%>
-$ImageVariableName.Caption
+<%-- Original Image Alt --%>
+$ImageVariableName.Alt
 
 <%-- Original Image Gravity --%>
 $ImageVariableName.Gravity
 
 <%-- Original Image at a specific size fill will default to "fill" --%>
-$ImageVariableName.getSource(100, 200)
+$ImageVariableName.URL(100, 200)
 
 <%-- Original Image at a specific size with a specific format --%>
-$ImageVariableName.getSource(100, 200, 'fill', 'png')
+$ImageVariableName.URL(<width>, <height>, <crop>, <quality = 'auto'>, <gravity = (defaults to selected in CMS)>, <fetchFormatAuto = true>)
 ```
 
 ## Development
 
 JS Amends are done in `client\src\js` and `client\src\styles`
 
-After changes you can run `npm run build` or during development use `npm run watch`
-
-Also required for development is `yarn`
+After changes you can run `yarn build` or during development use `yarn watch`
