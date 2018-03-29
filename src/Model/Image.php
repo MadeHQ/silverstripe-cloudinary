@@ -24,7 +24,7 @@ class Image extends BaseFile
     public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
     {
         $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
-        $gravity = is_bool($gravity) ? $gravity : @json_decode($gravity);
+        $gravity = is_bool($gravity) ? $gravity : @json_decode($gravity) ?: $gravity;
         $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
         $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
         return \Cloudinary::cloudinary_url($fileName, $options);

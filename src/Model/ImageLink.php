@@ -20,4 +20,18 @@ class ImageLink extends FileLink
     ];
 
     private static $table_name = 'CloudinaryImageLink';
+
+    public function __call($func, $args)
+    {
+        if (in_array($func, ['File', 'publishRecursive', 'findOwned', 'unlinkDisownedObjects'])) {
+            return parent::__call($func, $args);
+        }
+        if ($func === 'URL') {
+            if (count($args) === 3) {
+                array_push($args, 'auto');
+                array_push($args, $this->record['Gravity']);
+            }
+        }
+        return call_user_func_array([$this->getComponent('File'), $func], $args);
+    }
 }
