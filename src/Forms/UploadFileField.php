@@ -30,6 +30,7 @@ class UploadFileField extends FormField
 
         parent::__construct($name, $title, $value);
         $this->setTemplate('UploadFileField');
+        $this->extend('init');
     }
 
     public function addField(FormField $field)
@@ -76,8 +77,10 @@ class UploadFileField extends FormField
                 $linkRecord->setCastedField(preg_replace('/^.*\[(\w+)\]$/', '$1', $field->getName()), $field->dataValue());
             }
         }
+        $this->extend('saveIntoBeforeWrite', $record, $linkRecord);
         $linkRecord->write(true, false, true);
         $record->{$this->getName() . 'ID'} = $linkRecord->ID;
+        $this->extend('saveIntoAfterWrite', $record, $linkRecord);
     }
 
     public function setValue($value, $record = null)
