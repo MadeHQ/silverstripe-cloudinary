@@ -22,10 +22,10 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\AssetAdmin\Forms\UploadField:
     class: MadeHQ\Cloudinary\Forms\UploadField
 
-  SilverStripe\Assets\Image:
+  Image:
     class: MadeHQ\Cloudinary\Model\Image
 
-  SilverStripe\Assets\File:
+  File:
     class: MadeHQ\Cloudinary\Model\File
 
   DBFile:
@@ -36,3 +36,8 @@ SilverStripe\Admin\LeftAndMain:
         - mademedia/silverstripe-cloudinary:client/dist/js/bundle.js
     extra_requirements_css:
         - mademedia/silverstripe-cloudinary:client/dist/styles/bundle.css
+
+SilverStripe\ORM\DatabaseAdmin:
+    classname_value_remapping:
+        File: MadeHQ\Cloudinary\Model\File
+        Image: MadeHQ\Cloudinary\Model\Image

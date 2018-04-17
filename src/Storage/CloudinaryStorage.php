@@ -46,6 +46,7 @@ var_dump(__METHOD__);
         $options = [
             'public_id' => $publicId,
             'folder' => implode('/', $parts),
+            'type' => 'private',
         ];
 
         $response = Uploader::upload($path, $options);

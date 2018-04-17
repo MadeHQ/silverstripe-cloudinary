@@ -92,6 +92,24 @@ trait CloudinaryFileTrait
         return $result;
     }
 
+    public static function PrivateUrl($publicId, $format, $options = array())
+    {
+var_dump('check that user is logged in and has admin access');
+        $cloudinary_params = Cloudinary::sign_request(
+            array(
+                "timestamp" => time(),
+                "public_id" => $public_id,
+                "format" => $format,
+                "type" => Cloudinary::option_get($options, "type"),
+                "attachment" => Cloudinary::option_get($options, "attachment"),
+                "expires_at" => Cloudinary::option_get($options, "expires_at"),
+            ),
+            $options
+        );
+
+        return Cloudinary::cloudinary_api_url("download", $options) . "?" . http_build_query($cloudinary_params);
+    }
+
     private static function getNameForResource($resource)
     {
         $publicId = $resource['public_id'];

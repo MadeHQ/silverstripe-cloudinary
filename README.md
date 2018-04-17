@@ -46,8 +46,8 @@ public function getCMSFields()
     $fields->addFieldsToTab(
         'Root.Media',
         [
-            UploadFileField::create('ImageVariableName'),
-            UploadImageField::create('FileVariableName'),
+            UploadFileField::create('FileVariableName'),
+            UploadImageField::create('ImageVariableName'),
         ]
     );
     return $fields;
@@ -66,9 +66,6 @@ $FileVariableName.URL
 
 <%-- File Title --%>
 $FileVariableName.Title
-
-<%-- File Title --%>
-$FileVariableName.Description
 ```
 
 #### Images
@@ -77,13 +74,13 @@ Adding images to SilverStripe templates
 
 ```ss
 <%-- Original Image URL --%>
-$ImageVariableName.URL(<width>, <height>, <crop>)
+$ImageVariableName.SecureURL
 
-<%-- Original Image Title --%>
-$ImageVariableName.Title
+<%-- Original Image Credit --%>
+$ImageVariableName.Credit
 
-<%-- Original Image Alt --%>
-$ImageVariableName.Alt
+<%-- Original Image Caption --%>
+$ImageVariableName.Caption
 
 <%-- Original Image Gravity --%>
 $ImageVariableName.Gravity
@@ -92,7 +89,7 @@ $ImageVariableName.Gravity
 $ImageVariableName.URL(100, 200)
 
 <%-- Original Image at a specific size with a specific format --%>
-$ImageVariableName.URL(<width>, <height>, <crop>, <quality = 'auto'>, <gravity = (defaults to selected in CMS)>, <fetchFormatAuto = true>)
+$ImageVariableName.URL(100, 200, 'fill', 'png')
 ```
 
 ## Development
@@ -100,3 +97,5 @@ $ImageVariableName.URL(<width>, <height>, <crop>, <quality = 'auto'>, <gravity =
 JS Amends are done in `client\src\js` and `client\src\styles`
 
 After changes you can run `yarn build` or during development use `yarn watch`
+
+Also required for development is `yarn`
