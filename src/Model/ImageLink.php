@@ -23,7 +23,9 @@ class ImageLink extends FileLink
 
     public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
     {
-        $gravity = $gravity ?: $this->record['Gravity'];
-        return $this->File()->URL($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
+        if ($this->exists()) {
+            $gravity = $gravity ?: $this->record['Gravity'];
+            return $this->File()->URL($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
+        }
     }
 }
