@@ -61,7 +61,7 @@ trait CloudinaryFileTrait
 
     public function exists()
     {
-        return true;
+        return (isset($this->record['ID']) && $this->record['ID'] > 0);
     }
 
     public static function createFromCloudinaryResource($resource)

@@ -27,4 +27,9 @@ class FileLink extends DataObject
         parent::__construct($record, $isSingleton, $queryParams);
         $this->setFailover($this->File());
     }
+
+    public function exists()
+    {
+        return parent::exists() && $this->File()->exists();
+    }
 }
