@@ -3,9 +3,11 @@
 namespace MadeHQ\Cloudinary\Forms;
 
 use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Assets\Upload_Validator;
 
 // use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\SS_List;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectInterface;
 
 use SilverStripe\Forms\FieldList;
@@ -106,7 +108,11 @@ class UploadFileField extends FormField
             foreach ($fields as $field) {
                 $fieldSubName = preg_replace('/^.+\[(\w+)\]$/', '$1', $field->getName());
                 if ($fieldSubName === 'File') {
-                    $field->setValue($value->File());
+                    if (is_object($value) && $value instanceof DataObject && $value->hasMethod('File')) {
+                        $field->setValue($value->File());
+                    } else {
+                        $field->setValue($value);
+                    }
                 } else {
                     $field->setValue($value->$fieldSubName);
                 }
@@ -133,5 +139,10 @@ class UploadFileField extends FormField
     public function isComposite()
     {
         return true;
+    }
+
+    public function getValidator()
+    {
+        return Upload_Validator::create();
     }
 }

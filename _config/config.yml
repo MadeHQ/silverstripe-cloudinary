@@ -20,7 +20,10 @@ SilverStripe\Core\Injector\Injector:
     class: MadeHQ\Cloudinary\Storage\CloudinaryStorage
 
   SilverStripe\AssetAdmin\Forms\UploadField:
-    class: MadeHQ\Cloudinary\Forms\UploadField
+    class: MadeHQ\Cloudinary\Forms\UploadImageField
+
+  SilverStripe\Assets\Image:
+    class: MadeHQ\Cloudinary\Model\Image
 
   Image:
     class: MadeHQ\Cloudinary\Model\Image
