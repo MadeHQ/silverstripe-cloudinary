@@ -6,6 +6,7 @@ After:
   - '#assetadminthumbnails'
   - '#assetsfieldtypes'
   - '#assetadmin'
+  - '#assetadminfield'
 ---
 
 SilverStripe\Core\Injector\Injector:
@@ -18,6 +19,9 @@ SilverStripe\Core\Injector\Injector:
 
   SilverStripe\Assets\Storage\AssetStore:
     class: MadeHQ\Cloudinary\Storage\CloudinaryStorage
+
+  SilverStripe\Forms\FileHandleField:
+    class: MadeHQ\Cloudinary\Forms\UploadImageField
 
   SilverStripe\AssetAdmin\Forms\UploadField:
     class: MadeHQ\Cloudinary\Forms\UploadImageField
