@@ -67,7 +67,7 @@ trait CloudinaryFileTrait
     public static function createFromCloudinaryResource($resource)
     {
         $parentFolder = static::getParentFolderForResouce($resource);
-        $className = get_class();
+        $className = static::class;
         $file = $className::create();
         $file->PublicID = $resource['public_id'];
         $file->Title = static::getNameForResource($resource);

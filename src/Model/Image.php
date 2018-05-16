@@ -2,13 +2,8 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
-use SilverStripe\Assets\File As BaseFile;
-use MadeHQ\Cloudinary\Traits\CloudinaryFileTrait;
-
-class Image extends BaseFile
+class Image extends File
 {
-    use CloudinaryFileTrait;
-
     private static $table_name = 'CloudinaryImage';
 
     /**
