@@ -36,7 +36,7 @@ trait CloudinaryFileTrait
         $parentFolder = static::getParentFolderForResouce($resource);
         $this->PublicID = $resource['public_id'];
         $this->Title = static::getNameForResource($resource);
-        $this->Format = $resource['format'];
+        $this->Format = static::getFormatForResource($resource);
         $this->SecureURL = $resource['secure_url'];
         $this->ResourceType = $resource['resource_type'];
         $this->type = $resource['type'];
@@ -119,6 +119,15 @@ var_dump('check that user is logged in and has admin access');
             $name.= '.' . $resource['format'];
         }
         return $name;
+    }
+
+    private static function getFormatForResource($resource)
+    {
+        if (array_key_exists('format', $resource)) {
+            return $resource['format'];
+        }
+        $parts = explode('.', static::getNameForResource($resource));
+        return array_pop($parts);
     }
 
     private static function getParentFolderForResouce($resource)

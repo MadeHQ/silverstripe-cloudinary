@@ -7,6 +7,7 @@ use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
+use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Convert;
 use Cloudinary\Api;
 use MadeHQ\Cloudinary\Model\File;
@@ -14,11 +15,30 @@ use MadeHQ\Cloudinary\Model\Image;
 
 class APIController extends Controller implements PermissionProvider
 {
+    use Configurable;
+
     /**
      * @var array
      */
     private static $allowed_actions = [
         'sync',
+    ];
+
+    /**
+     * How many items to get from Cloudinary with each request when syncing
+     * @var Int
+     */
+    private static $api_page_size = 100;
+
+    /**
+     * List of Resource types to get from Cloudinary
+     *   (see https://cloudinary.com/documentation/admin_api)
+     * @var array
+     */
+    private static $resource_types = [
+        'image',
+        'raw',
+        'video',
     ];
 
     public function sync(HTTPRequest $request)
@@ -34,13 +54,17 @@ class APIController extends Controller implements PermissionProvider
         ini_set('max_execution_time', 300); //300 seconds = 5 minutes
         $page = 0;
         $count = 0;
-        $data = $this->getPageFromCloudinary();
-        while ($data && count($data['resources'])) {
-            array_walk($data['resources'], array($this, 'addOrUpdateResource'));
-            $count+= count($data['resources']);
-            $data = (array_key_exists('next_cursor', $data)) ?
-                $this->getPageFromCloudinary($data['next_cursor']) :
+        $resourceTypes = static::config()->uninherited('resource_types');
+
+        foreach ($resourceTypes as $resourceType) {
+            $data = $this->getPageFromCloudinary($resourceType);
+            while ($data && count($data['resources'])) {
+                array_walk($data['resources'], array($this, 'addOrUpdateResource'));
+                $count+= count($data['resources']);
+                $data = (array_key_exists('next_cursor', $data)) ?
+                $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
                 false;
+            }
         }
 
         return $this->output([
@@ -59,16 +83,18 @@ class APIController extends Controller implements PermissionProvider
         return $response;
     }
 
-    private function getPageFromCloudinary($cursor = null)
+    private function getPageFromCloudinary($resourceType, $cursor = null)
     {
         $api = new Api();
         $options = [
-            'max_results' => 100,
+            'resource_type' => $resourceType,
+            'max_results' => static::config()->uninherited('api_page_size'),
         ];
         // $options['start_at'] = date(\DateTime::ISO8601, strtotime('-4 week'));
         if ($cursor) {
             $options['next_cursor'] = $cursor;
         }
+
         return $api->resources($options);
     }
 
@@ -84,9 +110,13 @@ class APIController extends Controller implements PermissionProvider
                 Image::createFromCloudinaryResource($resource);
                 break;
             case 'file':
+            case 'raw':
                 $file = File::getOneByPublicId($resource['public_id']);
-            default:
-                throw new \RuntimeException(sprintf('[%s] Resource type is not yet being handled', $resource['resource_type']));
+                if ($file) {
+                    $file->updateFromCloudinary($resource);
+                    return;
+                }
+                File::createFromCloudinaryResource($resource);
                 break;
         }
     }
