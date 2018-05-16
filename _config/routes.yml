@@ -1,5 +1,5 @@
 ---
-Name: cloudinaryroutes
+Name: silverstripecloudinaryroutes
 After:
   - '#rootroutes'
   - '#coreroutes'
