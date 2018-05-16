@@ -10,6 +10,7 @@ use SilverStripe\Security\PermissionProvider;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Convert;
 use Cloudinary\Api;
+use Cloudinary\Api\Error As CloudinaryApiError;
 use MadeHQ\Cloudinary\Model\File;
 use MadeHQ\Cloudinary\Model\Image;
 
@@ -50,29 +51,40 @@ class APIController extends Controller implements PermissionProvider
                 'description' => 'You do not have permission to sync with cloudinary',
             ], 403);
         }
+        try {
+            ini_set('max_execution_time', 300); //300 seconds = 5 minutes
+            $page = 0;
+            $count = 0;
+            $resourceTypes = static::config()->uninherited('resource_types');
 
-        ini_set('max_execution_time', 300); //300 seconds = 5 minutes
-        $page = 0;
-        $count = 0;
-        $resourceTypes = static::config()->uninherited('resource_types');
-
-        foreach ($resourceTypes as $resourceType) {
-            $data = $this->getPageFromCloudinary($resourceType);
-            while ($data && count($data['resources'])) {
-                array_walk($data['resources'], array($this, 'addOrUpdateResource'));
-                $count+= count($data['resources']);
-                $data = (array_key_exists('next_cursor', $data)) ?
-                $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
-                false;
+            foreach ($resourceTypes as $resourceType) {
+                $data = $this->getPageFromCloudinary($resourceType);
+                while ($data && count($data['resources'])) {
+                    array_walk($data['resources'], array($this, 'addOrUpdateResource'));
+                    $count+= count($data['resources']);
+                    $data = (array_key_exists('next_cursor', $data)) ?
+                    $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
+                    false;
+                }
             }
-        }
 
-        return $this->output([
-            'status' => 'ok',
-            'result' => [
-                'count' => $count,
-            ]
-        ]);
+            return $this->output([
+                'status' => 'ok',
+                'result' => [
+                    'count' => $count,
+                ]
+            ]);
+        } catch (CloudinaryApiError $e) {
+            return $this->output([
+                'status' => 'error',
+                'description' => sprintf('Error occurred with the Cloudinary API: %s', $e->getMessage()),
+            ], 500);
+        } catch (\Exception $e) {
+            return $this->output([
+                'status' => 'error',
+                'description' => sprintf('Unhandled error occurred: %s', $e->getMessage()),
+            ], 500);
+        }
     }
 
     private function output(array $body = [], $statusCode = 200)

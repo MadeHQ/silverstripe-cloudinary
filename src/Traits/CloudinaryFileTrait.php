@@ -71,7 +71,7 @@ trait CloudinaryFileTrait
         $file = $className::create();
         $file->PublicID = $resource['public_id'];
         $file->Title = static::getNameForResource($resource);
-        $file->Format = $resource['format'];
+        $file->Format = static::getFormatForResource($resource);
         $file->SecureURL = $resource['secure_url'];
         $file->ResourceType = $resource['resource_type'];
         $file->Type = $resource['type'];
