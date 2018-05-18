@@ -4,6 +4,8 @@ class CloudinaryFile extends DataObject
 {
     protected $sourceURL = '';
 
+    private static $default_shortcode_max_width = 250;
+
     private static $db = array(
         'URL' => 'Varchar(500)',
         'FileSize' => 'Varchar(50)',
@@ -144,7 +146,8 @@ class CloudinaryFile extends DataObject
 
         $options = array(
             'secure' => true,
-            'fetch_format' => 'auto'
+            'fetch_format' => 'auto',
+            'width' => static::getDefaultShortcodeMaxWidth(),
         );
 
         if (isset($arguments['width'])) {
@@ -178,7 +181,11 @@ class CloudinaryFile extends DataObject
             'Height' => isset($arguments['height']) ? $arguments['height'] : null,
             'ExtraClass' => isset($arguments['class']) ? $arguments['class'] : null,
         ));
-
         return $data->renderWith('CloudinaryImageShortCode');
+    }
+
+    private static function getDefaultShortcodeMaxWidth()
+    {
+        return Config::inst()->get(get_class(), 'default_shortcode_max_width', Config::INHERITED);
     }
 }
