@@ -11,7 +11,10 @@ const CloudinaryToolbarFields = (GalleryToolbar) => (props) => {
     };
 
     function renderSyncButton() {
-        return <CloudinarySync key={CONSTANTS.SYNC_BUTTON_KEY} />;
+        return (<CloudinarySync
+          key={CONSTANTS.SYNC_BUTTON_KEY}
+          refreshPage={newProps.refreshPage}
+        />);
     }
 
     newProps.children = newProps.children || [];
