@@ -147,23 +147,23 @@ class CloudinaryFile extends DataObject
         $options = array(
             'secure' => true,
             'fetch_format' => 'auto',
+            'crop' => 'limit',
+            'quality' => 'auto',
             'width' => static::getDefaultShortcodeMaxWidth(),
         );
 
         if (isset($arguments['width'])) {
             $options['width'] = $arguments['width'];
-        }
+            if (isset($arguments['height'])) {
+                $options['height'] = $arguments['height'];
 
-        if (isset($arguments['height'])) {
-            $options['height'] = $arguments['height'];
-        }
-
-        // If we have both a width and a height then we should attempt
-        // to crop this image using the fill method and the provided gravity.
-        if (isset($arguments['width']) && isset($arguments['height'])) {
-            $options['crop'] = 'fill';
-            $options['quality'] = 'auto';
-            $options['gravity'] = $arguments['gravity'];
+                // As we have both a width and a height then we should attempt
+                // to crop this image using the fill method and the provided gravity.
+                $options['crop'] = 'fill';
+                if (isset($arguments['gravity'])) {
+                    $options['gravity'] = $arguments['gravity'];
+                }
+            }
         }
 
         $cloudinaryID = $arguments['id'];
