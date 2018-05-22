@@ -10,4 +10,14 @@ class File extends BaseFile
     use CloudinaryFileTrait;
 
     private static $table_name = 'CloudinaryFile';
+
+    /**
+     * Cloudinary Media Library URL
+     * @return String
+     */
+    public function CMSEditLink()
+    {
+        $link = sprintf('https://cloudinary.com/console/media_library/asset/%s/upload/%s', $this->ResourceType, rawurlencode($this->PublicID));
+        return $link;
+    }
 }

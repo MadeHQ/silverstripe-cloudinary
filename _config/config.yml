@@ -48,3 +48,15 @@ SilverStripe\ORM\DatabaseAdmin:
     classname_value_remapping:
         File: MadeHQ\Cloudinary\Model\File
         Image: MadeHQ\Cloudinary\Model\Image
+
+
+---
+Name: silverstripecloudinary-assetadmin-campaigns
+After:
+  - '#assetadmincampaigns'
+Only:
+  moduleexists: 'silverstripe/campaign-admin'
+---
+SilverStripe\Core\Injector\Injector:
+    SilverStripe\AssetAdmin\Forms\FileFormFactory:
+        class: MadeHQ\Cloudinary\Forms\FileFormFactory
