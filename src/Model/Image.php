@@ -16,7 +16,7 @@ class Image extends File
      * @param String $gravity
      * @param Boolean $fetchFormatAuto
      */
-    public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
+    public function URL($width, $height, $crop = 'fit', $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
     {
         $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
         $gravity = is_bool($gravity) ? $gravity : @json_decode($gravity) ?: $gravity;
@@ -38,7 +38,7 @@ class Image extends File
         return $link;
     }
 
-    private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
+    private function getDefaultImageOptions($width, $height, $crop = 'fit', $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
         $options = array(
             'secure' => true,
             'width' => $width,
