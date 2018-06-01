@@ -3,6 +3,7 @@
 namespace MadeHQ\Cloudinary\Traits;
 
 use SilverStripe\Assets\Folder;
+use SilverStripe\Versioned\Versioned;
 use Cloudinary\Api;
 
 /**
@@ -137,5 +138,19 @@ var_dump('check that user is logged in and has admin access');
         array_pop($segments);
         $folderPath = implode('/', $segments);
         return Folder::find_or_make($folderPath);
+    }
+
+    /**
+     * Want files to be published automatically
+     * @return void
+     */
+    public function onAfterWrite()
+    {
+        parent::onAfterWrite();
+
+        // No publishing UX for folders, so just cascade changes live
+        if (class_exists(Versioned::class) && Versioned::get_stage() === Versioned::DRAFT) {
+            $this->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE);
+        }
     }
 }
