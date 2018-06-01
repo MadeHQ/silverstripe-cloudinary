@@ -21,7 +21,7 @@ class ImageLink extends FileLink
 
     private static $table_name = 'CloudinaryImageLink';
 
-    public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
+    public function URL($width, $height, $crop = 'fill', $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
     {
         if ($this->exists()) {
             $gravity = $gravity ?: $this->record['Gravity'];
