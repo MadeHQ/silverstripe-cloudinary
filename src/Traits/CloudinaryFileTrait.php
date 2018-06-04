@@ -11,6 +11,8 @@ use Cloudinary\Api;
  */
 trait CloudinaryFileTrait
 {
+    private $remoteData;
+
     private static $db = array(
         'PublicID' => 'Varchar(255)',
         'SecureURL' => 'Varchar(1000)',
@@ -63,6 +65,16 @@ trait CloudinaryFileTrait
     public function exists()
     {
         return (isset($this->record['ID']) && $this->record['ID'] > 0);
+    }
+
+    public function getWidth()
+    {
+        return $this->getRemoteData()['width'];
+    }
+
+    public function getHeight()
+    {
+        return $this->getRemoteData()['height'];
     }
 
     public static function createFromCloudinaryResource($resource)
@@ -152,5 +164,16 @@ var_dump('check that user is logged in and has admin access');
         if (class_exists(Versioned::class) && Versioned::get_stage() === Versioned::DRAFT) {
             $this->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE);
         }
+    }
+
+    private function getRemoteData()
+    {
+        if (!$this->remoteData) {
+            $api = new Api();
+            $this->remoteData = $api->resource($this->PublicID, [
+                'resource_type' => $this->ResourceType,
+            ])->getArrayCopy();
+        }
+        return $this->remoteData;
     }
 }
