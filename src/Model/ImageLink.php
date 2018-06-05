@@ -23,7 +23,7 @@ class ImageLink extends FileLink
 
     public function URL($width, $height, $crop = 'fit', $quality = 'auto', $gravity = null, $fetchFormatAuto = true)
     {
-        if ($this->exists()) {
+        if (!$this->exists()) {
             return null;
         }
 
