@@ -5,6 +5,7 @@ namespace MadeHQ\Cloudinary\Traits;
 use SilverStripe\Assets\Folder;
 use SilverStripe\Versioned\Versioned;
 use Cloudinary\Api;
+use Cloudinary\Api\NotFound;
 
 /**
  *
@@ -168,12 +169,16 @@ var_dump('check that user is logged in and has admin access');
 
     private function getRemoteData()
     {
-        if (!$this->remoteData) {
-            $api = new Api();
-            $this->remoteData = $api->resource($this->PublicID, [
-                'resource_type' => $this->ResourceType,
-            ])->getArrayCopy();
+        try {
+            if (!$this->remoteData) {
+                $api = new Api();
+                $this->remoteData = $api->resource($this->PublicID, [
+                    'resource_type' => $this->ResourceType,
+                ])->getArrayCopy();
+            }
+            return $this->remoteData;
+        } catch (NotFound $e) {
+            return false;
         }
-        return $this->remoteData;
     }
 }
