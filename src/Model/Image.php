@@ -74,7 +74,7 @@ class Image extends File
         if (isset($fetchFormatAuto)) {
             $returnObj = $returnObj->fetchFormatAuto($fetchFormatAuto);
         }
-        
+
         return $this;
     }
 
@@ -97,6 +97,11 @@ class Image extends File
         $newHeight = $width * $ratio;
 
         return $this->Size($width, (int)$newHeight);
+    }
+
+    public function __toString()
+    {
+        return $this->forTemplate();
     }
 
     // This renders the end of the chain to the template
