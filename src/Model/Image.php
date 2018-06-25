@@ -38,6 +38,13 @@ class Image extends File
         return $link;
     }
 
+    public function resizeByWidth($width)
+    {
+        $ratio = $this->Width / $this->Height;
+        $newHeight = $width * $ratio;
+        return $this->URL($width, (int)$newHeight);
+    }
+
     private function getDefaultImageOptions($width, $height, $crop = 'fit', $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
         $options = array(
             'secure' => true,
