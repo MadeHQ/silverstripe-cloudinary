@@ -3,13 +3,17 @@
 namespace MadeHQ\Cloudinary\Traits;
 
 use SilverStripe\Assets\Folder;
+use SilverStripe\Versioned\Versioned;
 use Cloudinary\Api;
+use Cloudinary\Api\NotFound;
 
 /**
  *
  */
 trait CloudinaryFileTrait
 {
+    private $remoteData;
+
     private static $db = array(
         'PublicID' => 'Varchar(255)',
         'SecureURL' => 'Varchar(1000)',
@@ -62,6 +66,16 @@ trait CloudinaryFileTrait
     public function exists()
     {
         return (isset($this->record['ID']) && $this->record['ID'] > 0);
+    }
+
+    public function getWidth()
+    {
+        return $this->getRemoteData()['width'];
+    }
+
+    public function getHeight()
+    {
+        return $this->getRemoteData()['height'];
     }
 
     public static function createFromCloudinaryResource($resource)
@@ -137,5 +151,36 @@ var_dump('check that user is logged in and has admin access');
         array_pop($segments);
         $folderPath = implode('/', $segments);
         return Folder::find_or_make($folderPath);
+    }
+
+    /**
+     * Want files to be published automatically
+     * @return void
+     */
+    public function onAfterWrite()
+    {
+        parent::onAfterWrite();
+
+        // No publishing UX for folders, so just cascade changes live
+        if (class_exists(Versioned::class) && Versioned::get_stage() === Versioned::DRAFT) {
+            $this->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE);
+        }
+    }
+
+    private function getRemoteData()
+    {
+        try {
+            if (!$this->remoteData) {
+                $api = new Api();
+                $this->remoteData = $api->resource($this->PublicID, [
+                    'resource_type' => $this->ResourceType,
+                ])->getArrayCopy();
+            }
+            return $this->remoteData;
+        } catch (\Cloudinary\Api\RateLimited $e) {
+            return false;
+        } catch (NotFound $e) {
+            return false;
+        }
     }
 }

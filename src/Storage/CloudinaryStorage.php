@@ -155,7 +155,7 @@ var_dump(__METHOD__);
      */
     public function publish($filename, $hash)
     {
-var_dump(__METHOD__);
+//var_dump(__METHOD__);
     }
 
     /**

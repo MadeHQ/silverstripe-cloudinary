@@ -1,6 +1,7 @@
-/* global ss,fetch */
+/* global ss */
 
 import React, { Component } from 'react';
+import fetch from 'isomorphic-fetch';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
@@ -12,11 +13,12 @@ class CloudinarySync extends Component {
     constructor(props) {
         super(props);
         this.state = { updating: false };
+        this.fetch = fetch;
     }
 
     handleSyncWithCloudinary() {
         const opts = { credentials: 'include' };
-        fetch('/cloudinary-api/sync', opts).then(response => {
+        this.fetch('/cloudinary-api/sync', opts).then(response => {
             if (response.status === 200) {
                 response.json().then(this.handleSyncSuccess.bind(this));
             } else {
@@ -33,6 +35,8 @@ class CloudinarySync extends Component {
             updating: false,
             updated: data.result.count
         });
+
+        this.props.refreshPage();
     }
 
     handleSyncError(data) {

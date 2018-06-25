@@ -18,7 +18,7 @@ class ThumbnailGenerator extends BaseThumbnailGenerator
         $opts = [
             'width' => $width,
             'height' => $height,
-            'crop' => 'fit',
+            'crop' => 'fill',
             'type' => $file->Type,
             'secure' => true,
         ];

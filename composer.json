@@ -16,7 +16,7 @@
   "require": {
     "cloudinary/cloudinary_php": "dev-master",
     "php": ">=7.0.0",
-    "silverstripe/asset-admin": "1.1.x-dev"
+    "silverstripe/asset-admin": "dev-add-refresh-to-gallery"
   },
   "autoload": {
     "psr-4": {

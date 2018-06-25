@@ -91,6 +91,14 @@ class Image extends File
         return $link;
     }
 
+    public function resizeByWidth($width)
+    {
+        $ratio = $this->Width / $this->Height;
+        $newHeight = $width * $ratio;
+
+        return $this->Size($width, (int)$newHeight);
+    }
+
     // This renders the end of the chain to the template
     public function forTemplate() {
         $options = $this->options;
