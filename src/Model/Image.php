@@ -44,6 +44,10 @@ class Image extends File
     }
 
     public function DuoTone($duoTone) {
+        // Allow a blank duoTone so we don't have to use crazy ifs all over the place
+        if (trim($duoTone) == '') {
+            return $this;
+        }
         $this->options['transformation'] = [['effect' => 'grayscale'],['effect' => $duoTone]];
         return $this;
     }
