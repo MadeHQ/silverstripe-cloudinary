@@ -177,6 +177,8 @@ var_dump('check that user is logged in and has admin access');
                 ])->getArrayCopy();
             }
             return $this->remoteData;
+        } catch (\Cloudinary\Api\RateLimited $e) {
+            return false;
         } catch (NotFound $e) {
             return false;
         }
