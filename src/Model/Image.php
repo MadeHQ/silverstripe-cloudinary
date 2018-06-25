@@ -6,6 +6,48 @@ class Image extends File
 {
     private static $table_name = 'CloudinaryImage';
 
+    // These are basically defaults
+    protected $options = [
+        'secure' => true,
+        'width' => 100,
+        'height' => 100,
+        'quality' =>  'auto',
+        'crop' => 'fit',
+    ];
+
+    // Chainable methods, set what options you need on $this then return it
+    public function Size($width, $height) {
+        $this->options['width'] = $width;
+        $this->options['height'] = $height;
+
+        return $this;
+    }
+
+    public function Crop($crop) {
+        $this->options['crop'] = $crop;
+        return $this;
+    }
+
+    public function Quality($quality) {
+        $this->options['quality'] = $quality;
+        return $this;
+    }
+
+    public function Gravity($gravity) {
+        $this->options['gravity'] = is_bool($gravity) ? $gravity : @json_decode($gravity) ?: $gravity;
+        return $this;
+    }
+
+    public function FetchFormatAuto($fetchFormatAuto) {
+        $this->options['fetchFormatAuto'] = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
+        return $this;
+    }
+
+    public function DuoTone($duoTone) {
+        $this->options['transformation'] = [['effect' => 'grayscale'],['effect' => $duoTone]];
+        return $this;
+    }
+
     /**
      * Gets the Cloudinary URL for the image at the requested size, crop etc.
      * NOTE: Uses the `is_bool` check because SS template passes `true`/`false` as string so uses json_decode
@@ -16,13 +58,24 @@ class Image extends File
      * @param String $gravity
      * @param Boolean $fetchFormatAuto
      */
-    public function URL($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true)
+    public function URL($width = 100, $height = 100, $crop = null, $quality = null, $gravity = null, $fetchFormatAuto = true)
     {
-        $fetchFormatAuto = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
-        $gravity = is_bool($gravity) ? $gravity : @json_decode($gravity) ?: $gravity;
-        $options = $this->getDefaultImageOptions($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
-        $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
-        return \Cloudinary::cloudinary_url($fileName, $options);
+        $returnObj = $this->size($width, $height);
+
+        if (isset($crop)) {
+            $returnObj = $returnObj->crop($crop);
+        }
+        if (isset($quality)) {
+            $returnObj = $returnObj->quality($quality);
+        }
+        if (isset($gravity)) {
+            $returnObj = $returnObj->gravity($gravity);
+        }
+        if (isset($fetchFormatAuto)) {
+            $returnObj = $returnObj->fetchFormatAuto($fetchFormatAuto);
+        }
+        
+        return $this;
     }
 
     /**
@@ -38,29 +91,26 @@ class Image extends File
         return $link;
     }
 
-    private function getDefaultImageOptions($width, $height, $crop, $quality = 'auto', $gravity = false, $fetchFormatAuto = true) {
-        $options = array(
-            'secure' => true,
-            'width' => $width,
-            'height' => $height,
-            'quality' =>  $quality,
-            'type' => $this->Type,
-        );
-        if ($gravity) {
-            $options['gravity'] = $gravity;
-        } elseif ($this->Gravity !== 'auto') {
+    // This renders the end of the chain to the template
+    public function forTemplate() {
+        $options = $this->options;
+
+        if (!isset($options['type'])) {
+            $options['type'] = $this->Type;
+        }
+
+        if (!isset($options['gravity'])) {
             $options['gravity'] = $this->Gravity;
         }
-        if ($fetchFormatAuto) {
-            $options['fetch_format'] = 'auto';
-        }
-        if ($crop) {
-            $options['crop'] = $crop;
-        }
+
         // These crops don't support gravity, Cloudinary returns a 400 if passed
-        if (in_array($crop, array('fit', 'limit', 'mfit', 'pad', 'lpad'))) {
-            unset($options['gravity']);
+        if (isset($options['crop'])) {
+            if (in_array($options['crop'], ['fit', 'limit', 'mfit', 'pad', 'lpad'])) {
+                unset($options['gravity']);
+            }
         }
-        return $options;
+
+        $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
+        return \Cloudinary::cloudinary_url($fileName, $options);
     }
 }
