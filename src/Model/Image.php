@@ -102,12 +102,22 @@ class Image extends File
         return $link;
     }
 
-    public function resizeByWidth($width)
+    public function ResizeByWidth($width)
     {
-        $ratio = $this->Width / $this->Height;
-        $newHeight = $width * $ratio;
+        $this->options['width'] = $width;
 
-        return $this->Size($width, (int)$newHeight);
+        unset($this->options['height']);
+
+        return $this;
+    }
+
+    public function ResizeByHeight($height)
+    {
+        $this->options['height'] = $height;
+
+        unset($this->options['width']);
+
+        return $this;
     }
 
     public function __toString()
