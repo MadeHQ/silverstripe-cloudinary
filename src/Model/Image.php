@@ -48,6 +48,13 @@ class Image extends File
         if (trim($duoTone) == '') {
             return $this;
         }
+
+        // If the duoTone Paramter is just a colour, we plug that colour into a predefined string
+        if (mb_substr($duoTone, 0,1) === '#') {
+            $color = strtolower(str_replace("#", "", $duoTone));
+            $duoTone = 'tint:100:2E282E:0p:'.$color.':100p';
+        }
+
         $this->options['transformation'] = [['effect' => 'grayscale'],['effect' => $duoTone]];
         return $this;
     }
