@@ -8,3 +8,14 @@
 #sync-with-cloudinary-button.updating:before {
   animation: spinner 2s linear infinite;
 }
+
+// Temporarily hide the browse button until it's fully working
+.uploadfield__droptext {
+    .uploadfield__upload-button,
+    .uploadfield__join {
+        display: none;
+    }
+}
+input.entwine-uploadfield[type="file"] {
+    display: none;
+}
