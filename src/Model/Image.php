@@ -99,7 +99,7 @@ class Image extends File
         $height = (int)$this->config()->get('asset_preview_height');
         $link = $this->URL($width, $height, 'fit');
         $this->extend('updatePreviewLink', $link, $action);
-        return $link;
+        return (string) $link;
     }
 
     public function ResizeByWidth($width)
