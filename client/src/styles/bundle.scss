@@ -10,6 +10,9 @@
 }
 
 // Temporarily hide the browse button until it's fully working
+.uploadfield__backdrop {
+    pointer-events: none;
+}
 .uploadfield__droptext {
     .uploadfield__upload-button,
     .uploadfield__join {
