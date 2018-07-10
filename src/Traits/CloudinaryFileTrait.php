@@ -14,13 +14,13 @@ trait CloudinaryFileTrait
 {
     private $remoteData;
 
-    private static $db = array(
+    private static $db = [
         'PublicID' => 'Varchar(255)',
         'SecureURL' => 'Varchar(1000)',
         'ResourceType' => 'Varchar',
         'Type' => 'Varchar',
         'Format' => 'Varchar(10)',
-    );
+    ];
 
     private static $indexes = [
         'PublicID' => [
@@ -68,16 +68,6 @@ trait CloudinaryFileTrait
         return (isset($this->record['ID']) && $this->record['ID'] > 0);
     }
 
-    public function getWidth()
-    {
-        return $this->getRemoteData()['width'];
-    }
-
-    public function getHeight()
-    {
-        return $this->getRemoteData()['height'];
-    }
-
     public static function createFromCloudinaryResource($resource)
     {
         $parentFolder = static::getParentFolderForResouce($resource);
@@ -91,9 +81,10 @@ trait CloudinaryFileTrait
         $file->Type = $resource['type'];
         $file->Parent = $parentFolder;
         $file->write();
+        return $file;
     }
 
-    public function setFromLocalFile($path, $filename = null, $hash = null, $variant = null, $config = array())
+    public function setFromLocalFile($path, $filename = null, $hash = null, $variant = null, $config = [])
     {
         $result = parent::setFromLocalFile($path, $filename, $hash, $variant, $config);
         if ($result) {
@@ -106,18 +97,18 @@ trait CloudinaryFileTrait
         return $result;
     }
 
-    public static function PrivateUrl($publicId, $format, $options = array())
+    public static function PrivateUrl($publicId, $format, $options = [])
     {
 var_dump('check that user is logged in and has admin access');
         $cloudinary_params = Cloudinary::sign_request(
-            array(
+            [
                 "timestamp" => time(),
                 "public_id" => $public_id,
                 "format" => $format,
                 "type" => Cloudinary::option_get($options, "type"),
                 "attachment" => Cloudinary::option_get($options, "attachment"),
                 "expires_at" => Cloudinary::option_get($options, "expires_at"),
-            ),
+            ],
             $options
         );
 
@@ -167,13 +158,15 @@ var_dump('check that user is logged in and has admin access');
         }
     }
 
-    private function getRemoteData()
+    protected function getRemoteData()
     {
         try {
             if (!$this->remoteData) {
                 $api = new Api();
                 $this->remoteData = $api->resource($this->PublicID, [
                     'resource_type' => $this->ResourceType,
+                    'colors' => true,
+                    'image_metadata' => true,
                 ])->getArrayCopy();
             }
             return $this->remoteData;

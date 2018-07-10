@@ -29,7 +29,7 @@ class APIController extends Controller implements PermissionProvider
      * How many items to get from Cloudinary with each request when syncing
      * @var Int
      */
-    private static $api_page_size = 100;
+    private static $api_page_size = 500;
 
     /**
      * List of Resource types to get from Cloudinary
@@ -102,11 +102,11 @@ class APIController extends Controller implements PermissionProvider
             'resource_type' => $resourceType,
             'max_results' => static::config()->uninherited('api_page_size'),
         ];
+        // See (https://support.cloudinary.com/hc/requests/68494) for details
         // $options['start_at'] = date(\DateTime::ISO8601, strtotime('-4 week'));
         if ($cursor) {
             $options['next_cursor'] = $cursor;
         }
-
         return $api->resources($options);
     }
 

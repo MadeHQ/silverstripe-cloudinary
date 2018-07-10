@@ -15,6 +15,18 @@ class Image extends File
         'crop' => 'fit',
     ];
 
+    /**
+     * Database fields
+     * @var array
+     */
+    private static $db = [
+        'OriginalWidth' => 'Int',
+        'OriginalHeight' => 'Int',
+        'OriginalCaption' => 'Text',
+        'OriginalCredit' => 'Text',
+        'OriginalColours' => 'Text',
+    ];
+
     // Chainable methods, set what options you need on $this then return it
     public function Size($width, $height) {
         $this->options['width'] = $width;
@@ -146,5 +158,125 @@ class Image extends File
 
         $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
         return \Cloudinary::cloudinary_url($fileName, $options);
+    }
+
+    public function getWidth($forceFromCloudinary = false)
+    {
+        if ($this->OriginalWidth && !$forceFromCloudinary) {
+            return $this->OriginalWidth;
+        }
+        return $this->OriginalWidth = $this->getRemoteData()['width'];
+    }
+
+    public function getHeight($forceFromCloudinary = false)
+    {
+        if ($this->OriginalHeight && !$forceFromCloudinary) {
+            return $this->OriginalHeight;
+        }
+        return $this->OriginalHeight = $this->getRemoteData()['height'];
+    }
+
+    public function getCredit($forceFromCloudinary = false)
+    {
+        if ($this->OriginalCredit && !$forceFromCloudinary) {
+            return $this->OriginalCredit;
+        }
+        $remoteData = $this->getRemoteData();
+
+        if (!is_array($remoteData)) {
+            return $this->OriginalCredit = '';
+        }
+
+        if (!array_key_exists('image_metadata', $remoteData)) {
+            return $this->OriginalCredit = '';
+        }
+
+        $metadata = $remoteData['image_metadata'];
+
+        if (array_key_exists('Copyright', $metadata)) {
+            return $this->OriginalCredit = $metadata['Copyright'];
+        }
+
+        if (array_key_exists('By-line', $metadata)) {
+            return $this->OriginalCredit = $metadata['By-line'];
+        }
+
+        if (array_key_exists('Artist', $metadata)) {
+            return $this->OriginalCredit = $metadata['Artist'];
+        }
+
+        if (array_key_exists('Creator', $metadata)) {
+            return $this->OriginalCredit = $metadata['Creator'];
+        }
+
+        if (array_key_exists('XPAuthor', $metadata)) {
+            return $this->OriginalCredit = $metadata['XPAuthor'];
+        }
+
+        return $this->OriginalCredit = '';
+    }
+
+    public function getCaption($forceFromCloudinary = false)
+    {
+        if ($this->OriginalCaption && !$forceFromCloudinary) {
+            return $this->OriginalCaption;
+        }
+        $remoteData = $this->getRemoteData();
+
+        if (!is_array($remoteData)) {
+            return $this->OriginalCaption = '';
+        }
+
+        if (!array_key_exists('context', $remoteData)) {
+            return $this->OriginalCaption = '';
+        }
+
+        if (!array_key_exists('caption', $remoteData['context'])) {
+            return $this->OriginalCaption = '';
+        }
+
+        return $this->OriginalCaption = $remoteData['context']['caption'];
+    }
+
+    public function getColors($forceFromCloudinary = false)
+    {
+        if ($this->OriginalColours && !$forceFromCloudinary) {
+            return json_decode($this->OriginalColours);
+        }
+        $remoteData = $this->getRemoteData();
+
+        if (!is_array($remoteData)) {
+            return [];
+        }
+
+        if (!array_key_exists('colors', $remoteData)) {
+            return [];
+        }
+        $this->OriginalColours = json_encode($remoteData['colors']);
+        return $remoteData['colors'];
+    }
+
+    public function updateFromCloudinary($resource)
+    {
+        parent::updateFromCloudinary($resource);
+
+        $this->getWidth(true);
+        $this->getHeight(true);
+        $this->getCredit(true);
+        $this->getCaption(true);
+        $this->getColors(true);
+        $this->write();
+    }
+
+    public static function createFromCloudinaryResource($resource)
+    {
+        $file = parent::createFromCloudinaryResource($resource);
+        $file->getWidth(true);
+        $file->getHeight(true);
+        $file->getCredit(true);
+        $file->getCaption(true);
+        $file->getColors(true);
+        $file->write();
+        return $file;
     }
 }
