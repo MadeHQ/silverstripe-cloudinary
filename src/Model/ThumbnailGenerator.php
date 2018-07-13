@@ -12,10 +12,11 @@ class ThumbnailGenerator extends BaseThumbnailGenerator
      */
     public function generateThumbnailLink(AssetContainer $file, $width, $height)
     {
-        if (!$file->getIsImage() || !$file->exists()) {
+        if ((!$file->getIsImage() && !$file->getIsVideo()) || !$file->exists()) {
             return null;
         }
         $opts = [
+            'resource_type' => $file->ResourceType,
             'width' => $width,
             'height' => $height,
             'crop' => 'fill',

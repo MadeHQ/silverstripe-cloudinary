@@ -63,6 +63,11 @@ trait CloudinaryFileTrait
         return $this->ResourceType === 'image';
     }
 
+    public function getIsVideo()
+    {
+        return $this->ResourceType === 'video';
+    }
+
     public function exists()
     {
         return (isset($this->record['ID']) && $this->record['ID'] > 0);

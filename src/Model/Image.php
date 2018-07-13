@@ -141,6 +141,10 @@ class Image extends File
     public function forTemplate() {
         $options = $this->options;
 
+        if (!isset($options['resource_type'])) {
+            $options['resource_type'] = $this->ResourceType;
+        }
+
         if (!isset($options['type'])) {
             $options['type'] = $this->Type;
         }

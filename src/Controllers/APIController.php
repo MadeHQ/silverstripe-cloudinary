@@ -11,8 +11,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Convert;
 use Cloudinary\Api;
 use Cloudinary\Api\Error As CloudinaryApiError;
-use MadeHQ\Cloudinary\Model\File;
-use MadeHQ\Cloudinary\Model\Image;
+use MadeHQ\Cloudinary\Model\{ Image, File, Video };
 
 class APIController extends Controller implements PermissionProvider
 {
@@ -63,8 +62,8 @@ class APIController extends Controller implements PermissionProvider
                     array_walk($data['resources'], array($this, 'addOrUpdateResource'));
                     $count+= count($data['resources']);
                     $data = (array_key_exists('next_cursor', $data)) ?
-                    $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
-                    false;
+                        $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
+                        false;
                 }
             }
 
@@ -116,16 +115,30 @@ class APIController extends Controller implements PermissionProvider
             case 'image':
                 $file = Image::getOneByPublicId($resource['public_id']);
                 if ($file) {
-                    $file->updateFromCloudinary($resource);
+// Waiting for a response back from Cloudinary for this
+// var_dump('Check if there is a last-updated value, if so compare to the value from DB, if older bypass the `update`', $resource['created_at'], $resource);die;
+                    // $file->updateFromCloudinary($resource);
                     return;
                 }
                 Image::createFromCloudinaryResource($resource);
+                break;
+            case 'video':
+                $file = Video::getOneByPublicId($resource['public_id']);
+                if ($file) {
+// Waiting for a response back from Cloudinary for this
+// var_dump('Check if there is a last-updated value, if so compare to the value from DB, if older bypass the `update`', $resource['created_at'], $resource);die;
+                    // $file->updateFromCloudinary($resource);
+                    return;
+                }
+                $file = Video::createFromCloudinaryResource($resource);
                 break;
             case 'file':
             case 'raw':
                 $file = File::getOneByPublicId($resource['public_id']);
                 if ($file) {
-                    $file->updateFromCloudinary($resource);
+// Waiting for a response back from Cloudinary for this
+// var_dump('Check if there is a last-updated value, if so compare to the value from DB, if older bypass the `update`', $resource['created_at'], $resource);die;
+                    // $file->updateFromCloudinary($resource);
                     return;
                 }
                 File::createFromCloudinaryResource($resource);
