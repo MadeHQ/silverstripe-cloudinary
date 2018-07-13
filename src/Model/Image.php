@@ -9,8 +9,6 @@ class Image extends File
     // These are basically defaults
     protected $options = [
         'secure' => true,
-        'width' => 100,
-        'height' => 100,
         'quality' =>  'auto',
         'crop' => 'fit',
     ];
@@ -28,7 +26,7 @@ class Image extends File
     ];
 
     // Chainable methods, set what options you need on $this then return it
-    public function Size($width, $height) {
+    public function Size($width, $height = false) {
         $this->options['width'] = $width;
         $this->options['height'] = $height;
 
