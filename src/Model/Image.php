@@ -53,19 +53,39 @@ class Image extends File
         return $this;
     }
 
-    public function DuoTone($duoTone) {
-        // Allow a blank duoTone so we don't have to use crazy ifs all over the place
-        if (trim($duoTone) == '') {
+    public function DuoTone($darkColour = '', $lightColour = null) {
+        // We need at least one value
+        if (trim($darkColour) === '') {
             return $this;
         }
 
-        // If the duoTone Paramter is just a colour, we plug that colour into a predefined string
-        if (mb_substr($duoTone, 0,1) === '#') {
-            $color = strtolower(str_replace("#", "", $duoTone));
-            $duoTone = 'tint:100:2E282E:0p:'.$color.':100p';
+        // Remove hash from dark colour
+        $darkColour = strtolower(str_replace('#', '', $darkColour));
+
+        // If first value is a hex, we need a second value too
+        if (strlen($darkColour) === 3 ||  strlen($darkColour) === 6) {
+            if (!$lightColour) {
+                return $this;
+            }
+
+            // Remove hash from light colour
+            $lightColour = strtolower(str_replace('#', '', $lightColour));
+
+            // Make sure light colour is valid
+            if (!strlen($lightColour) === 3 && !strlen($lightColour) === 6) {
+                return $this;
+            }
+
+            $duoTone = 'tint:100:' . $darkColour . ':0p:' . $lightColour . ':100p';
+        } else {
+            $duoTone = $darkColour;
         }
 
-        $this->options['transformation'] = [['effect' => 'grayscale'],['effect' => $duoTone]];
+        $this->options['transformation'] = [
+            ['effect' => 'grayscale'],
+            ['effect' => $duoTone],
+        ];
+
         return $this;
     }
 
