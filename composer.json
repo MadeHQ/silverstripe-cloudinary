@@ -13,6 +13,10 @@
       "homepage": "https://www.example.com"
     }
   ],
+  "repositories": [{
+    "type": "vcs",
+    "url": "git@github.com:oilee80/silverstripe-asset-admin.git"
+  }],
   "require": {
     "cloudinary/cloudinary_php": "dev-master",
     "php": ">=7.0.0",
