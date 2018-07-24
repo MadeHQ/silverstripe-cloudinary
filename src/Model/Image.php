@@ -103,10 +103,58 @@ class Image extends File
             $duoTone = $darkColour;
         }
 
-        $this->options['transformation'] = [
+        $transformation = [];
+
+        if (array_key_exists('transformation', $this->options)) {
+            $transformation = $this->options['transformation'];
+        }
+
+        $this->options['transformation'] = array_merge($transformation, [
             ['effect' => 'grayscale'],
             ['effect' => $duoTone],
-        ];
+        ]);
+
+        return $this;
+    }
+
+    public function Brightness($value = 0)
+    {
+        if (is_null($value) || !(int) $value) {
+            return $this;
+        }
+
+        $transformation = [];
+
+        if (array_key_exists('transformation', $this->options)) {
+            $transformation = $this->options['transformation'];
+        }
+
+        $this->options['transformation'] = array_merge($transformation, [
+            ['effect' => 'brightness:' . $value],
+        ]);
+
+        return $this;
+    }
+
+    public function Effect($effect, $value)
+    {
+        if (is_null($effect) || !strlen($effect)) {
+            return $this;
+        }
+
+        if (is_null($value) || !strlen($value)) {
+            return $this;
+        }
+
+        $transformation = [];
+
+        if (array_key_exists('transformation', $this->options)) {
+            $transformation = $this->options['transformation'];
+        }
+
+        $this->options['transformation'] = array_merge($transformation, [
+            ['effect' => $effect . ':' . $value],
+        ]);
 
         return $this;
     }
