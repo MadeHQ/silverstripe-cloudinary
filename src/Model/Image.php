@@ -26,34 +26,56 @@ class Image extends File
     ];
 
     // Chainable methods, set what options you need on $this then return it
-    public function Size($width, $height = false) {
+    public function Size($width, $height = false)
+    {
         $this->options['width'] = $width;
         $this->options['height'] = $height;
 
         return $this;
     }
 
-    public function Crop($crop) {
+    public function Crop($crop)
+    {
         $this->options['crop'] = $crop;
         return $this;
     }
 
-    public function Quality($quality) {
+    public function Quality($quality)
+    {
         $this->options['quality'] = $quality;
         return $this;
     }
 
-    public function Gravity($gravity) {
+    /**
+     * Adds a radius onto the image to round the corners
+     * @param Mixed $radius pass in an integer value to specify radius, or `max` to round fully or leave blank/0 to remove radius completely
+     * @return this
+     */
+    public function Radius($radius = 0)
+    {
+        if ($radius) {
+            $this->options['radius'] = $radius;
+        } else {
+            unset($this->options['radius']);
+        }
+
+        return $this;
+    }
+
+    public function Gravity($gravity)
+    {
         $this->options['gravity'] = is_bool($gravity) ? $gravity : @json_decode($gravity) ?: $gravity;
         return $this;
     }
 
-    public function FetchFormatAuto($fetchFormatAuto) {
+    public function FetchFormatAuto($fetchFormatAuto)
+    {
         $this->options['fetchFormatAuto'] = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
         return $this;
     }
 
-    public function DuoTone($darkColour = '', $lightColour = null) {
+    public function DuoTone($darkColour = '', $lightColour = null)
+    {
         // We need at least one value
         if (trim($darkColour) === '') {
             return $this;
@@ -156,7 +178,8 @@ class Image extends File
     }
 
     // This renders the end of the chain to the template
-    public function forTemplate() {
+    public function forTemplate()
+    {
         $options = $this->options;
 
         if (!isset($options['resource_type'])) {
