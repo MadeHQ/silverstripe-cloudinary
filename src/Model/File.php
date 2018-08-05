@@ -9,6 +9,9 @@ class File extends BaseFile
 {
     use CloudinaryFileTrait;
 
+    /**
+     * @var string
+     */
     private static $table_name = 'CloudinaryFile';
 
     /**

@@ -18,6 +18,7 @@ trait CloudinaryFileTrait
         'PublicID' => 'Varchar(255)',
         'SecureURL' => 'Varchar(1000)',
         'ResourceType' => 'Varchar',
+        'Description' => 'Text',
         'Type' => 'Varchar',
         'Format' => 'Varchar(10)',
     ];
@@ -43,7 +44,8 @@ trait CloudinaryFileTrait
         $this->Format = static::getFormatForResource($resource);
         $this->SecureURL = $resource['secure_url'];
         $this->ResourceType = $resource['resource_type'];
-        $this->type = $resource['type'];
+        $this->Description = static::getDescriptionForResource($resource);
+        $this->Type = $resource['type'];
         $this->Parent = $parentFolder;
         $this->write();
     }
@@ -80,6 +82,7 @@ trait CloudinaryFileTrait
         $file = $className::create();
         $file->PublicID = $resource['public_id'];
         $file->Title = static::getNameForResource($resource);
+        $file->Description = static::getDescriptionForResource($resource);
         $file->Format = static::getFormatForResource($resource);
         $file->SecureURL = $resource['secure_url'];
         $file->ResourceType = $resource['resource_type'];
@@ -149,6 +152,37 @@ var_dump('check that user is logged in and has admin access');
         return Folder::find_or_make($folderPath);
     }
 
+    private static function getDescriptionForResource($resource)
+    {
+        $remoteData = static::get_remote_data($resource['public_id'], $resource['resource_type']);
+
+        if (!is_array($remoteData)) {
+            return '';
+        }
+
+        if (!array_key_exists('context', $remoteData)) {
+            return '';
+        }
+
+        if (!is_array($remoteData['context'])) {
+            return '';
+        }
+
+        if (!array_key_exists('custom', $remoteData['context'])) {
+            return '';
+        }
+
+        if (!is_array($remoteData['context']['custom'])) {
+            return '';
+        }
+
+        if (!array_key_exists('alt', $remoteData['context']['custom'])) {
+            return '';
+        }
+
+        return $remoteData['context']['custom']['alt'];
+    }
+
     /**
      * Want files to be published automatically
      * @return void
@@ -163,18 +197,30 @@ var_dump('check that user is logged in and has admin access');
         }
     }
 
-    protected function getRemoteData()
+    /**
+     * @var array
+     */
+    protected static $remote_data_cache = [];
+
+    /**
+     * @return
+     */
+    protected static function get_remote_data($publicID, $resourceType)
     {
+        if (array_key_exists($publicID, static::$remote_data_cache)) {
+            return static::$remote_data_cache[$publicID];
+        }
+
         try {
-            if (!$this->remoteData) {
-                $api = new Api();
-                $this->remoteData = $api->resource($this->PublicID, [
-                    'resource_type' => $this->ResourceType,
-                    'colors' => true,
-                    'image_metadata' => true,
-                ])->getArrayCopy();
-            }
-            return $this->remoteData;
+            $api = new Api();
+
+            static::$remote_data_cache[$publicID] = $api->resource($publicID, [
+                'resource_type' => $resourceType,
+                'colors' => true,
+                'image_metadata' => true,
+            ])->getArrayCopy();
+
+            return static::$remote_data_cache[$publicID];
         } catch (\Cloudinary\Api\RateLimited $e) {
             return false;
         } catch (NotFound $e) {

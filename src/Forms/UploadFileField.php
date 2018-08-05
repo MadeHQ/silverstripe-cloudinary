@@ -21,9 +21,13 @@ class UploadFileField extends FormField
 {
     private $fields;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct($name, $title = null, $value = null)
     {
         $uploadField = new UploadField(sprintf('%s[File]', $name), 'File');
+
         $this->fields = [
             $uploadField->setAllowedMaxFileNumber(1),
             TextField::create(sprintf('%s[Title]', $name), 'Title'),
@@ -31,16 +35,31 @@ class UploadFileField extends FormField
         ];
 
         parent::__construct($name, $title, $value);
+
         $this->setTemplate('UploadFileField');
+
         $this->extend('init');
     }
 
+    /**
+     * Inserts the given field to the list of fields to show in the CMS
+     *
+     * @param FormField $field
+     * @return UploadFileField
+     */
     public function addField(FormField $field)
     {
         array_push($this->fields, $field);
         return $this;
     }
 
+    /**
+     * Removes the field with the given name from the list of fields
+     * to show in the CMS
+     *
+     * @param string $name
+     * @return UploadFileField
+     */
     public function removeField($name)
     {
         foreach ($this->fields as $i => $field) {
@@ -48,24 +67,32 @@ class UploadFileField extends FormField
                 array_splice($this->fields, $i, 1);
             }
         }
+
         return $this;
     }
 
+    /**
+     * @return FieldList
+     */
     public function getFieldList()
     {
         return new FieldList($this->fields);
     }
 
+    /**
+     * @return FieldList
+     */
     public function setForm($form)
     {
         foreach ($this->fields as $field) {
             $field->setForm($form);
         }
+
         parent::setForm($form);
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function saveInto(DataObjectInterface $record)
     {
@@ -85,6 +112,9 @@ class UploadFileField extends FormField
         $this->extend('saveIntoAfterWrite', $record, $linkRecord);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setValue($value, $record = null)
     {
         if(empty($value) && $record) {
@@ -121,6 +151,9 @@ class UploadFileField extends FormField
         return parent::setValue($value, $record);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function setSubmittedValue($value, $data = NULL)
     {
         $fields = $this->getFieldList();
@@ -136,11 +169,17 @@ class UploadFileField extends FormField
         }
     }
 
+    /**
+     * @return boolean
+     */
     public function isComposite()
     {
         return true;
     }
 
+    /**
+     * @return Upload_Validator
+     */
     public function getValidator()
     {
         return Upload_Validator::create();

@@ -26,9 +26,17 @@ class APIController extends Controller implements PermissionProvider
 
     /**
      * How many items to get from Cloudinary with each request when syncing
-     * @var Int
+     * @var int
+     * @config
      */
     private static $api_page_size = 500;
+
+    /**
+     * 300 seconds = 5 minutes
+     * @var int
+     * @config
+     */
+    private static $execution_time = 300;
 
     /**
      * List of Resource types to get from Cloudinary
@@ -51,7 +59,11 @@ class APIController extends Controller implements PermissionProvider
             ], 403);
         }
         try {
-            ini_set('max_execution_time', 300); //300 seconds = 5 minutes
+            ini_set(
+                'max_execution_time',
+                static::config()->uninherited('execution_time')
+            );
+
             $page = 0;
             $count = 0;
             $resourceTypes = static::config()->uninherited('resource_types');

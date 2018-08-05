@@ -9,6 +9,8 @@ class ImageLink extends FileLink
     private static $db = [
         'Gravity' => 'Varchar(15)',
         'Alt' => 'Varchar(200)',
+        'Caption' => 'Text',
+        'Credit' => 'Text',
     ];
 
     /**

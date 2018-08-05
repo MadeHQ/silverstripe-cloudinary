@@ -250,6 +250,7 @@ class Image extends File
         }
 
         $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
+
         return \Cloudinary::cloudinary_url($fileName, $options);
     }
 
@@ -258,7 +259,10 @@ class Image extends File
         if ($this->OriginalWidth && !$forceFromCloudinary) {
             return $this->OriginalWidth;
         }
-        return $this->OriginalWidth = $this->getRemoteData()['width'];
+
+        $this->OriginalWidth = static::get_remote_data($this->PublicID, $this->ResourceType)['width'];
+
+        return $this->OriginalWidth;
     }
 
     public function getHeight($forceFromCloudinary = false)
@@ -266,7 +270,10 @@ class Image extends File
         if ($this->OriginalHeight && !$forceFromCloudinary) {
             return $this->OriginalHeight;
         }
-        return $this->OriginalHeight = $this->getRemoteData()['height'];
+
+        $this->OriginalHeight = static::get_remote_data($this->PublicID, $this->ResourceType)['height'];
+
+        return $this->OriginalHeight;
     }
 
     public function getCredit($forceFromCloudinary = false)
@@ -274,7 +281,8 @@ class Image extends File
         if ($this->OriginalCredit && !$forceFromCloudinary) {
             return $this->OriginalCredit;
         }
-        $remoteData = $this->getRemoteData();
+
+        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
 
         if (!is_array($remoteData)) {
             return $this->OriginalCredit = '';
@@ -287,26 +295,18 @@ class Image extends File
         $metadata = $remoteData['image_metadata'];
 
         if (array_key_exists('Copyright', $metadata)) {
-            return $this->OriginalCredit = $metadata['Copyright'];
+            $this->OriginalCredit = $metadata['Copyright'];
+        } else if (array_key_exists('By-line', $metadata)) {
+            $this->OriginalCredit = $metadata['By-line'];
+        } else if (array_key_exists('Artist', $metadata)) {
+            $this->OriginalCredit = $metadata['Artist'];
+        } else if (array_key_exists('Creator', $metadata)) {
+            $this->OriginalCredit = $metadata['Creator'];
+        } else if (array_key_exists('XPAuthor', $metadata)) {
+            $this->OriginalCredit = $metadata['XPAuthor'];
         }
 
-        if (array_key_exists('By-line', $metadata)) {
-            return $this->OriginalCredit = $metadata['By-line'];
-        }
-
-        if (array_key_exists('Artist', $metadata)) {
-            return $this->OriginalCredit = $metadata['Artist'];
-        }
-
-        if (array_key_exists('Creator', $metadata)) {
-            return $this->OriginalCredit = $metadata['Creator'];
-        }
-
-        if (array_key_exists('XPAuthor', $metadata)) {
-            return $this->OriginalCredit = $metadata['XPAuthor'];
-        }
-
-        return $this->OriginalCredit = '';
+        return $this->OriginalCredit;
     }
 
     public function getCaption($forceFromCloudinary = false)
@@ -314,21 +314,26 @@ class Image extends File
         if ($this->OriginalCaption && !$forceFromCloudinary) {
             return $this->OriginalCaption;
         }
-        $remoteData = $this->getRemoteData();
+
+        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
 
         if (!is_array($remoteData)) {
-            return $this->OriginalCaption = '';
+            $this->OriginalCaption = '';
+        } else if (!array_key_exists('context', $remoteData)) {
+            $this->OriginalCaption = '';
+        } else if (!is_array($remoteData['context'])) {
+            $this->OriginalCaption = '';
+        } else if (!array_key_exists('custom', $remoteData['context'])) {
+            $this->OriginalCaption = '';
+        } else if (!is_array($remoteData['context']['custom'])) {
+            $this->OriginalCaption = '';
+        } else if (!array_key_exists('alt', $remoteData['context']['custom'])) {
+            $this->OriginalCaption = '';
+        } else {
+            $this->OriginalCaption = $remoteData['context']['custom']['alt'];
         }
 
-        if (!array_key_exists('context', $remoteData)) {
-            return $this->OriginalCaption = '';
-        }
-
-        if (!array_key_exists('caption', $remoteData['context'])) {
-            return $this->OriginalCaption = '';
-        }
-
-        return $this->OriginalCaption = $remoteData['context']['caption'];
+        return $this->OriginalCaption;
     }
 
     public function getColors($forceFromCloudinary = false)
@@ -336,7 +341,8 @@ class Image extends File
         if ($this->OriginalColours && !$forceFromCloudinary) {
             return json_decode($this->OriginalColours);
         }
-        $remoteData = $this->getRemoteData();
+
+        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
 
         if (!is_array($remoteData)) {
             return [];
@@ -345,7 +351,9 @@ class Image extends File
         if (!array_key_exists('colors', $remoteData)) {
             return [];
         }
+
         $this->OriginalColours = json_encode($remoteData['colors']);
+
         return $remoteData['colors'];
     }
 
@@ -358,18 +366,22 @@ class Image extends File
         $this->getCredit(true);
         $this->getCaption(true);
         $this->getColors(true);
+
         $this->write();
     }
 
     public static function createFromCloudinaryResource($resource)
     {
         $file = parent::createFromCloudinaryResource($resource);
+
         $file->getWidth(true);
         $file->getHeight(true);
         $file->getCredit(true);
         $file->getCaption(true);
         $file->getColors(true);
+
         $file->write();
+
         return $file;
     }
 }
