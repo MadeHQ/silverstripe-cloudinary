@@ -278,7 +278,7 @@ class Image extends File
 
     public function getCredit($forceFromCloudinary = false)
     {
-        if ($this->OriginalCredit && !$forceFromCloudinary) {
+        if (!$forceFromCloudinary) {
             return $this->OriginalCredit;
         }
 
@@ -311,7 +311,7 @@ class Image extends File
 
     public function getCaption($forceFromCloudinary = false)
     {
-        if ($this->OriginalCaption && !$forceFromCloudinary) {
+        if (!$forceFromCloudinary) {
             return $this->OriginalCaption;
         }
 
