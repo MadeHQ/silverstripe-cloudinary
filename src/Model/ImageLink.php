@@ -23,16 +23,13 @@ class ImageLink extends FileLink
 
     private static $table_name = 'CloudinaryImageLink';
 
-    public function URL($width, $height, $crop = 'fit', $quality = 'auto', $gravity = null, $fetchFormatAuto = true)
+    public function getCredit()
     {
-        if (!$this->exists()) {
-            return null;
-        }
+        return $this->dbObject('Credit')->exists() ? $this->dbObject('Credit')->Value : $this->failover->Credit;
+    }
 
-        if (!$gravity) {
-            $gravity = $this->record['Gravity'];
-        }
-
-        return $this->File()->URL($width, $height, $crop, $quality, $gravity, $fetchFormatAuto);
+    public function getCaption()
+    {
+        return $this->dbObject('Caption')->exists() ? $this->dbObject('Caption')->Value : $this->failover->Caption;
     }
 }
