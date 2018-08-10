@@ -32,4 +32,9 @@ class ImageLink extends FileLink
     {
         return $this->dbObject('Caption')->exists() ? $this->dbObject('Caption')->Value : $this->failover->Caption;
     }
+
+    public function getGravity()
+    {
+        return $this->dbObject('Gravity');
+    }
 }
