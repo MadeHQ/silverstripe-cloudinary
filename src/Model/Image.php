@@ -249,6 +249,10 @@ class Image extends File
             }
         }
 
+        if (!isset($options['fetch_format'])) {
+            $options['fetch_format'] = 'auto';
+        }
+
         $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
 
         return \Cloudinary::cloudinary_url($fileName, $options);
