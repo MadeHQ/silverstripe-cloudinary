@@ -25,6 +25,13 @@ class Image extends File
         'OriginalColours' => 'Text',
     ];
 
+    /**
+     * @var array
+     */
+    private static $belongs_to = [
+        'ImageLink' => ImageLink::class,
+    ];
+
     // Chainable methods, set what options you need on $this then return it
     public function Size($width, $height = false)
     {
@@ -239,7 +246,11 @@ class Image extends File
         }
 
         if (!isset($options['gravity'])) {
-            $options['gravity'] = $this->Gravity;
+            if ($this->ImageLink()->exists()) {
+                $options['gravity'] = $this->ImageLink()->Gravity;
+            } else {
+                $options['gravity'] = 'auto';
+            }
         }
 
         // These crops don't support gravity, Cloudinary returns a 400 if passed

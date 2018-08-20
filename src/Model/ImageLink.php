@@ -25,16 +25,16 @@ class ImageLink extends FileLink
 
     public function getCredit()
     {
-        return $this->dbObject('Credit')->exists() ? $this->dbObject('Credit')->Value : $this->failover->Credit;
+        return $this->dbObject('Credit')->value ?: $this->failover->Credit;
     }
 
     public function getCaption()
     {
-        return $this->dbObject('Caption')->exists() ? $this->dbObject('Caption')->Value : $this->failover->Caption;
+        return $this->dbObject('Caption')->value ?: $this->failover->Caption;
     }
 
     public function getGravity()
     {
-        return $this->dbObject('Gravity');
+        return $this->dbObject('Gravity')->value;
     }
 }
