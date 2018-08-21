@@ -166,6 +166,25 @@ class Image extends File
         return $this;
     }
 
+    public function Cutout($overlay, $flags = 'cutter.relative', $width = '1.0', $height = '1.0')
+    {
+        if (is_null($overlay) || !strlen($overlay)) {
+            return $this;
+        }
+
+        $transformation = [];
+
+        if (array_key_exists('transformation', $this->options)) {
+            $transformation = $this->options['transformation'];
+        }
+
+        $this->options['transformation'] = array_merge($transformation, [
+            ['overlay' => $overlay, 'flags' => $flags, 'width' => $width, 'height' => $height],
+        ]);
+
+        return $this;
+    }
+
     /**
      * Gets the Cloudinary URL for the image at the requested size, crop etc.
      * NOTE: Uses the `is_bool` check because SS template passes `true`/`false` as string so uses json_decode
