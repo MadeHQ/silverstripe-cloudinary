@@ -21,6 +21,7 @@ trait CloudinaryFileTrait
         'Description' => 'Text',
         'Type' => 'Varchar',
         'Format' => 'Varchar(10)',
+        'Bytes' => 'Int',
     ];
 
     private static $indexes = [
@@ -103,6 +104,22 @@ trait CloudinaryFileTrait
             $this->Type = $result['Type'];
         }
         return $result;
+    }
+
+    public function getFileSize()
+    {
+        if ($this->Bytes) {
+            return $this->Bytes;
+        }
+        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
+        $this->Bytes = $remoteData['bytes'];
+        $this->write();
+        return $this->Bytes;
+    }
+
+    public function getFormattedFileSize()
+    {
+        return static::format_size($this->FileSize);
     }
 
     public static function PrivateUrl($publicId, $format, $options = [])
