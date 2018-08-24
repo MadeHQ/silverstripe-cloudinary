@@ -391,6 +391,25 @@ class Image extends File
         return $remoteData['colors'];
     }
 
+    public function getColorsMap($forceFromCloudinary = false)
+    {
+        $colours = $this->getColors($forceFromCloudinary);
+
+        if (!is_array($colours)) {
+            return null;
+        }
+
+        $map = [];
+
+        foreach ($colours as $color) {
+            list($hex, $strength) = $color;
+
+            $map[$hex] = $hex;
+        }
+
+        return $map;
+    }
+
     public function updateFromCloudinary($resource)
     {
         parent::updateFromCloudinary($resource);
