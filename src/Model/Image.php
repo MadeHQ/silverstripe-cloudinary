@@ -351,23 +351,38 @@ class Image extends File
 
         $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
 
-        if (!is_array($remoteData)) {
-            $this->OriginalCaption = '';
-        } else if (!array_key_exists('context', $remoteData)) {
-            $this->OriginalCaption = '';
-        } else if (!is_array($remoteData['context'])) {
-            $this->OriginalCaption = '';
-        } else if (!array_key_exists('custom', $remoteData['context'])) {
-            $this->OriginalCaption = '';
-        } else if (!is_array($remoteData['context']['custom'])) {
-            $this->OriginalCaption = '';
-        } else if (!array_key_exists('alt', $remoteData['context']['custom'])) {
-            $this->OriginalCaption = '';
-        } else {
-            $this->OriginalCaption = $remoteData['context']['custom']['alt'];
-        }
+        $this->OriginalCaption = static::extract_caption($remoteData);
 
         return $this->OriginalCaption;
+    }
+
+    public static function extract_caption($data)
+    {
+        if (!is_array($data)) {
+            return null;
+        }
+
+        if (!array_key_exists('context', $data)) {
+            return null;
+        }
+
+        if (!is_array($data['context'])) {
+            return null;
+        }
+
+        if (!array_key_exists('custom', $data['context'])) {
+            return null;
+        }
+
+        if (!is_array($data['context']['custom'])) {
+            return null;
+        }
+
+        if (!array_key_exists('alt', $data['context']['custom'])) {
+            return null;
+        }
+
+        return $data['context']['custom']['alt'];
     }
 
     public function getColors($forceFromCloudinary = false)

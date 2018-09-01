@@ -2,6 +2,7 @@
 
 namespace MadeHQ\Cloudinary\Controllers;
 
+use SilverStripe\ORM\DataObject;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -21,6 +22,7 @@ class APIController extends Controller implements PermissionProvider
      * @var array
      */
     private static $allowed_actions = [
+        'notify',
         'sync',
     ];
 
@@ -49,6 +51,46 @@ class APIController extends Controller implements PermissionProvider
         'video',
     ];
 
+    public function notify(HTTPRequest $request)
+    {
+        if (!$request->isPOST()) {
+            return false;
+        }
+
+        $data = json_decode($request->getBody(), true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
+        $notificationType = $data['notification_type'];
+
+        if ($notificationType === 'rename') {
+            $from = $data['from_public_id'];
+            $to = $data['to_public_id'];
+
+            $item = DataObject::get_one(File::class, ['PublicID' => $from]);
+            $item->SecureURL = str_replace($from, $to, $item->SecureURL);
+            return $item->write();
+        }
+
+        if ($notificationType === 'upload') {
+            return $this->addOrUpdateResource($data);
+        }
+
+        if ($notificationType === 'delete') {
+            foreach ($data['resources'] as $resource) {
+                $file = DataObject::get_one(File::class, [
+                    'PublicID' => $resource['public_id'],
+                ]);
+
+                if ($file) {
+                    $file->delete();
+                }
+            }
+        }
+    }
+
     public function sync(HTTPRequest $request)
     {
         if (!Permission::checkMember(null, 'CLOUDINARY_ACCESS_sync')) {
@@ -58,6 +100,7 @@ class APIController extends Controller implements PermissionProvider
                 'description' => 'You do not have permission to sync with cloudinary',
             ], 403);
         }
+
         try {
             ini_set(
                 'max_execution_time',
@@ -70,12 +113,17 @@ class APIController extends Controller implements PermissionProvider
 
             foreach ($resourceTypes as $resourceType) {
                 $data = $this->getPageFromCloudinary($resourceType);
+
                 while ($data && count($data['resources'])) {
                     array_walk($data['resources'], array($this, 'addOrUpdateResource'));
-                    $count+= count($data['resources']);
-                    $data = (array_key_exists('next_cursor', $data)) ?
-                        $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
-                        false;
+
+                    $count += count($data['resources']);
+
+                    $data = false;
+
+                    if (array_key_exists('next_cursor', $data)) {
+                        $data = $this->getPageFromCloudinary($resourceType, $data['next_cursor']);
+                    }
                 }
             }
 
@@ -109,15 +157,19 @@ class APIController extends Controller implements PermissionProvider
     private function getPageFromCloudinary($resourceType, $cursor = null)
     {
         $api = new Api();
+
         $options = [
             'resource_type' => $resourceType,
             'max_results' => static::config()->uninherited('api_page_size'),
+            'context' => true,
         ];
+
         // See (https://support.cloudinary.com/hc/requests/68494) for details
         // $options['start_at'] = date(\DateTime::ISO8601, strtotime('-4 week'));
         if ($cursor) {
             $options['next_cursor'] = $cursor;
         }
+
         return $api->resources($options);
     }
 
@@ -126,34 +178,34 @@ class APIController extends Controller implements PermissionProvider
         switch ($resource['resource_type']) {
             case 'image':
                 $file = Image::getOneByPublicId($resource['public_id']);
+
                 if ($file) {
-// Waiting for a response back from Cloudinary for this
-// var_dump('Check if there is a last-updated value, if so compare to the value from DB, if older bypass the `update`', $resource['created_at'], $resource);die;
-                    // $file->updateFromCloudinary($resource);
-                    return;
+                    $file->OriginalCaption = Image::extract_caption($resource);
+                    $file->write();
+                } else {
+                    Image::createFromCloudinaryResource($resource);
                 }
-                Image::createFromCloudinaryResource($resource);
+
                 break;
             case 'video':
                 $file = Video::getOneByPublicId($resource['public_id']);
+
                 if ($file) {
-// Waiting for a response back from Cloudinary for this
-// var_dump('Check if there is a last-updated value, if so compare to the value from DB, if older bypass the `update`', $resource['created_at'], $resource);die;
-                    // $file->updateFromCloudinary($resource);
                     return;
                 }
-                $file = Video::createFromCloudinaryResource($resource);
+
+                Video::createFromCloudinaryResource($resource);
+
                 break;
-            case 'file':
-            case 'raw':
+            default:
                 $file = File::getOneByPublicId($resource['public_id']);
+
                 if ($file) {
-// Waiting for a response back from Cloudinary for this
-// var_dump('Check if there is a last-updated value, if so compare to the value from DB, if older bypass the `update`', $resource['created_at'], $resource);die;
-                    // $file->updateFromCloudinary($resource);
                     return;
                 }
+
                 File::createFromCloudinaryResource($resource);
+
                 break;
         }
     }
