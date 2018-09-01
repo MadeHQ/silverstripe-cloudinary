@@ -70,6 +70,7 @@ class APIController extends Controller implements PermissionProvider
             $to = $data['to_public_id'];
 
             $item = DataObject::get_one(File::class, ['PublicID' => $from]);
+            $item->PublicID = $to;
             $item->SecureURL = str_replace($from, $to, $item->SecureURL);
             return $item->write();
         }
