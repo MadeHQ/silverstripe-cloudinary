@@ -218,14 +218,25 @@ class Image extends File
     /**
      * @inheritdoc
      */
+    public function Link()
+    {
+        return $this->URL($width, $height, 'fill', 'auto', 'auto')->forTemplate();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function PreviewLink($action = null)
     {
         // Size to width / height
         $width = (int)$this->config()->get('asset_preview_width');
         $height = (int)$this->config()->get('asset_preview_height');
-        $link = $this->URL($width, $height, 'fit');
+
+        $link = $this->URL($width, $height, 'fill');
+
         $this->extend('updatePreviewLink', $link, $action);
-        return (string) $link;
+
+        return $link->forTemplate();
     }
 
     public function ResizeByWidth($width)
