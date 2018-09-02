@@ -10,8 +10,11 @@ use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Convert;
+use SilverStripe\Versioned\Versioned;
+
 use Cloudinary\Api;
 use Cloudinary\Api\Error As CloudinaryApiError;
+
 use MadeHQ\Cloudinary\Model\{ Image, File, Video };
 
 class APIController extends Controller implements PermissionProvider
@@ -57,11 +60,21 @@ class APIController extends Controller implements PermissionProvider
             return false;
         }
 
+        if ($request->getHeader('User-Agent') !== 'Cloudinary') {
+            return false;
+        }
+
         $data = json_decode($request->getBody(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return false;
         }
+
+        if (!array_key_exists('notification_type', $data)) {
+            return false;
+        }
+
+        Versioned::set_reading_mode('Stage.Stage');
 
         $notificationType = $data['notification_type'];
 
@@ -70,8 +83,19 @@ class APIController extends Controller implements PermissionProvider
             $to = $data['to_public_id'];
 
             $item = DataObject::get_one(File::class, ['PublicID' => $from]);
+
+            if (!$item) {
+                return false;
+            }
+
             $item->PublicID = $to;
-            $item->SecureURL = str_replace($from, $to, $item->SecureURL);
+
+            $remoteData = File::get_remote_data($to, $item->ResourceType);
+
+            if (is_array($remoteData)) {
+                $item->SecureURL = $remoteData['secure_url'];
+            }
+
             return $item->write();
         }
 
@@ -101,6 +125,8 @@ class APIController extends Controller implements PermissionProvider
                 'description' => 'You do not have permission to sync with cloudinary',
             ], 403);
         }
+
+        Versioned::set_reading_mode('Stage.Stage');
 
         try {
             ini_set(

@@ -124,7 +124,6 @@ trait CloudinaryFileTrait
 
     public static function PrivateUrl($publicId, $format, $options = [])
     {
-var_dump('check that user is logged in and has admin access');
         $cloudinary_params = Cloudinary::sign_request(
             [
                 "timestamp" => time(),
@@ -215,6 +214,19 @@ var_dump('check that user is logged in and has admin access');
     }
 
     /**
+     * Want files to be unpublished automatically
+     * @return void
+     */
+    public function onBeforeDelete()
+    {
+        parent::onBeforeDelete();
+
+        if (class_exists(Versioned::class) && Versioned::get_stage() === Versioned::DRAFT) {
+            $this->deleteFromStage(Versioned::LIVE);
+        }
+    }
+
+    /**
      * @var array
      */
     protected static $remote_data_cache = [];
@@ -222,7 +234,7 @@ var_dump('check that user is logged in and has admin access');
     /**
      * @return
      */
-    protected static function get_remote_data($publicID, $resourceType)
+    public static function get_remote_data($publicID, $resourceType)
     {
         if (array_key_exists($publicID, static::$remote_data_cache)) {
             return static::$remote_data_cache[$publicID];
