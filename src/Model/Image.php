@@ -10,7 +10,7 @@ class Image extends File
     protected $options = [
         'secure' => true,
         'quality' =>  'auto',
-        'crop' => 'fit',
+        'gravity' => 'auto',
     ];
 
     /**
@@ -220,7 +220,7 @@ class Image extends File
      */
     public function Link()
     {
-        return $this->URL($width, $height, 'fill', 'auto', 'auto')->forTemplate();
+        return $this->Quality('auto')->Gravity('auto')->forTemplate();
     }
 
     /**
