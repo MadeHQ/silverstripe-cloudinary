@@ -23,4 +23,9 @@ class File extends BaseFile
         $link = sprintf('https://cloudinary.com/console/media_library/asset/%s/upload/%s', $this->ResourceType, rawurlencode($this->PublicID));
         return $link;
     }
+
+    public function getAbsoluteURL()
+    {
+        return $this->SecureURL;
+    }
 }
