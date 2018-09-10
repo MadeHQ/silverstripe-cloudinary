@@ -76,6 +76,11 @@ trait CloudinaryFileTrait
         return (isset($this->record['ID']) && $this->record['ID'] > 0);
     }
 
+    public function getURL($grant = true)
+    {
+        return $this->SecureURL;
+    }
+
     public static function createFromCloudinaryResource($resource)
     {
         $parentFolder = static::getParentFolderForResouce($resource);
