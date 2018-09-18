@@ -239,18 +239,20 @@ class Image extends File
         return $link->forTemplate();
     }
 
-    public function ResizeByWidth($width)
+    public function ResizeByWidth($width, $crop = 'fit')
     {
         $this->options['width'] = $width;
+        $this->options['crop'] = $crop;
 
         unset($this->options['height']);
 
         return $this;
     }
 
-    public function ResizeByHeight($height)
+    public function ResizeByHeight($height, $crop = 'fit')
     {
         $this->options['height'] = $height;
+        $this->options['crop'] = $crop;
 
         unset($this->options['width']);
 
