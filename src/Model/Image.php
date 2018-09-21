@@ -71,7 +71,7 @@ class Image extends File
 
     public function Gravity($gravity)
     {
-        $this->options['gravity'] = is_bool($gravity) ? $gravity : @json_decode($gravity) ?: $gravity;
+        $this->options['gravity'] = $gravity;
         return $this;
     }
 
@@ -277,12 +277,12 @@ class Image extends File
             $options['type'] = $this->Type;
         }
 
-        if (!isset($options['gravity'])) {
-            if ($this->ImageLink()->exists()) {
+        if ($this->ImageLink()->exists()) {
+            if (!isset($options['gravity']) || $options['gravity'] === 'auto') {
                 $options['gravity'] = $this->ImageLink()->Gravity;
-            } else {
-                $options['gravity'] = 'auto';
             }
+        } else if (!isset($options['gravity'])) {
+            $options['gravity'] = 'auto';
         }
 
         // These crops don't support gravity, Cloudinary returns a 400 if passed

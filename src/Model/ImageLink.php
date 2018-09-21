@@ -37,4 +37,9 @@ class ImageLink extends FileLink
     {
         return $this->dbObject('Gravity')->value;
     }
+
+    public function getFocus()
+    {
+        return $this->dbObject('Gravity')->value;
+    }
 }
