@@ -136,7 +136,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 
     public function getaudiolist(SS_HTTPRequest $request)
     {
-        $response = $this->getCloudinaryResources('video', $request->getVar('next_cursor'));
+        $response = $this->getCloudinaryResources('video', $request->getVar('folder'), $request->getVar('next_cursor'));
         $response['resources'] = array_filter(
             $response['resources'],
             function ($resource) {
@@ -149,7 +149,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
 
     public function getvideolist(SS_HTTPRequest $request)
     {
-        $response = $this->getCloudinaryResources('video', $request->getVar('next_cursor'));
+        $response = $this->getCloudinaryResources('video', $request->getVar('folder'), $request->getVar('next_cursor'));
         $response['resources'] = array_filter(
             $response['resources'],
             function ($resource) {
@@ -174,14 +174,14 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
     public function getimagelist(SS_HTTPRequest $request)
     {
         $api = CloudinaryUtils::api();
-        $images = $this->getCloudinaryResources('image', $request->getVar('next_cursor'));
+        $images = $this->getCloudinaryResources('image', $request->getVar('folder'), $request->getVar('next_cursor'));
         return $this->getJsonResponseFromData($images);
     }
 
     public function getfilelist(SS_HTTPRequest $request)
     {
         $api = CloudinaryUtils::api();
-        $files = $this->getCloudinaryResources('raw', $request->getVar('next_cursor'));
+        $files = $this->getCloudinaryResources('raw', $request->getVar('folder'), $request->getVar('next_cursor'));
         return $this->getJsonResponseFromData($files);
     }
 
@@ -310,17 +310,45 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
      * @param String $nextCursor Cloudinary's pagination
      * @return Array
      */
-    private function getCloudinaryResources($type = 'image', $nextCursor = null)
+    private function getCloudinaryResources($type = 'image', $folder = null, $nextCursor = null)
     {
         $api = CloudinaryUtils::api();
-        $respond = $api->resources(array(
+//        $respond = $api->resources(array(
+//            'max_results' => $this->getMaxResults(),
+//            'direction' => -1,
+//            'resource_type' => $type,
+//            'type' => 'upload',
+//            'next_cursor' => $nextCursor
+//        ));
+
+        $search_options = array(
             'max_results' => $this->getMaxResults(),
-            'direction' => -1,
-            'resource_type' => $type,
-            'type' => 'upload',
-            'next_cursor' => $nextCursor
-        ));
+            'next_cursor' => $nextCursor,
+            'sort_by' => array(array( 'uploaded_at' => 'desc' )),
+            "expression" => array(
+                "resource_type = " . $type,
+            ),
+        );
+
+        if ($folder === null) {
+            // This is apparently how you're supposed to get things in the root dir
+            $search_options['expression'][] = 'folder:""';
+        } else {
+            $search_options['expression'][] = 'folder = ' . $folder;
+        }
+
+        $respond = $api->search_resources($search_options);
         $data = $respond->getArrayCopy();
+
+        // Mangle folders into an array for the json
+        $folder_data = $this->fetchFoldersFromAPI($folder);
+        $folder_array = array();
+
+        foreach ($folder_data as $value => $name) {
+            $folder_array[] = array( "folder" => $value, "name" => $name );
+        }
+
+        $data['folders'] = $folder_array;
         return $data;
     }
 

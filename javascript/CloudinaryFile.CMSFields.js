@@ -1,4 +1,4 @@
-(function($){
+cloudinary__browser__window__item(function($){
 
 
 

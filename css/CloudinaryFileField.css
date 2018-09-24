@@ -57,6 +57,25 @@
     font-weight: bold;
 }
 
+.cloudinary__browser__window__item.folder span {
+    position: absolute;
+    bottom: 0px;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+}
+.cloudinary__browser__window__item.folder:hover {
+    border: 1px solid #777777;
+}
+.cloudinary__browser__window__item.folder {
+    max-width: 256px;
+    max-height: 256px;
+    background-image: url(data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjEyOHB4IiBoZWlnaHQ9IjEyOHB4IiB2aWV3Qm94PSIwIDAgNDUgNDUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQ1IDQ1OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTQ0LjQ1LDEzLjQzNmMtMC40NzQtMC41OTEtMS4xOTItMC45MzYtMS45NS0wLjkzNkg0MGMwLTEuMzgxLTEuMTE5LTIuNS0yLjUtMi41SDM1VjcuNUMzNSw2LjExOSwzMy44ODEsNSwzMi41LDVoLTMwICAgQzEuMTE5LDUsMCw2LjExOSwwLDcuNXYzMEMwLDM4Ljg4MSwxLjExOSw0MCwyLjUsNDBoNWgyNWg1YzEuMTcyLDAsMi4xODgtMC44MTQsMi40MzktMS45NThsNS0yMi41ICAgQzQ1LjEwNSwxNC44MDIsNDQuOTI1LDE0LjAyNyw0NC40NSwxMy40MzZ6IE0yLjUsNy41aDMwVjEwSDMwYy0xLjM4MSwwLTIuNSwxLjExOS0yLjUsMi41aC0xNWMtMS4xNzIsMC0yLjE4NiwwLjgxNC0yLjQ0LDEuOTU4ICAgYzAsMC01LjA1OCwyMi44NjItNS4wNTgsMjMuMDQySDIuNVY3LjVMMi41LDcuNXoiIGZpbGw9IiMwMDAwMDAiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K);
+    background-size: 70px;
+    background-repeat: no-repeat;
+    background-position: center;
+    position: relative;
+}
 .cloudinary-file-type-audio .cloudinary__browser__window__item .preview,
 .cloudinary-file-type-audio .cloudinary__browser__window__item .meta,
 .cloudinary-file-type-file .cloudinary__browser__window__item .preview,

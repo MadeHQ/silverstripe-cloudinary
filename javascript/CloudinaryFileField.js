@@ -71,7 +71,7 @@
             });
         }
 
-        var loadBrowserWindow = function(type, previewGenerator){
+        var loadBrowserWindow = function(type, previewGenerator, folder_name){
 
             var firstField = $('._js-cloudinary_holer:first');
             jQueryCloudinary.config({
@@ -103,7 +103,32 @@
             browserWindow.addClass('cloudinary-file-type-' + type);
             if (load) {
                 browserWindow.html('').removeClass('loaded');
-                $.getJSON('admin/cloudinary/get' + type + 'list', function(data){
+                $.getJSON('admin/cloudinary/get' + type + 'list' + (folder_name ? '?folder='+folder_name : ""), function(data){
+                    // Add the folders first
+                    var folder_list = data.folders;
+                    if (folder_name) {
+                        var up_folder = folder_name.split('/').slice(0, -1).join('/');
+                        // if we're not in the root directory, add the parent dir to the top fo the list
+                        folder_list.unshift({ folder: up_folder, name: 'Parent Folder' });
+                    }
+                    $.each(folder_list, function(){
+                        var folder = this;
+
+                        var html = '<div class="cloudinary__browser__window__item folder">' +
+                            '<span>' + folder.name + '</span>' +
+                            '</div>';
+
+
+                        var dom = $(html);
+
+                        dom.click(function(){
+
+                            loadBrowserWindow(type, previewGenerator, folder.folder);
+                            return false;
+                        });
+
+                        browserWindow.append(dom);
+                    });
                     $.each(data.resources, function(){
                         var image = this;
                         image.thubmnail_url = previewGenerator(image);
