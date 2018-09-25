@@ -337,7 +337,7 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
             $search_options['expression'][] = 'folder = ' . $folder;
         }
 
-        $respond = $api->search_resources($search_options);
+        $respond = $this->api_search_resources($api, $search_options);
         $data = $respond->getArrayCopy();
 
         // Mangle folders into an array for the json
@@ -358,5 +358,18 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
     private function getMaxResults()
     {
         return Config::inst()->get(get_class($this), 'max_results');
+    }
+
+    // HACK: TERRIBLE HACK, this function SHOULD be in the cloudinary api.php
+    // but it's not implemented so i'm doing what it does here instead.
+    // This is bad, but i can't think of a nicer way of getting it in there
+    function api_search_resources($api, $options=array()) {
+        $uri = array("resources", "search");
+
+        $expression = \Cloudinary::option_get($options, "expression");
+        if (is_array($expression)) {
+            $options['expression'] = join(" AND ", $expression);
+        }
+        return $api->call_api("get", $uri, $options, $options);
     }
 }
