@@ -144,7 +144,7 @@ class Image extends File
      * @param int $quality
      * @return CachedImage
      */
-    public function Quality(string $quality = 'auto')
+    public function Quality($quality)
     {
         return $this->Transform([ 'quality' => $quality ]);
     }

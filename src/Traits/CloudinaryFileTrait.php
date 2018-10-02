@@ -20,7 +20,6 @@ trait CloudinaryFileTrait
 {
     private static $db = [
         'LastUpdatedFromCloudinary' => 'DBDatetime',
-        'PublicID' => 'Varchar(255)',
         'SecureURL' => 'Varchar(1000)',
         'ResourceType' => 'Varchar',
         'Description' => 'Text',
@@ -28,12 +27,6 @@ trait CloudinaryFileTrait
         'Format' => 'Varchar(10)',
         'Bytes' => 'Int',
         'RemoteData' => 'Text',
-    ];
-
-    private static $indexes = [
-        'PublicID' => [
-            'type' => 'unique',
-        ],
     ];
 
     public static function getOneByPublicId($publicId)
