@@ -153,6 +153,7 @@ class APIController extends Controller implements PermissionProvider
                     } else {
                         $data = false;
                     }
+
                 }
             }
 
