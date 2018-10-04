@@ -12,9 +12,14 @@ class ThumbnailGenerator extends BaseThumbnailGenerator
      */
     public function generateThumbnailLink(AssetContainer $file, $width, $height)
     {
+        if (!($file instanceof File)) {
+            return null;
+        }
+
         if ((!$file->getIsImage() && !$file->getIsVideo()) || !$file->exists()) {
             return null;
         }
+
         $opts = [
             'resource_type' => $file->ResourceType,
             'width' => $width,
@@ -23,6 +28,7 @@ class ThumbnailGenerator extends BaseThumbnailGenerator
             'type' => $file->Type,
             'secure' => true,
         ];
+
         return \Cloudinary::cloudinary_url($file->PublicID . '.png', $opts);
     }
 }
