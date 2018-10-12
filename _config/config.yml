@@ -38,11 +38,11 @@ SilverStripe\Core\Injector\Injector:
   DBFile:
     class: MadeHQ\Cloudinary\Storage\DBFile
 
-SilverStripe\Admin\LeftAndMain:
-    extra_requirements_javascript:
-        - mademedia/silverstripe-cloudinary:client/dist/js/bundle.js
-    extra_requirements_css:
-        - mademedia/silverstripe-cloudinary:client/dist/styles/bundle.css
+# SilverStripe\Admin\LeftAndMain:
+    # extra_requirements_javascript:
+    #     - mademedia/silverstripe-cloudinary:client/dist/js/bundle.js
+    # extra_requirements_css:
+    #     - mademedia/silverstripe-cloudinary:client/dist/styles/bundle.css
 
 SilverStripe\ORM\DatabaseAdmin:
     classname_value_remapping:
