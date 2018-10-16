@@ -25,6 +25,7 @@ class Image extends File
             [
                 'quality' =>  'auto',
                 'gravity' => 'auto',
+                'fetch_format' => 'auto',
             ],
         ],
     ];
@@ -57,7 +58,7 @@ class Image extends File
      * @param array $remove
      * @return CachedImage
      */
-    public function Transform(array $transformation, $index = 0, array $remove = [])
+    public function Transform(array $transformation, int $index = 0, array $remove = [])
     {
         $clone = $this->toCache();
 
@@ -119,7 +120,7 @@ class Image extends File
      * @param int $height
      * @return CachedImage
      */
-    public function Size($width, $height = false)
+    public function Size(int $width, /* int */ $height = false)
     {
         return $this->Transform([ 'width' => $width, 'height' => $height ]);
     }
@@ -128,7 +129,7 @@ class Image extends File
      * @param string $crop
      * @return CachedImage
      */
-    public function Crop($crop = 'fill')
+    public function Crop(string $crop = 'fill')
     {
         return $this->Transform([ 'crop' => $crop ]);
     }
@@ -137,7 +138,7 @@ class Image extends File
      * @param int $quality
      * @return CachedImage
      */
-    public function Quality($quality = 'auto')
+    public function Quality(string $quality = 'auto')
     {
         return $this->Transform([ 'quality' => $quality ]);
     }
@@ -146,7 +147,7 @@ class Image extends File
      * @param string $gravity
      * @return CachedImage
      */
-    public function Gravity($gravity = 'auto')
+    public function Gravity(string $gravity = 'auto')
     {
         return $this->Transform([ 'gravity' => $gravity ]);
     }
@@ -155,7 +156,7 @@ class Image extends File
      * @param string $fetchFormat
      * @return CachedImage
      */
-    public function FetchFormat($fetchFormat = 'auto')
+    public function FetchFormat(string $fetchFormat = 'auto')
     {
         return $this->Transform([ 'fetch_format' => $fetchFormat ]);
     }
@@ -165,7 +166,7 @@ class Image extends File
      * @param string $crop
      * @return CachedImage
      */
-    public function ResizeByWidth($width, $crop = 'fit')
+    public function ResizeByWidth(int $width, string $crop = 'fit')
     {
         return $this->Transform([ 'width' => $width, 'crop' => $crop ], 0, 'height');
     }
@@ -175,7 +176,7 @@ class Image extends File
      * @param string $crop
      * @return CachedImage
      */
-    public function ResizeByHeight($height, $crop = 'fit')
+    public function ResizeByHeight(int $height, string $crop = 'fit')
     {
         return $this->Transform([ 'height' => $height, 'crop' => $crop ], 0, 'width');
     }
@@ -202,7 +203,7 @@ class Image extends File
      * @param string $height
      * @return CachedImage
      */
-    public function Cutout($overlay, $flags = 'cutter.relative', $width = '1.0', $height = '1.0')
+    public function Cutout(string $overlay, string $flags = 'cutter.relative', string $width = '1.0', string $height = '1.0')
     {
         if (is_null($overlay) || !strlen($overlay)) {
             return $this;
@@ -225,7 +226,7 @@ class Image extends File
      * @param $value
      * @return CachedImage
      */
-    public function Effect($effect, $value = null)
+    public function Effect(string $effect, $value = null)
     {
         if (is_null($effect) || !strlen($effect)) {
             return $this;
@@ -244,7 +245,7 @@ class Image extends File
      * @param int $value
      * @return CachedImage
      */
-    public function Brightness($value = 0)
+    public function Brightness(int $value = 0)
     {
         if (is_null($value) || !(int) $value) {
             return $this;
@@ -258,7 +259,7 @@ class Image extends File
      * @param string $lightcolour
      * @return CachedImage
      */
-    public function DuoTone($darkColour = '', $lightColour = null)
+    public function DuoTone(string $darkColour = '', string $lightColour = null)
     {
         // We need at least one value
         if (trim($darkColour) === '') {
@@ -302,14 +303,23 @@ class Image extends File
      * @param String $gravity
      * @param Boolean $fetchFormat
      */
-    public function URL($width = 100, $height = 100, $crop = 'fill', $quality = 'auto', $gravity = 'auto', $fetchFormat = 'auto')
+    public function URL(int $width = 100, int $height = 100, string $crop = null, string $quality = null, string $gravity = null, string $fetchFormat = 'auto')
     {
-        return $this
-            ->Size($width, $height)
-            ->Crop($crop)
-            ->Quality($quality)
-            ->Gravity($gravity)
-            ->FetchFormat($fetchFormat);
+        $object = $this->Size($width, $height);
+
+        if ($crop) {
+            $object = $object->Crop($crop);
+        }
+
+        if ($quality) {
+            $object = $object->Quality($quality);
+        }
+
+        if ($gravity) {
+            $object = $object->Gravity($gravity);
+        }
+
+        return $object->FetchFormat($fetchFormat);
     }
 
     /**
@@ -323,11 +333,11 @@ class Image extends File
             $transformations = $this->options['transformation'];
         }
 
-        if (array_key_exists('resource_type', $transformations[0]) === false) {
+        if (array_key_exists('resource_type', $transformations[0]) === false || !$transformations[0]['resource_type']) {
             $transformations[0]['resource_type'] = $this->ResourceType;
         }
 
-        if (array_key_exists('type', $transformations[0]) === false) {
+        if (array_key_exists('type', $transformations[0]) === false || !$transformations[0]['type']) {
             $transformations[0]['type'] = $this->Type;
         }
 
@@ -335,12 +345,8 @@ class Image extends File
             if (array_key_exists('gravity', $transformations[0]) === false || $transformations[0]['gravity'] === 'auto') {
                 $transformations[0]['gravity'] = $this->ImageLink()->Focus;
             }
-        } else if (array_key_exists('gravity', $transformations[0]) === false) {
+        } else if (array_key_exists('gravity', $transformations[0]) === false || !$transformations[0]['gravity']) {
             $transformations[0]['gravity'] = 'auto';
-        }
-
-        if (array_key_exists('fetch_format', $transformations[0]) === false) {
-            $transformations[0]['fetch_format'] = 'auto';
         }
 
         // These crops don't support gravity, Cloudinary returns a 400 if passed
