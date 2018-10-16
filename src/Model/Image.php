@@ -4,13 +4,29 @@ namespace MadeHQ\Cloudinary\Model;
 
 class Image extends File
 {
+    /**
+     * @var string
+     */
     private static $table_name = 'CloudinaryImage';
 
-    // These are basically defaults
+    /**
+     * @var array
+     * @config
+     */
+    private static $non_gravity_crops = ['fit', 'limit', 'mfit', 'pad', 'lpad'];
+
+    /**
+     * These are basically defaults
+     * @var array
+     */
     protected $options = [
         'secure' => true,
-        'quality' =>  'auto',
-        'gravity' => 'auto',
+        'transformation' => [
+            [
+                'quality' =>  'auto',
+                'gravity' => 'auto',
+            ],
+        ],
     ];
 
     /**
@@ -32,55 +48,216 @@ class Image extends File
         'ImageLink' => ImageLink::class,
     ];
 
-    // Chainable methods, set what options you need on $this then return it
+    /**
+     * Adds a new transformation to an existing one, or appends
+     * it to a brand new one
+     *
+     * @param array $transformation
+     * @param int $index
+     * @param array $remove
+     * @return CachedImage
+     */
+    public function Transform(array $transformation, $index = 0, array $remove = [])
+    {
+        $clone = $this->toCache();
+
+        if (is_null($transformation) || !is_array($transformation)) {
+            return $clone;
+        }
+
+        $transformations = [];
+
+        if (array_key_exists('transformation', $clone->options)) {
+            $transformations = $clone->options['transformation'];
+        }
+
+        if ((int) $index === -1) {
+            $duplicate = false;
+
+            foreach ($transformations as $old) {
+                $intersection = array_intersect($old, $transformation);
+
+                if (count($old) === count($intersection)) {
+                    $duplicate = true;
+                }
+            }
+
+            if ($duplicate === false) {
+                array_push($transformations, $transformation);
+            }
+        } else if (array_key_exists('effect', $transformation)) {
+            array_push($transformations, $transformation);
+        } else {
+            $index = (int) $index;
+
+            if (array_key_exists($index, $transformations)) {
+                $old = $transformations[$index];
+
+                if (!is_array($remove)) {
+                    $remove = [$remove];
+                }
+
+                foreach ($old as $key=>$value) {
+                    if (array_key_exists($key, $remove)) {
+                        unset($old[$key]);
+                    }
+                }
+
+                $transformations[$index] = array_merge($old, $transformation);
+            } else {
+                $transformations[$index] = $transformation;
+            }
+        }
+
+        $clone->options['transformation'] = $transformations;
+
+        return $clone;
+    }
+
+    /**
+     * @param int $width
+     * @param int $height
+     * @return CachedImage
+     */
     public function Size($width, $height = false)
     {
-        $this->options['width'] = $width;
-        $this->options['height'] = $height;
-
-        return $this;
+        return $this->Transform([ 'width' => $width, 'height' => $height ]);
     }
 
-    public function Crop($crop)
+    /**
+     * @param string $crop
+     * @return CachedImage
+     */
+    public function Crop($crop = 'fill')
     {
-        $this->options['crop'] = $crop;
-        return $this;
+        return $this->Transform([ 'crop' => $crop ]);
     }
 
-    public function Quality($quality)
+    /**
+     * @param int $quality
+     * @return CachedImage
+     */
+    public function Quality($quality = 'auto')
     {
-        $this->options['quality'] = $quality;
-        return $this;
+        return $this->Transform([ 'quality' => $quality ]);
+    }
+
+    /**
+     * @param string $gravity
+     * @return CachedImage
+     */
+    public function Gravity($gravity = 'auto')
+    {
+        return $this->Transform([ 'gravity' => $gravity ]);
+    }
+
+    /**
+     * @param string $fetchFormat
+     * @return CachedImage
+     */
+    public function FetchFormat($fetchFormat = 'auto')
+    {
+        return $this->Transform([ 'fetch_format' => $fetchFormat ]);
+    }
+
+    /**
+     * @param int $width
+     * @param string $crop
+     * @return CachedImage
+     */
+    public function ResizeByWidth($width, $crop = 'fit')
+    {
+        return $this->Transform([ 'width' => $width, 'crop' => $crop ], 0, 'height');
+    }
+
+    /**
+     * @param int $height
+     * @param string $crop
+     * @return CachedImage
+     */
+    public function ResizeByHeight($height, $crop = 'fit')
+    {
+        return $this->Transform([ 'height' => $height, 'crop' => $crop ], 0, 'width');
     }
 
     /**
      * Adds a radius onto the image to round the corners
-     * @param Mixed $radius pass in an integer value to specify radius, or `max` to round fully or leave blank/0 to remove radius completely
+     * @param Mixed $radius pass in an integer value to specify radius, or `max`
+     * to round fully or leave blank/0 to remove radius completely
      * @return this
      */
     public function Radius($radius = 0)
     {
         if ($radius) {
-            $this->options['radius'] = $radius;
-        } else {
-            unset($this->options['radius']);
+            return $this->Transform([ 'radius' => $radius ]);
         }
 
-        return $this;
+        return $this->Transform([], 0, 'radius');
     }
 
-    public function Gravity($gravity)
+    /**
+     * @param string $overlay
+     * @param string $flags
+     * @param string $width
+     * @param string $height
+     * @return CachedImage
+     */
+    public function Cutout($overlay, $flags = 'cutter.relative', $width = '1.0', $height = '1.0')
     {
-        $this->options['gravity'] = $gravity;
-        return $this;
+        if (is_null($overlay) || !strlen($overlay)) {
+            return $this;
+        }
+
+        $transformation = [
+            'overlay' => $overlay,
+            'flags' => $flags,
+            'width' => $width,
+            'height' => $height
+        ];
+
+        return $this->Transform($transformation, -1);
     }
 
-    public function FetchFormatAuto($fetchFormatAuto)
+    /**
+     * Applies a raw transformation
+     *
+     * @param string $effect
+     * @param $value
+     * @return CachedImage
+     */
+    public function Effect($effect, $value = null)
     {
-        $this->options['fetchFormatAuto'] = is_bool($fetchFormatAuto) ? $fetchFormatAuto : @json_decode($fetchFormatAuto);
-        return $this;
+        if (is_null($effect) || !strlen($effect)) {
+            return $this;
+        }
+
+        if ($value) {
+            $value = $effect . ':' . $value;
+        } else {
+            $value = $effect;
+        }
+
+        return $this->Transform([ 'effect' => $value ]);
     }
 
+    /**
+     * @param int $value
+     * @return CachedImage
+     */
+    public function Brightness($value = 0)
+    {
+        if (is_null($value) || !(int) $value) {
+            return $this;
+        }
+
+        return $this->Effect('brightness', $value);
+    }
+
+    /**
+     * @param string $darkColour
+     * @param string $lightcolour
+     * @return CachedImage
+     */
     public function DuoTone($darkColour = '', $lightColour = null)
     {
         // We need at least one value
@@ -110,79 +287,9 @@ class Image extends File
             $duoTone = $darkColour;
         }
 
-        $transformation = [];
-
-        if (array_key_exists('transformation', $this->options)) {
-            $transformation = $this->options['transformation'];
-        }
-
-        $this->options['transformation'] = array_merge($transformation, [
-            ['effect' => 'grayscale'],
-            ['effect' => $duoTone],
-        ]);
-
-        return $this;
-    }
-
-    public function Brightness($value = 0)
-    {
-        if (is_null($value) || !(int) $value) {
-            return $this;
-        }
-
-        $transformation = [];
-
-        if (array_key_exists('transformation', $this->options)) {
-            $transformation = $this->options['transformation'];
-        }
-
-        $this->options['transformation'] = array_merge($transformation, [
-            ['effect' => 'brightness:' . $value],
-        ]);
-
-        return $this;
-    }
-
-    public function Effect($effect, $value)
-    {
-        if (is_null($effect) || !strlen($effect)) {
-            return $this;
-        }
-
-        if (is_null($value) || !strlen($value)) {
-            return $this;
-        }
-
-        $transformation = [];
-
-        if (array_key_exists('transformation', $this->options)) {
-            $transformation = $this->options['transformation'];
-        }
-
-        $this->options['transformation'] = array_merge($transformation, [
-            ['effect' => $effect . ':' . $value],
-        ]);
-
-        return $this;
-    }
-
-    public function Cutout($overlay, $flags = 'cutter.relative', $width = '1.0', $height = '1.0')
-    {
-        if (is_null($overlay) || !strlen($overlay)) {
-            return $this;
-        }
-
-        $transformation = [];
-
-        if (array_key_exists('transformation', $this->options)) {
-            $transformation = $this->options['transformation'];
-        }
-
-        $this->options['transformation'] = array_merge($transformation, [
-            ['overlay' => $overlay, 'flags' => $flags, 'width' => $width, 'height' => $height],
-        ]);
-
-        return $this;
+        return $this
+            ->Effect('grayscale')
+            ->Effect($duoTone);
     }
 
     /**
@@ -193,26 +300,107 @@ class Image extends File
      * @param String $crop
      * @param String $quality
      * @param String $gravity
-     * @param Boolean $fetchFormatAuto
+     * @param Boolean $fetchFormat
      */
-    public function URL($width = 100, $height = 100, $crop = null, $quality = null, $gravity = null, $fetchFormatAuto = true)
+    public function URL($width = 100, $height = 100, $crop = 'fill', $quality = 'auto', $gravity = 'auto', $fetchFormat = 'auto')
     {
-        $returnObj = $this->size($width, $height);
+        return $this
+            ->Size($width, $height)
+            ->Crop($crop)
+            ->Quality($quality)
+            ->Gravity($gravity)
+            ->FetchFormat($fetchFormat);
+    }
 
-        if (isset($crop)) {
-            $returnObj = $returnObj->crop($crop);
-        }
-        if (isset($quality)) {
-            $returnObj = $returnObj->quality($quality);
-        }
-        if (isset($gravity)) {
-            $returnObj = $returnObj->gravity($gravity);
-        }
-        if (isset($fetchFormatAuto)) {
-            $returnObj = $returnObj->fetchFormatAuto($fetchFormatAuto);
+    /**
+     * @return string
+     */
+    public function forTemplate()
+    {
+        $transformations = [];
+
+        if (array_key_exists('transformation', $this->options)) {
+            $transformations = $this->options['transformation'];
         }
 
-        return $this;
+        if (array_key_exists('resource_type', $transformations[0]) === false) {
+            $transformations[0]['resource_type'] = $this->ResourceType;
+        }
+
+        if (array_key_exists('type', $transformations[0]) === false) {
+            $transformations[0]['type'] = $this->Type;
+        }
+
+        if ($this->ImageLink()->exists()) {
+            if (array_key_exists('gravity', $transformations[0]) === false || $transformations[0]['gravity'] === 'auto') {
+                $transformations[0]['gravity'] = $this->ImageLink()->Focus;
+            }
+        } else if (array_key_exists('gravity', $transformations[0]) === false) {
+            $transformations[0]['gravity'] = 'auto';
+        }
+
+        if (array_key_exists('fetch_format', $transformations[0]) === false) {
+            $transformations[0]['fetch_format'] = 'auto';
+        }
+
+        // These crops don't support gravity, Cloudinary returns a 400 if passed
+        $nonGravityCrops = static::config()->get('non_gravity_crops');
+
+        // Loop through all and apply the generic stuff
+        foreach ($transformations as &$transformation) {
+            // Remove gravity if specific crop is applied
+            if (array_key_exists('crop', $transformation) && in_array($transformation['crop'], $nonGravityCrops)) {
+                unset($transformation['gravity']);
+            }
+        }
+
+        // Grab options
+        $options = $this->options;
+
+        // Reset the transformations of the object using what we gawt
+        $options['transformation'] = $transformations;
+
+        // Determine name
+        $fileName = $this->Format ? $this->PublicID . '.' . $this->Format : $this->PublicID;
+
+        // Generate image URL using options
+        return \Cloudinary::cloudinary_url($fileName, $options);
+    }
+
+    /**
+     * Makes a cache object
+     *
+     * @return CachedImage
+     */
+    public function toCache()
+    {
+        if ($this instanceof CachedImage) {
+            return $this;
+        }
+
+        return CachedImage::create(
+            $this->toMap()
+        );
+    }
+
+    /**
+     * Makes a clone
+     *
+     * @return Image
+     */
+    public function __clone()
+    {
+        return Image::create(
+            $this->toMap()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->forTemplate();
     }
 
     /**
@@ -237,68 +425,6 @@ class Image extends File
         $this->extend('updatePreviewLink', $link, $action);
 
         return $link->forTemplate();
-    }
-
-    public function ResizeByWidth($width, $crop = 'fit')
-    {
-        $this->options['width'] = $width;
-        $this->options['crop'] = $crop;
-
-        unset($this->options['height']);
-
-        return $this;
-    }
-
-    public function ResizeByHeight($height, $crop = 'fit')
-    {
-        $this->options['height'] = $height;
-        $this->options['crop'] = $crop;
-
-        unset($this->options['width']);
-
-        return $this;
-    }
-
-    public function __toString()
-    {
-        return $this->forTemplate();
-    }
-
-    // This renders the end of the chain to the template
-    public function forTemplate()
-    {
-        $options = $this->options;
-
-        if (!isset($options['resource_type'])) {
-            $options['resource_type'] = $this->ResourceType;
-        }
-
-        if (!isset($options['type'])) {
-            $options['type'] = $this->Type;
-        }
-
-        if ($this->ImageLink()->exists()) {
-            if (!isset($options['gravity']) || $options['gravity'] === 'auto') {
-                $options['gravity'] = $this->ImageLink()->Gravity;
-            }
-        } else if (!isset($options['gravity'])) {
-            $options['gravity'] = 'auto';
-        }
-
-        // These crops don't support gravity, Cloudinary returns a 400 if passed
-        if (isset($options['crop'])) {
-            if (in_array($options['crop'], ['fit', 'limit', 'mfit', 'pad', 'lpad'])) {
-                unset($options['gravity']);
-            }
-        }
-
-        if (!isset($options['fetch_format'])) {
-            $options['fetch_format'] = 'auto';
-        }
-
-        $fileName = $this->Format ? $this->PublicID. '.'. $this->Format : $this->PublicID;
-
-        return \Cloudinary::cloudinary_url($fileName, $options);
     }
 
     public function getWidth($forceFromCloudinary = false)
@@ -464,5 +590,20 @@ class Image extends File
         $file->write();
 
         return $file;
+    }
+}
+
+class CachedImage extends Image
+{
+    /**
+     * Makes a cache object
+     *
+     * @return CachedImage
+     */
+    public function __clone()
+    {
+        return CachedImage::create(
+            $this->toMap()
+        );
     }
 }
