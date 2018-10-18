@@ -18,15 +18,19 @@ class UploadImageField extends UploadFileField
     private static $gravities = [
         'auto' => 'Auto',
         'center' => 'Center',
+        'face' => 'Face',
+        'face:auto' => 'Face (or auto)',
         'faces' => 'Faces',
+        'faces:auto' => 'Faces (or auto)',
+        'body:face' => 'Body or Face'
         'north' => 'Top',
-        'north_east' => 'Top right',
+        'north_east' => 'Top Right',
         'east' => 'Right',
-        'south_east' => 'Bottom right',
+        'south_east' => 'Bottom Right',
         'south' => 'Bottom',
-        'south_west' => 'Bottom left',
+        'south_west' => 'Bottom Left',
         'west' => 'Left',
-        'north_west' => 'Top left',
+        'north_west' => 'Top Left',
     ];
 
     /**
