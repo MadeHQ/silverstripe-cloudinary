@@ -22,7 +22,7 @@ class UploadImageField extends UploadFileField
         'face:auto' => 'Face (or auto)',
         'faces' => 'Faces',
         'faces:auto' => 'Faces (or auto)',
-        'body:face' => 'Body or Face'
+        'body:face' => 'Body or Face',
         'north' => 'Top',
         'north_east' => 'Top Right',
         'east' => 'Right',
