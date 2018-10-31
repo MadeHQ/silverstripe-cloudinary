@@ -2,6 +2,7 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
+use Cloudinary\Api;
 use SilverStripe\Assets\File As BaseFile;
 use MadeHQ\Cloudinary\Traits\CloudinaryFileTrait;
 
@@ -27,5 +28,12 @@ class File extends BaseFile
     public function getAbsoluteURL()
     {
         return $this->SecureURL;
+    }
+
+    public function doArchive()
+    {
+        $api = new Api();
+        $r = $api->delete_resources(array($this->PublicID));
+        return parent::doArchive();
     }
 }
