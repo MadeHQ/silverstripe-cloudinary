@@ -23,7 +23,7 @@ class Image extends File
         'secure' => true,
         'transformation' => [
             [
-                'quality' =>  'auto',
+                'quality' =>  'auto:eco',
                 'gravity' => 'auto',
                 'fetch_format' => 'auto',
             ],
