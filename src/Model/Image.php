@@ -337,10 +337,6 @@ class Image extends File
             $transformations[0]['resource_type'] = $this->ResourceType;
         }
 
-        if (array_key_exists('type', $transformations[0]) === false || !$transformations[0]['type']) {
-            $transformations[0]['type'] = $this->Type;
-        }
-
         if ($this->ImageLink()->exists()) {
             if (array_key_exists('gravity', $transformations[0]) === false || $transformations[0]['gravity'] === 'auto') {
                 $transformations[0]['gravity'] = $this->ImageLink()->Focus;
@@ -362,6 +358,11 @@ class Image extends File
 
         // Grab options
         $options = $this->options;
+
+        // Fix type
+        if (!array_key_exists('type', $options)) {
+            $options['type'] = $this->Type;
+        }
 
         // Reset the transformations of the object using what we gawt
         $options['transformation'] = $transformations;

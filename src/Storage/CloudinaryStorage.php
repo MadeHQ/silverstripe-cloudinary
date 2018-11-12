@@ -5,6 +5,7 @@ namespace MadeHQ\Cloudinary\Storage;
 use SilverStripe\Assets\Storage\AssetStore;
 use Cloudinary;
 use Cloudinary\Uploader;
+use SilverStripe\Control\Director;
 
 class CloudinaryStorage implements AssetStore
 {
@@ -31,7 +32,9 @@ class CloudinaryStorage implements AssetStore
      */
     public function setFromString($data, $filename, $hash = null, $variant = null, $config = array())
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -42,13 +45,14 @@ var_dump(__METHOD__);
         $filename = str_replace('\\', '/', $filename);
         $parts = explode('/', $filename);
         $publicId = explode('.', array_pop($parts));
-        $publicId = $publicId[0];
+
         $options = [
-            'public_id' => $publicId,
+            'public_id' => $publicId[0],
             'folder' => implode('/', $parts),
         ];
 
         $response = Uploader::upload($path, $options);
+
         return [
             'Filename' => $response['public_id'],
             'PublicID' => $response['public_id'],
@@ -64,7 +68,9 @@ var_dump(__METHOD__);
      */
     public function setFromStream($stream, $filename, $hash = null, $variant = null, $config = array())
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -72,7 +78,9 @@ var_dump(__METHOD__);
      */
     public function getAsString($filename, $hash, $variant = null)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -80,7 +88,9 @@ var_dump(__METHOD__);
      */
     public function getAsStream($filename, $hash, $variant = null)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -97,7 +107,6 @@ var_dump(__METHOD__);
     public function getMetadata($filename, $hash, $variant = null)
     {
         return null;
-var_dump(__METHOD__, func_get_args());die;
     }
 
     /**
@@ -130,7 +139,9 @@ var_dump(__METHOD__, func_get_args());die;
      */
     public function delete($filename, $hash)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -138,7 +149,9 @@ var_dump(__METHOD__);
      */
     public function rename($filename, $hash, $newName)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -146,7 +159,9 @@ var_dump(__METHOD__);
      */
     public function copy($filename, $hash, $newName)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -154,7 +169,7 @@ var_dump(__METHOD__);
      */
     public function publish($filename, $hash)
     {
-//var_dump(__METHOD__);
+        // intentionally empty
     }
 
     /**
@@ -162,14 +177,18 @@ var_dump(__METHOD__);
      * @inheritdoc
      */
     public function protect($filename, $hash)
-    {}
+    {
+        // intentionally empty
+    }
 
     /**
      * @inheritdoc
      */
     public function grant($filename, $hash)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -177,7 +196,9 @@ var_dump(__METHOD__);
      */
     public function revoke($filename, $hash)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 
     /**
@@ -185,6 +206,8 @@ var_dump(__METHOD__);
      */
     public function canView($filename, $hash)
     {
-var_dump(__METHOD__);
+        if (Director::isDev()) {
+            var_dump(__METHOD__, debug_backtrace()); die;
+        }
     }
 }
