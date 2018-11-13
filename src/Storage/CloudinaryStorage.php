@@ -32,9 +32,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function setFromString($data, $filename, $hash = null, $variant = null, $config = array())
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -68,9 +66,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function setFromStream($stream, $filename, $hash = null, $variant = null, $config = array())
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -78,9 +74,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function getAsString($filename, $hash, $variant = null)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -88,9 +82,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function getAsStream($filename, $hash, $variant = null)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -139,9 +131,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function delete($filename, $hash)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -149,9 +139,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function rename($filename, $hash, $newName)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -159,9 +147,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function copy($filename, $hash, $newName)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -186,9 +172,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function grant($filename, $hash)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -196,9 +180,7 @@ class CloudinaryStorage implements AssetStore
      */
     public function revoke($filename, $hash)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 
     /**
@@ -206,8 +188,6 @@ class CloudinaryStorage implements AssetStore
      */
     public function canView($filename, $hash)
     {
-        if (Director::isDev()) {
-            var_dump(__METHOD__, debug_backtrace()); die;
-        }
+        // intentionally empty
     }
 }
