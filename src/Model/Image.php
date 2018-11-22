@@ -94,10 +94,6 @@ class Image extends File
             if (array_key_exists($index, $transformations)) {
                 $old = $transformations[$index];
 
-                if (!is_array($remove)) {
-                    $remove = [$remove];
-                }
-
                 foreach ($old as $key=>$value) {
                     if (array_key_exists($key, $remove)) {
                         unset($old[$key]);
@@ -168,7 +164,7 @@ class Image extends File
      */
     public function ResizeByWidth(int $width, string $crop = 'fit')
     {
-        return $this->Transform([ 'width' => $width, 'crop' => $crop ], 0, 'height');
+        return $this->Transform([ 'width' => $width, 'crop' => $crop ], 0, ['height']);
     }
 
     /**
@@ -178,7 +174,7 @@ class Image extends File
      */
     public function ResizeByHeight(int $height, string $crop = 'fit')
     {
-        return $this->Transform([ 'height' => $height, 'crop' => $crop ], 0, 'width');
+        return $this->Transform([ 'height' => $height, 'crop' => $crop ], 0, ['width']);
     }
 
     /**
@@ -193,7 +189,7 @@ class Image extends File
             return $this->Transform([ 'radius' => $radius ]);
         }
 
-        return $this->Transform([], 0, 'radius');
+        return $this->Transform([], 0, ['radius']);
     }
 
     /**
