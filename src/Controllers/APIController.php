@@ -2,7 +2,10 @@
 
 namespace MadeHQ\Cloudinary\Controllers;
 
+use SilverStripe\ORM\DB;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\Queries\SQLUpdate;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -90,7 +93,7 @@ class APIController extends Controller implements PermissionProvider
 
             $item->PublicID = $to;
 
-            $remoteData = File::get_remote_data($to, $item->ResourceType);
+            $remoteData = File::get_remote_data($to, $item->ResourceType, true);
 
             if (is_array($remoteData)) {
                 $item->SecureURL = $remoteData['secure_url'];
@@ -127,6 +130,8 @@ class APIController extends Controller implements PermissionProvider
         }
 
         Versioned::set_reading_mode('Stage.Stage');
+
+        $this->clearRemoteCloudinaryData();
 
         try {
             ini_set(
@@ -171,6 +176,15 @@ class APIController extends Controller implements PermissionProvider
                 'description' => sprintf('Unhandled error occurred: %s', $e->getMessage()),
             ], 500);
         }
+    }
+
+    private function clearRemoteCloudinaryData()
+    {
+        $tableName = Config::inst()->get(File::class, 'table_name', Config::UNINHERITED);
+
+        SQLUpdate::create('"' . $tableName . '"')
+            ->assign('"RemoteData"', NULL)
+            ->execute();
     }
 
     private function output(array $body = [], $statusCode = 200)
