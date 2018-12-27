@@ -41,8 +41,8 @@ SilverStripe\Core\Injector\Injector:
 SilverStripe\Admin\LeftAndMain:
     extra_requirements_javascript:
         - mademedia/silverstripe-cloudinary:client/dist/js/bundle.js
-    # extra_requirements_css:
-    #     - mademedia/silverstripe-cloudinary:client/dist/styles/bundle.css
+    extra_requirements_css:
+        - mademedia/silverstripe-cloudinary:client/dist/styles/bundle.css
 
 SilverStripe\ORM\DatabaseAdmin:
     classname_value_remapping:
