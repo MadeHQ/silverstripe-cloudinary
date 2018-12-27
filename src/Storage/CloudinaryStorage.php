@@ -169,7 +169,9 @@ class CloudinaryStorage implements AssetStore, AssetStoreRouter
      */
     public function exists($filename, $hash, $variant = null)
     {
-        header(sprintf('Checking-%s: %s', $hash, $filename));
+        if (!headers_sent()) {
+            header(sprintf('Checking-%s: %s', $hash, $filename));
+        }
         return true;
     }
 
