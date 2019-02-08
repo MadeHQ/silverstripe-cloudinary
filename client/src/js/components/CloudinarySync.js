@@ -35,9 +35,8 @@ class CloudinarySync extends Component {
             updating: false,
             updated: data.result.count
         });
-        if (this.props.refreshPage) {
-            this.props.refreshPage();
-        }
+
+        this.props.refreshPage();
     }
 
     handleSyncError(data) {

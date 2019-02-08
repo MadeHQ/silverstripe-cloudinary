@@ -2,26 +2,13 @@
 
 namespace MadeHQ\Cloudinary\Storage;
 
-use SilverStripe\Assets\Storage\{ AssetStore, AssetStoreRouter };
+use SilverStripe\Assets\Storage\AssetStore;
 use Cloudinary;
 use Cloudinary\Uploader;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Control\{ Director, HTTPResponse };
+use SilverStripe\Control\Director;
 
-class CloudinaryStorage implements AssetStore, AssetStoreRouter
+class CloudinaryStorage implements AssetStore
 {
-    use Configurable;
-
-    /**
-     * Set HTTP error code for requests to secure denied assets.
-     * Note that this defaults to 404 to prevent information disclosure
-     * of secure files
-     *
-     * @config
-     * @var int
-     */
-    private static $denied_response_code = 404;
-
     /**
      * @inheritdoc
      */
@@ -38,40 +25,6 @@ class CloudinaryStorage implements AssetStore, AssetStoreRouter
                 // self::CONFLICT_USE_EXISTING
             )
         );
-    }
-
-    public function getResponseFor($asset)
-    {
-        return $this->createDeniedResponse();
-    }
-
-    /**
-     * Generate a response for requests to a denied protected file
-     *
-     * @return HTTPResponse
-     */
-    protected function createDeniedResponse()
-    {
-        $code = (int)$this->config()->get('denied_response_code');
-        return $this->createErrorResponse($code);
-    }
-
-    /**
-     * Create a response with the given error code
-     *
-     * @param int $code
-     * @return HTTPResponse
-     */
-    protected function createErrorResponse($code)
-    {
-        $response = new HTTPResponse('', $code);
-
-        // Show message in dev
-        if (!Director::isLive()) {
-            $response->setBody($response->getStatusDescription());
-        }
-
-        return $response;
     }
 
     /**
@@ -169,9 +122,7 @@ class CloudinaryStorage implements AssetStore, AssetStoreRouter
      */
     public function exists($filename, $hash, $variant = null)
     {
-        if (!headers_sent()) {
-            header(sprintf('Checking-%s: %s', $hash, $filename));
-        }
+        header(sprintf('Checking-%s: %s', $hash, $filename));
         return true;
     }
 
