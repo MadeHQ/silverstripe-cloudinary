@@ -16,6 +16,16 @@ class Image extends File
     private static $non_gravity_crops = ['fit', 'limit', 'mfit', 'pad', 'lpad'];
 
     /**
+     * @var array
+     * @config
+     */
+    private static $valid_image_formats = [
+        'jpg',
+        'gif',
+        'png',
+    ];
+
+    /**
      * These are basically defaults
      * @var array
      */
@@ -343,12 +353,20 @@ class Image extends File
 
         // These crops don't support gravity, Cloudinary returns a 400 if passed
         $nonGravityCrops = static::config()->get('non_gravity_crops');
+        $isImage = in_array($this->Format, static::config()->get('valid_image_formats'));
 
         // Loop through all and apply the generic stuff
         foreach ($transformations as &$transformation) {
             // Remove gravity if specific crop is applied
             if (array_key_exists('crop', $transformation) && in_array($transformation['crop'], $nonGravityCrops)) {
                 unset($transformation['gravity']);
+            }
+            if (
+                !$isImage &&
+                (!array_key_exists('width', $transformation) || empty($transformation['width'])) &&
+                (!array_key_exists('height', $transformation) || empty($transformation['height']))
+            ) {
+                unset($transformation['fetch_format']);
             }
         }
 

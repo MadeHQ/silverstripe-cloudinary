@@ -49,6 +49,9 @@ SilverStripe\ORM\DatabaseAdmin:
         File: MadeHQ\Cloudinary\Model\File
         Image: MadeHQ\Cloudinary\Model\Image
 
+SilverStripe\Assets\File:
+    extensions:
+        - MadeHQ\Cloudinary\Extensions\FileExtension
 
 ---
 Name: silverstripecloudinary-assetadmin-campaigns

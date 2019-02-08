@@ -4,30 +4,29 @@ namespace MadeHQ\Cloudinary\Traits;
 
 use SilverStripe\Assets\Folder;
 use SilverStripe\Versioned\Versioned;
+
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBDatetime;
+
 use Cloudinary\Api;
 use Cloudinary\Api\NotFound;
+
+use MadeHQ\Cloudinary\Model\File;
 
 /**
  *
  */
 trait CloudinaryFileTrait
 {
-    private $remoteData;
-
     private static $db = [
-        'PublicID' => 'Varchar(255)',
+        'LastUpdatedFromCloudinary' => 'DBDatetime',
         'SecureURL' => 'Varchar(1000)',
         'ResourceType' => 'Varchar',
         'Description' => 'Text',
         'Type' => 'Varchar',
         'Format' => 'Varchar(10)',
         'Bytes' => 'Int',
-    ];
-
-    private static $indexes = [
-        'PublicID' => [
-            'type' => 'unique',
-        ],
+        'RemoteData' => 'Text',
     ];
 
     public static function getOneByPublicId($publicId)
@@ -239,9 +238,18 @@ trait CloudinaryFileTrait
     /**
      * @return
      */
-    public static function get_remote_data($publicID, $resourceType)
+    public static function get_remote_data($publicID, $resourceType, $forceFromCloudinary = false)
     {
-        if (array_key_exists($publicID, static::$remote_data_cache)) {
+        if (array_key_exists($publicID, static::$remote_data_cache) && !$forceFromCloudinary) {
+            return static::$remote_data_cache[$publicID];
+        }
+
+        $dataObject = DataObject::get_one(File::class, [
+            'PublicID' => $publicID
+        ]);
+
+        if ($dataObject && $dataObject->exists() && $dataObject->RemoteData && !$forceFromCloudinary) {
+            static::$remote_data_cache[$publicID] = json_decode($dataObject->RemoteData, true);
             return static::$remote_data_cache[$publicID];
         }
 
@@ -253,6 +261,12 @@ trait CloudinaryFileTrait
                 'colors' => true,
                 'image_metadata' => true,
             ])->getArrayCopy();
+
+            if ($dataObject && $dataObject->exists()) {
+                $dataObject->RemoteData = json_encode(static::$remote_data_cache[$publicID]);
+                $dataObject->LastUpdatedFromCloudinary = DBDatetime::now()->Rfc2822();
+                $r = $dataObject->write();
+            }
 
             return static::$remote_data_cache[$publicID];
         } catch (\Cloudinary\Api\RateLimited $e) {
