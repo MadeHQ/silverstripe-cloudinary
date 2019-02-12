@@ -29,13 +29,6 @@ trait CloudinaryFileTrait
         'RemoteData' => 'Text',
     ];
 
-    public static function getOneByPublicId($publicId)
-    {
-        return static::get_one(static::class, [
-            'PublicID' => $publicId,
-        ]);
-    }
-
     public function updateFromCloudinary($resource)
     {
         $parentFolder = static::getParentFolderForResouce($resource);

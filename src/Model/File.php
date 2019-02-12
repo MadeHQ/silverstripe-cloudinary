@@ -36,4 +36,11 @@ class File extends BaseFile
         $r = $api->delete_resources(array($this->PublicID));
         return parent::doArchive();
     }
+
+    public static function getOneByPublicId($publicId)
+    {
+        return static::get_one(static::class, [
+            'PublicID' => $publicId,
+        ]);
+    }
 }
