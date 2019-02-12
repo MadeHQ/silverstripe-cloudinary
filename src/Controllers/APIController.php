@@ -63,10 +63,6 @@ class APIController extends Controller implements PermissionProvider
             return false;
         }
 
-        if ($request->getHeader('User-Agent') !== 'Cloudinary') {
-            return false;
-        }
-
         $data = json_decode($request->getBody(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
