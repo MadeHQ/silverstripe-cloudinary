@@ -27,6 +27,9 @@ class FileFormFactory extends BaseFileFormFactory
 </div>
 HTML;
         $tabSet->replaceField('ParentID', LiteralField::create('ParentID', sprintf($html, _t(__CLASS__.'.FOLDERLOCATION', 'Location'), $record->Parent()->Title ?: '<root>')));
+
+        $this->extend('updateFormFieldTabs', $tabSet, $record, $context);
+
         return $tabSet;
     }
 }
