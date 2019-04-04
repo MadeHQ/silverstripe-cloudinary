@@ -363,7 +363,7 @@ class Image extends File
         // Loop through all and apply the generic stuff
         foreach ($transformations as &$transformation) {
             // Remove gravity if specific crop is applied
-            if (array_key_exists('crop', $transformation) && in_array($transformation['crop'], $nonGravityCrops)) {
+            if (array_key_exists('crop', $transformation) && in_array($transformation['crop'], $nonGravityCrops) || !array_key_exists('crop', $transformation)) {
                 unset($transformation['gravity']);
             }
             if (
