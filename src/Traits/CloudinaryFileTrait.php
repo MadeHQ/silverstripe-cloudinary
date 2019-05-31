@@ -242,8 +242,10 @@ trait CloudinaryFileTrait
         ]);
 
         if ($dataObject && $dataObject->exists() && $dataObject->RemoteData && !$forceFromCloudinary) {
-            static::$remote_data_cache[$publicID] = json_decode($dataObject->RemoteData, true);
-            return static::$remote_data_cache[$publicID];
+            static::$remote_data_cache[$publicID] = @json_decode($dataObject->RemoteData, true);
+            if (static::$remote_data_cache[$publicID]) {
+                return static::$remote_data_cache[$publicID];
+            }
         }
 
         try {
