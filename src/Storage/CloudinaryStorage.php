@@ -2,12 +2,12 @@
 
 namespace MadeHQ\Cloudinary\Storage;
 
-use SilverStripe\Assets\Storage\AssetStore;
+use SilverStripe\Assets\Storage\AssetStoreRouter;
 use Cloudinary;
 use Cloudinary\Uploader;
 use SilverStripe\Control\Director;
 
-class CloudinaryStorage implements AssetStore
+class CloudinaryStorage implements AssetStoreRouter
 {
     /**
      * @inheritdoc
