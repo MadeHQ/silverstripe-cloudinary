@@ -2,12 +2,13 @@
 
 namespace MadeHQ\Cloudinary\Storage;
 
-use SilverStripe\Assets\Storage\AssetStoreRouter;
+use MadeHQ\Cloudinary\Model\File;
+use SilverStripe\Assets\Storage;
 use Cloudinary;
 use Cloudinary\Uploader;
 use SilverStripe\Control\Director;
 
-class CloudinaryStorage implements AssetStoreRouter
+class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 {
     /**
      * @inheritdoc
@@ -33,6 +34,21 @@ class CloudinaryStorage implements AssetStoreRouter
     public function setFromString($data, $filename, $hash = null, $variant = null, $config = array())
     {
         // intentionally empty
+    }
+
+    /**
+     * This is called from the URL `/assets/{$Filename}`
+     * @inheritdoc
+     */
+    public function getResponseFor($asset)
+    {
+        $file = File::getOneByPublicId($asset);
+        $controller = \SilverStripe\Control\Controller::curr();
+        if ($file) {
+            return $controller->redirect($file->AbsoluteURL, 301);
+        }
+
+        return $controller->httpError(404, sprintf('Unable to find [%s]', $asset));
     }
 
     /**
