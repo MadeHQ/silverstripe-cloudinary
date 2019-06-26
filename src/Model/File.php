@@ -43,4 +43,9 @@ class File extends BaseFile
             'PublicID' => $publicId,
         ]);
     }
+
+    public function canUnpublish($member = null)
+    {
+        return false;
+    }
 }

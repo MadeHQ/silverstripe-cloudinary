@@ -105,6 +105,9 @@ trait CloudinaryFileTrait
 
     public function getFileSize()
     {
+        if (!$this->PublicID) {
+            return 0;
+        }
         if ($this->Bytes) {
             return $this->Bytes;
         }

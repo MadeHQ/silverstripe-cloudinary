@@ -338,6 +338,9 @@ class Image extends File
      */
     public function forTemplate()
     {
+        if (!$this->PublicID) {
+            return '';
+        }
         $transformations = [];
 
         if (array_key_exists('transformation', $this->options)) {
