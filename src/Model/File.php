@@ -57,6 +57,11 @@ class File extends BaseFile implements Flushable
         ]);
     }
 
+    public function canUnpublish($member = null)
+    {
+        return false;
+    }
+
     public static function flush()
     {
         $tableName = static::config()->get('table_name');
