@@ -69,7 +69,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
             'folder' => implode('/', $parts)
         ];
         $categories = BaseFile::config()->app_categories;
-        if (in_array($extension, $categories['audio']) || in_array($extension, $categories['audio'])) {
+        if (in_array($extension, $categories['audio']) || in_array($extension, $categories['video'])) {
             $options['resource_type'] = 'video';
         }
 
