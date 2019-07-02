@@ -58,15 +58,13 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     public function setFromLocalFile($path, $filename = null, $hash = null, $variant = null, $config = array())
     {
         $filename = str_replace('\\', '/', $filename);
-        $parts = explode('/', $filename);
 
         $info = pathinfo($filename);
-        $publicId = $info['filename'];
         $extension = $info['extension'];
 
         $options = [
-            'public_id' => $publicId[0],
-            'folder' => implode('/', $parts)
+            'public_id' => $info['filename'],
+            'folder' => $info['dirname']
         ];
         $categories = BaseFile::config()->app_categories;
         if (in_array($extension, $categories['audio']) || in_array($extension, $categories['video'])) {
@@ -74,6 +72,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         }
 
         $response = Uploader::upload($path, $options);
+        echo '<pre>'.print_r($response, 2);die();
 
         return [
             'Filename' => $response['public_id'],
