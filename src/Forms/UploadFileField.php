@@ -2,6 +2,7 @@
 
 namespace MadeHQ\Cloudinary\Forms;
 
+use MadeHQ\Cloudinary\Model\File;
 use MadeHQ\Cloudinary\Model\FileLink;
 
 use SilverStripe\AssetAdmin\Controller\AssetAdmin;
@@ -287,7 +288,7 @@ class UploadFileField extends FormField
             return $default;
         } else {
             $class = $record->getRelationClass($name);
-            if (is_subclass_of($class, FileLink::class)) {
+            if (singleton($class) instanceof FileLink) {
                 $class = Injector::inst()->create($class)->getRelationClass('File');
             }
 
