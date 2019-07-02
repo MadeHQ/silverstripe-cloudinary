@@ -3,6 +3,7 @@
 namespace MadeHQ\Cloudinary\Storage;
 
 use MadeHQ\Cloudinary\Model\File;
+use SilverStripe\Assets\File as BaseFile;
 use SilverStripe\Assets\Storage;
 use Cloudinary;
 use Cloudinary\Uploader;
@@ -58,12 +59,19 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     {
         $filename = str_replace('\\', '/', $filename);
         $parts = explode('/', $filename);
-        $publicId = explode('.', array_pop($parts));
+
+        $info = pathinfo($filename);
+        $publicId = $info['filename'];
+        $extension = $info['extension'];
 
         $options = [
             'public_id' => $publicId[0],
-            'folder' => implode('/', $parts),
+            'folder' => implode('/', $parts)
         ];
+        $categories = BaseFile::config()->app_categories;
+        if (in_array($extension, $categories['audio']) || in_array($extension, $categories['audio'])) {
+            $options['resource_type'] = 'video';
+        }
 
         $response = Uploader::upload($path, $options);
 
