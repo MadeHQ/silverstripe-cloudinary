@@ -72,7 +72,6 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         }
 
         $response = Uploader::upload($path, $options);
-        echo '<pre>'.print_r($response, 2);die();
 
         return [
             'Filename' => $response['public_id'],
