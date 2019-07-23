@@ -1,37 +1,58 @@
 {
-  "name": "mademedia/silverstripe-cloudinary",
-  "type": "silverstripe-vendormodule",
-  "description": "Fields & DataObjects to add Cloudinary Images/Files to DataObjects.",
-  "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary.git",
-  "keywords": ["silverstripe","cloudinary"],
-  "license": "BSD-3-Clause",
-  "authors": [
-    {
-      "name": "Made Media",
-      "role": "Developer",
-      "email": "developers@mademedia.co.uk",
-      "homepage": "https://www.example.com"
-    }
-  ],
-  "require": {
-    "cloudinary/cloudinary_php": "dev-master",
-    "php": ">=7.0.0",
-    "silverstripe/assets": "^1.1",
-    "silverstripe/asset-admin": "^1.1"
-  },
-  "autoload": {
-    "psr-4": {
-      "MadeHQ\\Cloudinary\\": "src/"
-    }
-  },
-  "extra": {
-    "expose": [
-        "client/dist"
+    "name": "mademedia/silverstripe-cloudinary",
+    "type": "silverstripe-vendormodule",
+    "description": "Adds the Cloudinary browser to the CMS.",
+    "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary.git",
+    "keywords": ["silverstripe", "cloudinary", "mademedia", "madehq"],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Made Media Ltd.",
+            "role": "Developer",
+            "email": "developers@made.media",
+            "homepage": "https://made.media"
+        },
+        {
+            "name": "Bartlomiej Bialek",
+            "role": "Developer",
+            "email": "bartlomiej.bialek@made.media"
+        },
+        {
+            "name": "Lee Bradley",
+            "role": "Developer",
+            "email": "lee.bradley@made.media"
+        },
+        {
+            "name": "Daniel James",
+            "role": "Developer",
+            "email": "daniel.james@made.media"
+        },
+        {
+            "name": "Hiren Patel",
+            "role": "Developer",
+            "email": "hiren.patel@made.media"
+        }
     ],
-    "branch-alias": {
-      "dev-master": "1.0.x-dev"
-    }
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "require": {
+        "cloudinary/cloudinary_php": "dev-master",
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MadeHQ\\Cloudinary\\": "src/"
+        }
+    },
+    "extra": {
+        "expose": [
+            "client/dist"
+        ],
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    },
+    "config": {
+        "discard-changes": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

@@ -17,7 +17,3 @@ Desktop.ini
 
 ### Sass Cache ###
 .sass-cache
-
-### Source Maps ###
-/**/*.js.map
-/**/*.css.map
