@@ -1,3 +1,19 @@
 ---
 Name: silverstripecloudinary
 ---
+SilverStripe\Core\Injector\Injector:
+  CloudinaryImage:
+    class: MadeHQ\Cloudinary\FieldType\DBImage
+  DBCloudinaryImage:
+    class: MadeHQ\Cloudinary\FieldType\DBImage
+
+SilverStripe\Control\Director:
+  rules:
+    'cloudinary-api': 'MadeHQ\Cloudinary\Controllers\API'
+
+SilverStripe\Admin\LeftAndMain:
+  extra_requirements_javascript:
+    - https://media-library.cloudinary.com/global/all.js
+    - mademedia/silverstripe-cloudinary:client/dist/bundle.js
+  extra_requirements_css:
+    - mademedia/silverstripe-cloudinary:client/dist/bundle.css

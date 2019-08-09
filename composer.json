@@ -2,7 +2,7 @@
     "name": "mademedia/silverstripe-cloudinary",
     "type": "silverstripe-vendormodule",
     "description": "Adds the Cloudinary browser to the CMS.",
-    "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary.git",
+    "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary",
     "keywords": ["silverstripe", "cloudinary", "mademedia", "madehq"],
     "license": "BSD-3-Clause",
     "authors": [
@@ -34,7 +34,7 @@
         }
     ],
     "require": {
-        "cloudinary/cloudinary_php": "dev-master",
+        "cloudinary/cloudinary_php": "^1.14",
         "php": ">=7.0.0"
     },
     "autoload": {
@@ -53,6 +53,6 @@
     "config": {
         "discard-changes": true
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }

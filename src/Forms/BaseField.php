@@ -1,0 +1,165 @@
+<?php
+
+namespace MadeHQ\Cloudinary\Forms;
+
+use SilverStripe\Forms\TextareaField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\HiddenField;
+use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\View\Requirements;
+use SilverStripe\Core\Config\Config;
+
+abstract class BaseField extends TextareaField
+{
+    /**
+     * @config
+     */
+    private static $cloud_name = null;
+
+    /**
+     * @config
+     */
+    private static $api_key = null;
+
+    /**
+     * @config
+     */
+    private static $api_secret = null;
+
+    /**
+     * @config
+     */
+    private static $username = null;
+
+    /**
+     * @config
+     */
+    private static $default_transformations;
+
+    /**
+     * @config
+     */
+    private static $default_button_label = 'Choose Asset';
+
+    /**
+     * @config
+     */
+    private static $default_max_files = 25;
+
+    protected $fieldType = null;
+
+    protected $transformations = [];
+
+    protected $isMultiple = false;
+
+    protected $maxFiles = null;
+
+    protected $buttonLabel = null;
+
+    public function getAttributes()
+    {
+        $attributes = parent::getAttributes();
+
+        $attributes['data-cloudinary-type'] = $this->fieldType;
+
+        $defaultTransformations = static::config()->get('default_transformations');
+        $instanceTransformations = $this->getTransformations();
+
+        if (is_array($defaultTransformations) === false) {
+            $defaultTransformations = [];
+        }
+
+        if (is_array($instanceTransformations) === false) {
+            $instanceTransformations = [];
+        }
+
+        $transformations = array_merge($defaultTransformations, $instanceTransformations);
+
+        if (empty($transformations) === false) {
+            $attributes['data-transformations'] = json_encode($transformations);
+        }
+
+        $attributes['data-is-multiple'] = $this->getIsMultiple() ? 1 : 0;
+        $attributes['data-button-label'] = $this->getButtonLabel();
+        $attributes['data-max-files'] = $this->getMaxFiles();
+
+        return $attributes;
+    }
+
+    public function Field($properties = array())
+    {
+        $cloudName = Config::inst()->get('MadeHQ\\Cloudinary', 'cloud_name');
+        $apiKey = Config::inst()->get('MadeHQ\\Cloudinary', 'api_key');
+        $apiSecret = Config::inst()->get('MadeHQ\\Cloudinary', 'api_secret');
+        $username = Config::inst()->get('MadeHQ\\Cloudinary', 'username');
+
+        $timestamp = DBDatetime::now()->getTimestamp();
+
+        $signature = hash('sha256', sprintf(
+            'cloud_name=%s&timestamp=%s&username=%s%s', $cloudName, $timestamp, $username, $apiSecret
+        ));
+
+        $options = [
+            'cloud_name' => $cloudName,
+            'api_key' => $apiKey,
+            'username' => $username,
+            'timestamp' => $timestamp,
+            'signature' => $signature,
+        ];
+
+        $script = sprintf('const CLOUDINARY_CONFIG = %s;', json_encode($options));
+
+        Requirements::customScript($script, self::class);
+
+        return parent::Field($properties);
+    }
+
+    protected function setupDefaultClasses()
+    {
+        parent::setupDefaultClasses();
+
+        $this->addExtraClass('stacked');
+    }
+
+    public function setTransformations($transformations)
+    {
+        $this->transformations = $transformations;
+
+        return $this;
+    }
+
+    public function getTransformations()
+    {
+        return $this->transformations;
+    }
+
+    public function setButtonLabel($buttonLabel)
+    {
+        $this->buttonLabel = $buttonLabel;
+
+        return $this;
+    }
+
+    public function getButtonLabel()
+    {
+        return $this->buttonLabel ?: static::config()->get('default_button_label');
+    }
+
+    protected function setIsMultiple($isMultiple)
+    {
+        $this->isMultiple = $isMultiple;
+
+        return $this;
+    }
+
+    protected function getIsMultiple()
+    {
+        return $this->isMultiple;
+    }
+
+    protected function getMaxFiles()
+    {
+        return $this->maxFiles ?: static::config()->get('default_max_files');
+    }
+}
