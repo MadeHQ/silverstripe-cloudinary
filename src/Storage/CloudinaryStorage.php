@@ -44,17 +44,36 @@ class CloudinaryStorage implements AssetStore
         $parts = explode('/', $filename);
         $publicId = explode('.', array_pop($parts));
 
+        /*
+         * only try to preserve the name if the file is an image, otherwise, let cloudinary generate one
+         * This is so that we don't run into errors when the form module uploads files which breaks beacuse
+         * the public ID ends up being the same
+         */
+        $suggestPublicId = false;
+
+        $imageEndings = ['.jpg', '.jpeg', '.jpe', '.png', '.gif', '.webp', '.bmp', '.webp'];
+        foreach ($imageEndings as $ext) {
+            // suggest a public ID if the filename ends with one of the above extensions
+            if (strripos($filename, $ext) === (strlen($filename) - strlen($ext))) {
+                $suggestPublicId = true;
+            }
+        }
+
         $options = [
-            'public_id' => $publicId[0],
             'folder' => implode('/', $parts),
+            'resource_type' => 'auto',
         ];
+
+        if ($suggestPublicId) {
+            $options['public_id'] = $publicId[0];
+        }
 
         $response = Uploader::upload($path, $options);
 
         return [
             'Filename' => $response['public_id'],
             'PublicID' => $response['public_id'],
-            'Format' => $response['format'],
+            'Format' => isset($response['format']) ? $response['format'] : '',
             'SecureURL' => $response['secure_url'],
             'ResourceType' => $response['resource_type'],
             'Type' => $response['type'],

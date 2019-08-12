@@ -32,6 +32,9 @@ SilverStripe\Core\Injector\Injector:
   Image:
     class: MadeHQ\Cloudinary\Model\Image
 
+  SilverStripe\Assets\File:
+    class: MadeHQ\Cloudinary\Model\File
+
   File:
     class: MadeHQ\Cloudinary\Model\File
 
