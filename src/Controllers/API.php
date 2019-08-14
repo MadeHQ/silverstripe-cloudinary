@@ -21,31 +21,13 @@ class API extends RequestHandler
 
     public function __construct()
     {
+        parent::__construct();
+
         $user = Security::getCurrentUser();
 
         if ($user === null) {
             throw new HTTPResponse_Exception('Must be logged in', 401);
         }
-
-        $settings = Config::inst()->get('MadeHQ\\Cloudinary');
-
-        $options = ['cloud_name', 'api_key', 'api_secret'];
-
-        $valid = true;
-
-        foreach ($options as $name) {
-            if (array_key_exists($name, $settings) === false || empty($settings[$name]) === true) {
-                $valid = false;
-            }
-        }
-
-        if ($valid === false) {
-            throw new HTTPResponse_Exception('Service Unavailable', 503);
-        }
-
-        Cloudinary::config($settings);
-
-        parent::__construct();
     }
 
     protected static function api()
@@ -93,7 +75,9 @@ class API extends RequestHandler
                     'duration' => $data['duration'],
                     'caption' => $this->extractCaption($data),
                     'description' => $this->extractDescription($data),
+                    'resource_type' => $resourceType,
                     'actual_type' => 'video',
+                    'type' => $data['type'],
                 ];
             } else {
                 $return = [
@@ -102,7 +86,9 @@ class API extends RequestHandler
                     'duration' => $data['duration'],
                     'caption' => $this->extractCaption($data),
                     'description' => $this->extractDescription($data),
+                    'resource_type' => $resourceType,
                     'actual_type' => 'audio',
+                    'type' => $data['type'],
                 ];
             }
         } else if ($resourceType === 'image') {
@@ -114,7 +100,9 @@ class API extends RequestHandler
                 'description' => $this->extractDescription($data),
                 'top_colours' => $this->extractTopColours($data),
                 'predominant_colours' => $this->extractPredominantColours($data),
+                'resource_type' => $resourceType,
                 'actual_type' => 'image',
+                'type' => $data['type'],
             ];
         } else {
             $return = [
@@ -124,7 +112,9 @@ class API extends RequestHandler
                 'description' => $this->extractDescription($data),
                 'bytes' => $data['bytes'],
                 'format' => $this->determineFormat($data),
+                'resource_type' => $resourceType,
                 'actual_type' => 'raw',
+                'type' => $data['type'],
             ];
         }
 

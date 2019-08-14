@@ -35,27 +35,15 @@ abstract class BaseField extends TextareaField
     /**
      * @config
      */
-    private static $default_transformations;
-
-    /**
-     * @config
-     */
-    private static $default_button_label = 'Choose Asset';
-
-    /**
-     * @config
-     */
     private static $default_max_files = 25;
 
     protected $fieldType = null;
-
-    protected $transformations = [];
 
     protected $isMultiple = false;
 
     protected $maxFiles = null;
 
-    protected $buttonLabel = null;
+    protected $buttonLabel = 'Choose Files';
 
     public function getAttributes()
     {
@@ -63,25 +51,8 @@ abstract class BaseField extends TextareaField
 
         $attributes['data-cloudinary-type'] = $this->fieldType;
 
-        $defaultTransformations = static::config()->get('default_transformations');
-        $instanceTransformations = $this->getTransformations();
-
-        if (is_array($defaultTransformations) === false) {
-            $defaultTransformations = [];
-        }
-
-        if (is_array($instanceTransformations) === false) {
-            $instanceTransformations = [];
-        }
-
-        $transformations = array_merge($defaultTransformations, $instanceTransformations);
-
-        if (empty($transformations) === false) {
-            $attributes['data-transformations'] = json_encode($transformations);
-        }
-
         $attributes['data-is-multiple'] = $this->getIsMultiple() ? 1 : 0;
-        $attributes['data-button-label'] = $this->getButtonLabel();
+        $attributes['data-button-label'] = $this->buttonLabel;
         $attributes['data-max-files'] = $this->getMaxFiles();
 
         return $attributes;
@@ -122,30 +93,6 @@ abstract class BaseField extends TextareaField
         $this->addExtraClass('stacked');
     }
 
-    public function setTransformations($transformations)
-    {
-        $this->transformations = $transformations;
-
-        return $this;
-    }
-
-    public function getTransformations()
-    {
-        return $this->transformations;
-    }
-
-    public function setButtonLabel($buttonLabel)
-    {
-        $this->buttonLabel = $buttonLabel;
-
-        return $this;
-    }
-
-    public function getButtonLabel()
-    {
-        return $this->buttonLabel ?: static::config()->get('default_button_label');
-    }
-
     protected function setIsMultiple($isMultiple)
     {
         $this->isMultiple = $isMultiple;
@@ -156,6 +103,13 @@ abstract class BaseField extends TextareaField
     protected function getIsMultiple()
     {
         return $this->isMultiple;
+    }
+
+    public function setMaxFiles($maxFiles)
+    {
+        $this->maxFiles = $maxFiles;
+
+        return $this;
     }
 
     protected function getMaxFiles()
