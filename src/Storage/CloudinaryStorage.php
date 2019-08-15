@@ -56,35 +56,25 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function setFromLocalFile($path, $filename = null, $hash = null, $variant = null, $config = array())
     {
-        $filename = str_replace('\\', '/', $filename);
-        $parts = explode('/', $filename);
-        $publicId = explode('.', array_pop($parts));
+        $uploadPath = str_replace('\\', '/', $filename);
+        $parts = explode('/', $uploadPath);
+        $justFileName = array_pop($parts);
 
-        /*
-         * only try to preserve the name if the file is an image, otherwise, let cloudinary generate one
-         * This is so that we don't run into errors when the form module uploads files which breaks beacuse
-         * the public ID ends up being the same
-         */
-        $suggestPublicId = false;
-
-        $imageEndings = ['.jpg', '.jpeg', '.jpe', '.png', '.gif', '.webp', '.bmp', '.webp'];
-        foreach ($imageEndings as $ext) {
-            // suggest a public ID if the filename ends with one of the above extensions
-            if (strripos($filename, $ext) === (strlen($filename) - strlen($ext))) {
-                $suggestPublicId = true;
-            }
+        // Copy the uploaded files to a tmp location with the correct name, so we can let cloudinary deal
+        // with generating a publicID using the actual filename
+        $tmpFile = sys_get_temp_dir() . $justFileName;
+        if(!move_uploaded_file($path, $tmpFile)) {
+            throw new \Exception('Could not copy uploaded file to ' . $tmpFile);
         }
 
         $options = [
             'folder' => implode('/', $parts),
             'resource_type' => 'auto',
+            'use_filename' => true,
+            'unique_filename' => true,
         ];
 
-        if ($suggestPublicId) {
-            $options['public_id'] = $publicId[0];
-        }
-
-        $response = Uploader::upload($path, $options);
+        $response = Uploader::upload($tmpFile, $options);
 
         return [
             'Filename' => $response['public_id'],
