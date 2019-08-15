@@ -62,7 +62,8 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 
         // Copy the uploaded files to a tmp location with the correct name, so we can let cloudinary deal
         // with generating a publicID using the actual filename
-        $tmpFile = sys_get_temp_dir() . $justFileName;
+        $tmpFile = str_replace("//", "/", sys_get_temp_dir() . "/" . $justFileName);
+        
         if(!move_uploaded_file($path, $tmpFile)) {
             throw new \Exception('Could not copy uploaded file to ' . $tmpFile);
         }
