@@ -68,7 +68,7 @@ class Image extends File
      * @param array $remove
      * @return CachedImage
      */
-    public function Transform(array $transformation, int $index = 0, array $remove = [])
+    public function Transform(array $transformation, $index = 0, array $remove = [])
     {
         $clone = $this->toCache();
 
@@ -126,7 +126,7 @@ class Image extends File
      * @param int $height
      * @return CachedImage
      */
-    public function Size(int $width, /* int */ $height = false)
+    public function Size($width, $height = false)
     {
         return $this->Transform([ 'width' => $width, 'height' => $height ]);
     }
@@ -177,7 +177,7 @@ class Image extends File
      * @param string $crop
      * @return CachedImage
      */
-    public function ResizeByWidth(int $width, string $crop = 'fit')
+    public function ResizeByWidth($width, string $crop = 'fit')
     {
         return $this->Transform([ 'width' => $width, 'crop' => $crop ], 0, ['height']);
     }
@@ -187,7 +187,7 @@ class Image extends File
      * @param string $crop
      * @return CachedImage
      */
-    public function ResizeByHeight(int $height, string $crop = 'fit')
+    public function ResizeByHeight($height, string $crop = 'fit')
     {
         return $this->Transform([ 'height' => $height, 'crop' => $crop ], 0, ['width']);
     }
@@ -256,7 +256,7 @@ class Image extends File
      * @param int $value
      * @return CachedImage
      */
-    public function Brightness(int $value = 0)
+    public function Brightness($value = 0)
     {
         if (is_null($value) || !(int) $value) {
             return $this;
@@ -314,7 +314,7 @@ class Image extends File
      * @param String $gravity
      * @param Boolean $fetchFormat
      */
-    public function URL(int $width = 100, int $height = 100, string $crop = null, string $quality = null, string $gravity = null, string $fetchFormat = 'auto')
+    public function URL($width = 100, $height = 100, string $crop = null, string $quality = null, string $gravity = null, string $fetchFormat = 'auto')
     {
         $object = $this->Size($width, $height);
 
