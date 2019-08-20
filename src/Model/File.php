@@ -95,4 +95,23 @@ class File extends BaseFile implements Flushable
             DB::get_schema()->renameField($tableName . '_Versions', 'PublicID', '_obsolete_PublicID');
         }
     }
+    
+    public function requireTable()
+    {
+        /*
+        We've done a slightly dumb thing, and extended the Silverstripe/Assets/File class into this class which does
+        all the cloudinary crap, however we then use injector to override that class with this one, so now dev/build
+        has no way of getting at the base class, so it can no longer build it, so any changes to that class do not show up,
+        and so we get db errors, this method fixes that by manually finding and building the base class
+
+        In the future, if we need to extend an object, use an Extension, or if we MUST create a new class to replace it, 
+        do NOT have it extend the original class
+        */
+
+        // We have to use new here because ::create will invoke the injector API and return us the Cloudinary Image class
+        $baseClassInstance = new BaseFile();
+        $baseClassInstance->requireTable();
+
+        parent::requireTable();
+    }
 }
