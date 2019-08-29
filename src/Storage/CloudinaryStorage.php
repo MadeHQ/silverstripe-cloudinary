@@ -59,6 +59,9 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         $uploadPath = str_replace('\\', '/', $filename);
         $parts = explode('/', $uploadPath);
         $justFileName = array_pop($parts);
+        
+        $pathParts = pathinfo($justFileName);
+        $extension = $pathParts['extension'];
 
         // Copy the uploaded files to a tmp location with the correct name, so we can let cloudinary deal
         // with generating a publicID using the actual filename
@@ -80,7 +83,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         return [
             'Filename' => $response['public_id'],
             'PublicID' => $response['public_id'],
-            'Format' => isset($response['format']) ? $response['format'] : '',
+            'Format' => isset($response['format']) ? $response['format'] : $extension,
             'SecureURL' => $response['secure_url'],
             'ResourceType' => $response['resource_type'],
             'Type' => $response['type'],
