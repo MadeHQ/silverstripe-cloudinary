@@ -5,9 +5,9 @@ namespace MadeHQ\Cloudinary\FieldType;
 use MadeHQ\Cloudinary\Forms\ImageField;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
-use \BadFunctionCallException;
+use BadFunctionCallException;
 
-class DBImage extends DBBase
+class DBImage extends DBSingle
 {
     /**
      * @config
@@ -16,13 +16,7 @@ class DBImage extends DBBase
 
     protected $defaultTransformationsKey = 'default_image_transformations';
 
-    private static $casting = array(
-        'Caption' => 'Text',
-        'Description' => 'Text',
-        'Credit' => 'Text',
-    );
-
-    public function Size(int $width, int $height)
+    public function Size(/* int */ $width, /* int */ $height)
     {
         return $this->AddTransformations([
             'width' => $width,
@@ -30,17 +24,17 @@ class DBImage extends DBBase
         ]);
     }
 
-    public function Width(int $width)
+    public function Width(/* int */ $width)
     {
         return $this->AddTransformation('width', $width);
     }
 
-    public function Height(int $height)
+    public function Height(/* int */ $height)
     {
         return $this->AddTransformation('height', $height);
     }
 
-    public function ResizeByWidth(int $width, $crop = 'fit')
+    public function ResizeByWidth(/* int */ $width, $crop = 'scale')
     {
         return $this
             ->RemoveTransformation('height')
@@ -48,7 +42,7 @@ class DBImage extends DBBase
             ->AddTransformation('crop', $crop);
     }
 
-    public function ResizeByHeight(int $height, $crop = 'fit')
+    public function ResizeByHeight(/* int */ $height, $crop = 'scale')
     {
         return $this
             ->RemoveTransformation('width')
@@ -56,7 +50,7 @@ class DBImage extends DBBase
             ->AddTransformation('crop', $crop);
     }
 
-    public function Crop($crop = 'fill')
+    public function Crop($crop = 'scale')
     {
         return $this->AddTransformation('crop', $crop);
     }
@@ -95,14 +89,9 @@ class DBImage extends DBBase
         return $this->AddTransformation('radius', $radius);
     }
 
-    public function Rotate(string $rotate)
+    public function Rotate(/* string */ $rotate)
     {
         return $this->AddTransformation('rotate', $rotate);
-    }
-
-    public function Credit()
-    {
-        return $this->getJSONValue('credit');
     }
 
     public function TopColours()
@@ -123,6 +112,24 @@ class DBImage extends DBBase
         }
 
         return $return;
+    }
+
+    protected function parseTransformations(array &$transformations)
+    {
+        $nonGravityCrops = static::config()->get('non_gravity_crops');
+
+        foreach ($transformations as &$transformation) {
+            $cropExists = array_key_exists('crop', $transformation);
+            $gravityExists = array_key_exists('gravity', $transformation);
+
+            if ($cropExists === false && $gravityExists === true) {
+                unset($transformation['gravity']);
+            }
+
+            if ($cropExists === true && in_array($transformation['crop'], $nonGravityCrops) === true) {
+                unset($transformation['gravity']);
+            }
+        }
     }
 
     public function scaffoldFormField($title = null, $params = null)

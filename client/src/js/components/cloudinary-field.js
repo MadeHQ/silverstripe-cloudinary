@@ -5,7 +5,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { get, first, isObject, isArray, differenceBy, concat, last } from 'lodash';
-import Image from 'components/image';
+import Image from './image';
+import Video from './video';
+import Audio from './audio';
+import File from './file';
 
 class CloudinaryField extends React.Component {
     library = null;
@@ -47,7 +50,7 @@ class CloudinaryField extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.updateProperty = this.updateProperty.bind(this);
         this.renderResources = this.renderResources.bind(this);
-        this.removeFile = this.removeFile.bind(this);
+        this.onRemoveResource = this.onRemoveResource.bind(this);
         this.setupLibrary = this.setupLibrary.bind(this);
 
         this.setupLibrary();
@@ -74,15 +77,14 @@ class CloudinaryField extends React.Component {
         const {
             isMultiple,
             maxFiles,
-            cloudinaryType,
-            transformations,
+            resourceType,
         } = this.props;
 
         const options = {
             multiple: !!isMultiple,
             max_files: maxFiles - this.state.files.length,
             folder: {
-                resource_type: cloudinaryType,
+                resource_type: resourceType,
             },
         };
 
@@ -96,10 +98,6 @@ class CloudinaryField extends React.Component {
             }
 
             options.folder.path = path;
-        }
-
-        if (transformations) {
-            options.default_transformations = [transformations];
         }
 
         this.library.show(options);
@@ -178,21 +176,7 @@ class CloudinaryField extends React.Component {
     }
 
     processVideo(asset, resource) {
-        return {
-            ...asset,
-            ...resource,
-        };
-    }
-
-    processAudio(asset, resource) {
-        return {
-            ...asset,
-            ...resource,
-        };
-    }
-
-    processImage(asset, resource) {
-        const derived = get(asset, 'derived', null);
+        const { bytes, format, derived } = asset;
 
         let transformations = [];
 
@@ -211,14 +195,61 @@ class CloudinaryField extends React.Component {
         }
 
         return {
+            bytes,
+            format,
+            transformations,
+            ...resource,
+        };
+    }
+
+    processAudio(asset, resource) {
+        const { bytes, format } = asset;
+
+        return {
+            bytes,
+            format,
+            ...resource,
+        };
+    }
+
+    processImage(asset, resource) {
+        const { bytes, format, derived } = asset;
+
+        let transformations = [];
+
+        if (derived) {
+            transformations = derived[0].raw_transformation.split(',');
+        }
+
+        transformations = transformations.filter(transformation => {
+            return transformation.indexOf('w_') === -1 && transformation.indexOf('h_');
+        });
+
+        if (transformations.length) {
+            transformations = transformations.join(',');
+        } else {
+            transformations = null;
+        }
+
+        return {
+            bytes,
+            format,
             transformations,
             ...resource,
         };
     }
 
     processRaw(asset, resource) {
+        const { bytes, format } = asset;
+
+        if (format) {
+            resource.format = format;
+        }
+
+        console.log(asset, resource);
+
         return {
-            ...asset,
+            bytes,
             ...resource,
         };
     }
@@ -249,7 +280,7 @@ class CloudinaryField extends React.Component {
         this.onChange(files);
     }
 
-    removeFile(publicId) {
+    onRemoveResource(publicId) {
         const files = this.state.files.filter(file => {
             return file.public_id !== publicId;
         });
@@ -266,11 +297,21 @@ class CloudinaryField extends React.Component {
             const { actual_type } = file;
 
             if (actual_type === 'video') {
-                return console.log('@todo render video');
+                return <Video
+                    { ...file }
+                    key={ file.public_id }
+                    onChange={ this.updateProperty }
+                    onRemoveResource={ this.onRemoveResource }
+                />;
             }
 
             if (actual_type === 'audio') {
-                return console.log('@todo render audio');
+                return <Audio
+                    { ...file }
+                    key={ file.public_id }
+                    onChange={ this.updateProperty }
+                    onRemoveResource={ this.onRemoveResource }
+                />;
             }
 
             if (actual_type === 'image') {
@@ -278,11 +319,16 @@ class CloudinaryField extends React.Component {
                     { ...file }
                     key={ file.public_id }
                     onChange={ this.updateProperty }
-                    onRemoveFile={ this.removeFile }
+                    onRemoveResource={ this.onRemoveResource }
                 />;
             }
 
-            return console.log('@todo render raw');
+            return <File
+                { ...file }
+                key={ file.public_id }
+                onChange={ this.updateProperty }
+                onRemoveResource={ this.onRemoveResource }
+            />;
         });
     }
 
@@ -320,12 +366,11 @@ class CloudinaryField extends React.Component {
 }
 
 CloudinaryField.propTypes = {
-    cloudinaryType: PropTypes.string.isRequired,
+    resourceType: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
     isMultiple: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     maxFiles: PropTypes.number,
-    transformations: PropTypes.object,
     value: PropTypes.string,
 }
 

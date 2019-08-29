@@ -6,6 +6,26 @@ SilverStripe\Core\Injector\Injector:
     class: MadeHQ\Cloudinary\FieldType\DBImage
   DBCloudinaryImage:
     class: MadeHQ\Cloudinary\FieldType\DBImage
+  CloudinaryMedia:
+    class: MadeHQ\Cloudinary\FieldType\DBMedia
+  DBCloudinaryMedia:
+    class: MadeHQ\Cloudinary\FieldType\DBMedia
+  CloudinaryFile:
+    class: MadeHQ\Cloudinary\FieldType\DBFile
+  DBCloudinaryFile:
+    class: MadeHQ\Cloudinary\FieldType\DBFile
+  CloudinaryMultiImage:
+    class: MadeHQ\Cloudinary\FieldType\DBMultiImage
+  DBCloudinaryMultiImage:
+    class: MadeHQ\Cloudinary\FieldType\DBMultiImage
+  CloudinaryMultiMedia:
+    class: MadeHQ\Cloudinary\FieldType\DBMultiMedia
+  DBCloudinaryMultiMedia:
+    class: MadeHQ\Cloudinary\FieldType\DBMultiMedia
+  CloudinaryMultiFile:
+    class: MadeHQ\Cloudinary\FieldType\DBMultiFile
+  DBCloudinaryMultiFile:
+    class: MadeHQ\Cloudinary\FieldType\DBMultiFile
 
 SilverStripe\Control\Director:
   rules:

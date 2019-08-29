@@ -7,7 +7,7 @@ import { unmountComponentAtNode, render } from 'react-dom';
 import CloudinaryField from 'components/cloudinary-field';
 
 jQuery.entwine('ss', $ => {
-    $('[data-cloudinary-type]').entwine({
+    $('[data-resource-type]').entwine({
         HolderInstance: null,
         onmatch() {
             this._super();

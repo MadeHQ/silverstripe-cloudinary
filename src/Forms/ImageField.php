@@ -4,7 +4,7 @@ namespace MadeHQ\Cloudinary\Forms;
 
 class ImageField extends BaseField
 {
-    protected $fieldType = 'image';
+    protected $resourceType = 'image';
 
     protected $buttonLabel = 'Choose Image';
 }

@@ -4,7 +4,7 @@ namespace MadeHQ\Cloudinary\Forms;
 
 class MultiImageField extends BaseField
 {
-    protected $fieldType = 'image';
+    protected $resourceType = 'image';
 
     protected $isMultiple = true;
 

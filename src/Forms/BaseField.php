@@ -3,10 +3,7 @@
 namespace MadeHQ\Cloudinary\Forms;
 
 use SilverStripe\Forms\TextareaField;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\HiddenField;
 use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\View\Requirements;
 use SilverStripe\Core\Config\Config;
 
@@ -37,7 +34,7 @@ abstract class BaseField extends TextareaField
      */
     private static $default_max_files = 25;
 
-    protected $fieldType = null;
+    protected $resourceType = null;
 
     protected $isMultiple = false;
 
@@ -49,7 +46,7 @@ abstract class BaseField extends TextareaField
     {
         $attributes = parent::getAttributes();
 
-        $attributes['data-cloudinary-type'] = $this->fieldType;
+        $attributes['data-resource-type'] = $this->resourceType;
 
         $attributes['data-is-multiple'] = $this->getIsMultiple() ? 1 : 0;
         $attributes['data-button-label'] = $this->buttonLabel;
@@ -112,8 +109,13 @@ abstract class BaseField extends TextareaField
         return $this;
     }
 
-    protected function getMaxFiles()
+    public function getMaxFiles()
     {
         return $this->maxFiles ?: static::config()->get('default_max_files');
+    }
+
+    public function getResourceType()
+    {
+        return $this->resourceType;
     }
 }

@@ -6,10 +6,11 @@ use SilverStripe\Control\RequestHandler;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\HTTPResponse_Exception;
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Security\Security;
-use Cloudinary;
 use Cloudinary\Api as CloudinaryAPI;
+use DateTime;
+use DateInterval;
+use DateTimeZone;
 
 class API extends RequestHandler
 {
@@ -54,7 +55,6 @@ class API extends RequestHandler
             'resource_type' => $resourceType,
             'colors' => true,
             'image_metadata' => true,
-            'format' => true,
         ])->getArrayCopy();
 
         $return = $this->processResource($response);
@@ -65,60 +65,32 @@ class API extends RequestHandler
     protected function processResource($data)
     {
         $resourceType = $data['resource_type'];
-        $publicId = $data['public_id'];
+
+        $return = [
+            'public_id' => $data['public_id'],
+            'url' => $data['secure_url'],
+            'name' => $this->extractName($data),
+            'title' => $this->extractTitle($data),
+            'description' => $this->extractDescription($data),
+            'credit' => null,
+            'format' => $this->determineFormat($data),
+            'resource_type' => $resourceType,
+            'type' => $data['type'],
+        ];
 
         if ($resourceType === 'video') {
-            if (array_key_exists('has_video', $data) && $data['has_video'] === true) {
-                $return = [
-                    'public_id' => $data['public_id'],
-                    'url' => $data['secure_url'],
-                    'duration' => $data['duration'],
-                    'caption' => $this->extractCaption($data),
-                    'description' => $this->extractDescription($data),
-                    'resource_type' => $resourceType,
-                    'actual_type' => 'video',
-                    'type' => $data['type'],
-                ];
-            } else {
-                $return = [
-                    'public_id' => $data['public_id'],
-                    'url' => $data['secure_url'],
-                    'duration' => $data['duration'],
-                    'caption' => $this->extractCaption($data),
-                    'description' => $this->extractDescription($data),
-                    'resource_type' => $resourceType,
-                    'actual_type' => 'audio',
-                    'type' => $data['type'],
-                ];
-            }
+            $return['duration'] = $data['duration'];
+            $return['actual_type'] = array_key_exists('is_audio', $data) && $data['is_audio'] ? 'audio' : 'video';
         } else if ($resourceType === 'image') {
-            $return = [
-                'public_id' => $data['public_id'],
-                'url' => $data['secure_url'],
-                'caption' => $this->extractCaption($data),
-                'credit' => $this->extractCredit($data),
-                'description' => $this->extractDescription($data),
-                'top_colours' => $this->extractTopColours($data),
-                'predominant_colours' => $this->extractPredominantColours($data),
-                'resource_type' => $resourceType,
-                'actual_type' => 'image',
-                'type' => $data['type'],
-            ];
+            $return['credit'] = $this->extractCredit($data);
+            $return['top_colours'] = $this->extractTopColours($data);
+            $return['predominant_colours'] = $this->extractPredominantColours($data);
+            $return['actual_type'] = 'image';
         } else {
-            $return = [
-                'public_id' => $data['public_id'],
-                'url' => $data['secure_url'],
-                'caption' => $this->extractCaption($data),
-                'description' => $this->extractDescription($data),
-                'bytes' => $data['bytes'],
-                'format' => $this->determineFormat($data),
-                'resource_type' => $resourceType,
-                'actual_type' => 'raw',
-                'type' => $data['type'],
-            ];
+            $return['actual_type'] = 'raw';
         }
 
-        $this->extend('updateResourceData', $return);
+        $this->extend('updateResourceData', $return, $data);
 
         return $return;
     }
@@ -192,7 +164,20 @@ class API extends RequestHandler
         return $colours;
     }
 
-    protected function extractCaption($data)
+    protected function extractName($data)
+    {
+        if (array_key_exists('original_filename', $data) && !empty($data['original_filename'])) {
+            return $data['original_filename'];
+        }
+
+        $publicId = $data['public_id'];
+
+        $publicId = explode('/', $publicId);
+
+        return end($publicId);
+    }
+
+    protected function extractTitle($data)
     {
         if (!array_key_exists('context', $data) || !is_array($data['context'])) {
             return null;
@@ -276,9 +261,9 @@ class API extends RequestHandler
 
         $response->setStatusCode($status);
 
-        $expire = new \DateTime();
-        $expire->add(new \DateInterval('PT300S'));
-        $expire->setTimezone(new \DateTimeZone('UTC'));
+        $expire = new DateTime();
+        $expire->add(new DateInterval('PT300S'));
+        $expire->setTimezone(new DateTimeZone('UTC'));
 
         $response->addHeader('Content-Type', 'application/json; charset=utf-8')
             ->addHeader('Access-Control-Allow-Methods', 'GET')

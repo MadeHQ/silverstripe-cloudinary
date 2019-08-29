@@ -34,8 +34,9 @@
         }
     ],
     "require": {
+        "php": ">=7.0.0",
         "cloudinary/cloudinary_php": "^1.14",
-        "php": ">=7.0.0"
+        "silverstripe/framework": "^4.3@dev"
     },
     "autoload": {
         "psr-4": {
