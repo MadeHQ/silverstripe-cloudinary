@@ -64,7 +64,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 
         $options = [
             'public_id' => $info['filename'],
-            'folder' => $info['dirname']
+            'folder' => $info['dirname'] === '.' ? '' : $info['dirname'],
         ];
         $categories = BaseFile::config()->app_categories;
         if (in_array($extension, $categories['audio']) || in_array($extension, $categories['video'])) {
