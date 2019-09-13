@@ -7,9 +7,14 @@ use SilverStripe\Assets\Storage;
 use Cloudinary;
 use Cloudinary\Uploader;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Config\Configurable;
 
 class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 {
+    use Configurable;
+
+    private static $upload_preset;
+
     /**
      * @inheritdoc
      */
@@ -59,14 +64,14 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         $uploadPath = str_replace('\\', '/', $filename);
         $parts = explode('/', $uploadPath);
         $justFileName = array_pop($parts);
-        
+
         $pathParts = pathinfo($justFileName);
         $extension = $pathParts['extension'];
 
         // Copy the uploaded files to a tmp location with the correct name, so we can let cloudinary deal
         // with generating a publicID using the actual filename
         $tmpFile = str_replace("//", "/", sys_get_temp_dir() . "/" . $justFileName);
-        
+
         if(!move_uploaded_file($path, $tmpFile)) {
             throw new \Exception('Could not copy uploaded file to ' . $tmpFile);
         }
@@ -74,9 +79,10 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         $options = [
             'folder' => implode('/', $parts),
             'resource_type' => 'auto',
-            'use_filename' => true,
-            'unique_filename' => true,
         ];
+        if ($preset = static::config()->get('upload_preset')) {
+            $options['upload_preset'] = $preset;
+        }
 
         $response = Uploader::upload($tmpFile, $options);
 
