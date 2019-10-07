@@ -636,6 +636,11 @@ class Image extends File
         return false;
     }
 
+    public function Background($colour)
+    {
+        return $this->Transform(['background' => $colour]);
+    }
+
     // Below are standard SS resize methods so adding them for compatibility
 
     /**
