@@ -11,6 +11,7 @@ use Cloudinary\Api;
 
 use MadeHQ\Cloudinary\Model\File;
 use MadeHQ\Cloudinary\Model\Image;
+use MadeHQ\Cloudinary\Model\Video;
 
 class SyncTask extends BuildTask
 {
@@ -31,7 +32,7 @@ class SyncTask extends BuildTask
     /**
      * @inheritdoc
      */
-    protected $description = 'Fully syncronizes DB files with Cloudinary using the API';
+    protected $description = 'Fully syncronizes DB files with Cloudinary using the API. This is used if Cloudinary is unable to communicate with your servers (due to Firewall etc.). If possible it\'s better to use Cloudinarys Notification functionality';
 
     /**
      * @inheritdoc
@@ -40,15 +41,16 @@ class SyncTask extends BuildTask
     {
         ini_set('max_execution_time', 300); //300 seconds = 5 minutes
 
-        $page = 0;
-        $count = 0;
-        $data = $this->getPageFromCloudinary();
-        while ($data && count($data['resources'])) {
-            array_walk($data['resources'], array($this, 'addOrUpdateResource'));
-            $count+= count($data['resources']);
-            $data = (array_key_exists('next_cursor', $data)) ?
-                $this->getPageFromCloudinary($data['next_cursor']) :
-                false;
+        foreach(['image', 'raw', 'video'] as $resourceType) {
+            $count = 0;
+            $data = $this->getPageFromCloudinary($resourceType, null);
+            while ($data && count($data['resources'])) {
+                array_walk($data['resources'], array($this, 'addOrUpdateResource'));
+                $count+= count($data['resources']);
+                $data = (array_key_exists('next_cursor', $data)) ?
+                    $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
+                    false;
+            }
         }
 
         echo sprintf('Sync Complete: %d files synced stating %s', $count, static::config()->get('whenToStartSync'));
@@ -58,11 +60,12 @@ class SyncTask extends BuildTask
 
 
 
-    private function getPageFromCloudinary($cursor = null)
+    private function getPageFromCloudinary($resourceType, $cursor = null)
     {
         $api = new Api();
         $options = [
             'max_results' => 100,
+            'resource_type' => $resourceType,
         ];
         // Not using as Cloudinary API doesn't correctly implement this option (gets things older than the time sent (doh!)
         // $timeInPastToSync = static::config()->get('whenToStartSync');
@@ -87,9 +90,24 @@ class SyncTask extends BuildTask
                 }
                 Image::createFromCloudinaryResource($resource);
                 break;
-            case 'file':
+            case 'video':
+                $file = Video::getOneByPublicId($resource['public_id']);
+                if ($file) {
+                    $file->updateFromCloudinary($resource);
+                    return;
+                }
+                Video::createFromCloudinaryResource($resource);
+                break;
+            case 'raw':
                 $file = File::getOneByPublicId($resource['public_id']);
+                if ($file) {
+                    $file->updateFromCloudinary($resource);
+                    return;
+                }
+                File::createFromCloudinaryResource($resource);
+                break;
             default:
+                var_dump($resource);
                 throw new \RuntimeException(sprintf('[%s] Resource type is not yet being handled', $resource['resource_type']));
                 break;
         }

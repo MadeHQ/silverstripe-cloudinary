@@ -13,7 +13,7 @@ class Image extends File
      * @var array
      * @config
      */
-    private static $non_gravity_crops = ['fit', 'limit', 'mfit', 'pad', 'lpad'];
+    private static $non_gravity_crops = ['fit', 'limit', 'mfit', 'pad', 'lpad', 'scale'];
 
     /**
      * @var array
@@ -619,6 +619,138 @@ class Image extends File
         $file->write();
 
         return $file;
+    }
+
+    /**
+     * The default SS functionality works for normal `::getOrientation()`
+     * @return mixed
+     */
+    public function getCloudinaryOrientation()
+    {
+        $data = static::get_remote_data($this->PublicID, $this->ResourceType);
+        if (array_key_exists('image_metadata', $data)) {
+            if (array_key_exists('Orientation', $data['image_metadata'])) {
+                return $data['image_metadata']['Orientation'];
+            }
+        }
+        return false;
+    }
+
+    // Below are standard SS resize methods so adding them for compatibility
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleWidth($width)
+    {
+        return $this->ResizeByWidth($width);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleMaxWidth($width)
+    {
+        if ($this->Width <= $width) {
+            return $this;
+        }
+        return $this->ResizeByWidth($width);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleHeight($height)
+    {
+        return $this->ResizeByHeight($height);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleMaxHeight($height)
+    {
+        if ($this->Height <= $height) {
+            return $this;
+        }
+        return $this->ResizeByHeight($height);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function Fit($width, $height)
+    {
+        return $this->Size($width, $height)->Crop('fit');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function FitMax($width, $height)
+    {
+        if (
+            $this->Width < $width ||
+            $this->Height < $height
+        ) {
+            return $this;
+        }
+        return $this->Size($width, $height)->Crop('fit');
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ResizedImage($width, $height)
+    {
+        return $this->Size($width, $height)->Crop('scale');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function Fill($width, $height)
+    {
+        return $this->Size($width, $height)->Crop('fill');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function FillMax($width, $height)
+    {
+        if (
+            $this->Width < $width ||
+            $this->Height < $height
+        ) {
+            return $this;
+        }
+        return $this->Size($width, $height)->Crop('fill');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function CropWidth($width)
+    {
+        return $this->ResizeByWidth($width, 'fill');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function CropHeight($height)
+    {
+        return $this->ResizeByHeight($height, 'fill');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function Pad($width, $height, $backgroundColour = 'FFFFFF', $transparencyPercent = 0)
+    {
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'background' => sprintf('rgb:%s', $backgroundColour), 'crop' => 'pad' ]);
     }
 }
 
