@@ -23,9 +23,6 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\Forms\FileHandleField:
     class: MadeHQ\Cloudinary\Forms\UploadImageField
 
-  SilverStripe\AssetAdmin\Forms\UploadField:
-    class: MadeHQ\Cloudinary\Forms\UploadImageField
-
   SilverStripe\Assets\Image:
     class: MadeHQ\Cloudinary\Model\Image
 
