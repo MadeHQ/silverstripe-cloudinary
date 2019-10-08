@@ -57,17 +57,17 @@ class APIController extends Controller implements PermissionProvider
     public function notify(HTTPRequest $request)
     {
         if (!$request->isPOST()) {
-            return false;
+            throw $this->httpError(400, 'Expected a POST from Cloudinary');
         }
 
         $data = json_decode($request->getBody(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return false;
+            throw $this->httpError(400, 'Expected body to be JSON');
         }
 
         if (!array_key_exists('notification_type', $data)) {
-            return false;
+            throw $this->httpError(400, 'Expected <code>notification_type</code> in the body');
         }
 
         Versioned::set_reading_mode('Stage.Stage');
@@ -81,7 +81,7 @@ class APIController extends Controller implements PermissionProvider
             $item = DataObject::get_one(File::class, ['PublicID' => $from]);
 
             if (!$item) {
-                return false;
+                throw $this->httpError(400, sprintf('Failed to rename %s', $from));
             }
 
             $item->PublicID = $to;
