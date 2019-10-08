@@ -404,7 +404,7 @@ class Image extends File
     public function toCache()
     {
         if ($this instanceof CachedImage) {
-            return $this;
+            return clone $this;
         }
 
         return CachedImage::create(
