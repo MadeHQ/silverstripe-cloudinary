@@ -3,6 +3,9 @@
 namespace MadeHQ\Cloudinary\Model;
 
 use MadeHQ\Cloudinary\Model\Image;
+use SilverStripe\AssetAdmin\Forms\UploadField;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\TextField;
 
 class ImageLink extends FileLink
 {
@@ -21,7 +24,54 @@ class ImageLink extends FileLink
         'File' => Image::class,
     ];
 
+    /**
+     * @inheritdoc
+     */
+    private static $summary_fields = [
+        'File.Title' => 'Title',
+        'SummaryPreview' => 'Preview',
+    ];
+
+    /**
+     * @inheritdoc
+     */
+    private static $searchable_fields = [
+        'Title',
+        'File.Title',
+    ];
+
     private static $table_name = 'CloudinaryImageLink';
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->removeByName([
+            'Title',
+            'Description',
+            'Gravity',
+            'Alt',
+            'File',
+            'Caption',
+            'Credit',
+        ]);
+
+        $fields->addFieldsToTab('Root.Main', [
+            UploadField::create('File'),
+            TextField::create('Caption'),
+            TextField::create('Credit'),
+        ]);
+
+        return $fields;
+    }
+
+    public function getSummaryPreview()
+    {
+        return LiteralField::create('SummaryImage', sprintf('<img src="%s">', $this->Size(150, 150)));
+    }
 
     public function getCredit()
     {
