@@ -70,5 +70,7 @@ class UploadImageField extends UploadFileField
         }
 
         $this->removeField('Description');
+
+        $this->setAllowedFileCategories('image');
     }
 }

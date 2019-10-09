@@ -29,7 +29,6 @@ use SilverStripe\Control\{
 
 class UploadFileField extends FormField
 {
-    use FileUploadReceiver;
 
     private $fields;
 
@@ -48,12 +47,10 @@ class UploadFileField extends FormField
      */
     public function __construct($name, $title = null, $value = null)
     {
-        $this->constructFileUploadReceiver();
+        $this->uploadField = new CustomUploadField(sprintf('%s[File]', $name), 'File');
 
         // When creating new files, rename on conflict
-        $this->getUpload()->setReplaceFile(false);
-
-        $this->uploadField = new CustomUploadField(sprintf('%s[File]', $name), 'File');
+        $this->uploadField->getUpload()->setReplaceFile(false);
 
         $this->fields = [
             $this->uploadField->setAllowedMaxFileNumber(1),
@@ -66,6 +63,23 @@ class UploadFileField extends FormField
         $this->setTemplate('UploadFileField');
 
         $this->extend('init');
+    }
+
+    public function setAllowedFileCategories($category)
+    {
+        $this->uploadField->setAllowedFileCategories($category);
+        return $this;
+    }
+
+    public function setAllowedExtensions($rules)
+    {
+        $this->uploadField->setAllowedExtensions($rules);
+        return $this;
+    }
+
+    public function getAllowedExtensions()
+    {
+        return $this->uploadField->getAllowedExtensions();
     }
 
     /**
