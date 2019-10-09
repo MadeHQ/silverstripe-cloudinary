@@ -553,6 +553,12 @@ class Image extends File
         return $data['context']['custom']['alt'];
     }
 
+    /**
+     * Gets the colours used in the image with the percentage of the image that has that colour
+     * This is because we automatically pass `true` for the `colors`
+     * See (https://cloudinary.com/blog/api_for_extracting_semantic_image_data_colors_faces_exif_data_and_more)
+     * @return array
+     */
     public function getColors($forceFromCloudinary = false)
     {
         if ($this->OriginalColours && !$forceFromCloudinary) {
@@ -574,6 +580,12 @@ class Image extends File
         return $remoteData['colors'];
     }
 
+    /**
+     * Returns an array of colours used in the image
+     * The key of the array item is the hex RGB colour without a hash (can be used directly in `::Pad()`)
+     * The value of the array item is the same but with a # symbol at the start
+     * @return Array
+     */
     public function getColorsMap($forceFromCloudinary = false)
     {
         $colours = $this->getColors($forceFromCloudinary);
@@ -587,7 +599,7 @@ class Image extends File
         foreach ($colours as $color) {
             list($hex, $strength) = $color;
 
-            $map[$hex] = $hex;
+            $map[trim($hex, '#')] = $hex;
         }
 
         return $map;
