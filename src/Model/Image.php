@@ -769,6 +769,11 @@ class Image extends File
     {
         return $this->Transform([ 'width' => $width, 'height' => $height, 'background' => sprintf('rgb:%s', $backgroundColour), 'crop' => 'pad' ]);
     }
+
+    public function getURL($grant = true)
+    {
+        return $this->forTemplate();
+    }
 }
 
 class CachedImage extends Image
