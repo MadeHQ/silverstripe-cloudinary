@@ -2,16 +2,12 @@
 
 namespace MadeHQ\Cloudinary\Tasks;
 
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Convert;
 use SilverStripe\Dev\BuildTask;
 
 use Cloudinary\Api;
-
-use MadeHQ\Cloudinary\Model\File;
-use MadeHQ\Cloudinary\Model\Image;
-use MadeHQ\Cloudinary\Model\Video;
+use SilverStripe\Assets\File;
+use SilverStripe\Assets\Image;
 
 class SyncTask extends BuildTask
 {
@@ -22,7 +18,15 @@ class SyncTask extends BuildTask
      * See (http://php.net/manual/en/function.strtotime.php) for details
      * @var String
      */
-    private static $whenToStartSync = '-4 week';
+    private static $api_start_at = '-4 week';
+
+    /**
+     * How many results to return with each request
+     * See (https://cloudinary.com/documentation/admin_api#resources)
+     * 500 is the Max value
+     * @var Int
+     */
+    private static $api_max_results = 500;
 
     /**
      * @inheritdoc
@@ -58,58 +62,42 @@ class SyncTask extends BuildTask
         return;
     }
 
-
-
     private function getPageFromCloudinary($resourceType, $cursor = null)
     {
         $api = new Api();
         $options = [
-            'max_results' => 100,
+            'max_results' => static::config()->get('api_max_results'),
+            'direction' => 1,   // So that the oldest items come through first
             'resource_type' => $resourceType,
         ];
         // Not using as Cloudinary API doesn't correctly implement this option (gets things older than the time sent (doh!)
-        // $timeInPastToSync = static::config()->get('whenToStartSync');
-        // if ($timeInPastToSync) {
-        //     $options['start_at'] = date(\DateTime::ISO8601, strtotime($timeInPastToSync));
-        // }
+        $timeInPastToSync = static::config()->get('api_start_at');
+        if ($timeInPastToSync) {
+            $options['start_at'] = date(\DateTime::ISO8601, strtotime($timeInPastToSync));
+        }
         if ($cursor) {
             $options['next_cursor'] = $cursor;
         }
-
         return $api->resources($options);
     }
 
     private function addOrUpdateResource($resource)
     {
-        switch ($resource['resource_type']) {
-            case 'image':
-                $file = Image::getOneByPublicId($resource['public_id']);
-                if ($file) {
-                    $file->updateFromCloudinary($resource);
-                    return;
-                }
-                Image::createFromCloudinaryResource($resource);
-                break;
-            case 'video':
-                $file = Video::getOneByPublicId($resource['public_id']);
-                if ($file) {
-                    $file->updateFromCloudinary($resource);
-                    return;
-                }
-                Video::createFromCloudinaryResource($resource);
-                break;
-            case 'raw':
-                $file = File::getOneByPublicId($resource['public_id']);
-                if ($file) {
-                    $file->updateFromCloudinary($resource);
-                    return;
-                }
-                File::createFromCloudinaryResource($resource);
-                break;
-            default:
-                var_dump($resource);
-                throw new \RuntimeException(sprintf('[%s] Resource type is not yet being handled', $resource['resource_type']));
-                break;
+        $file = File::singleton()->getOneByPublicId($resource['public_id']);
+        if (!$file) {
+            switch ($resource['resource_type']) {
+                case 'image':
+                    $file = Image::create();
+                    break;
+                default:
+                    $file = File::create();
+            }
         }
+
+        $file->updateFromCloudinary($resource);
+        if (!$file->write()) {
+            var_dump(sprintf('Error saving: %s', $resource['public_id']), $resource);
+        }
+        return $file;
     }
 }

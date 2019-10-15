@@ -1,28 +1,21 @@
 <?php
 
 namespace MadeHQ\Cloudinary\Model;
+use SilverStripe\Assets\Image as SilverStripeImage;
 
-class Image extends File
+class Image extends SilverStripeImage
 {
     /**
-     * @var string
-     */
-    private static $table_name = 'CloudinaryImage';
-
-    /**
      * @var array
      * @config
      */
-    private static $non_gravity_crops = ['fit', 'limit', 'mfit', 'pad', 'lpad', 'scale'];
-
-    /**
-     * @var array
-     * @config
-     */
-    private static $valid_image_formats = [
-        'jpg',
-        'gif',
-        'png',
+    private static $non_gravity_crops = [
+        'fit',
+        'limit',
+        'mfit',
+        'pad',
+        'lpad',
+        'scale',
     ];
 
     /**
@@ -40,24 +33,164 @@ class Image extends File
         ],
     ];
 
-    /**
-     * Database fields
-     * @var array
-     */
-    private static $db = [
-        'OriginalWidth' => 'Int',
-        'OriginalHeight' => 'Int',
-        'OriginalCaption' => 'Text',
-        'OriginalCredit' => 'Text',
-        'OriginalColours' => 'Text',
-    ];
+    public function getWidth()
+    {
+        return $this->getRemoteDataProperty('width');
+    }
+
+    public function getHeight()
+    {
+        return $this->getRemoteDataProperty('height');
+    }
 
     /**
-     * @var array
+     * {@inheritdoc}
      */
-    private static $belongs_to = [
-        'ImageLink' => ImageLink::class,
-    ];
+    public function ScaleWidth($width)
+    {
+        return $this->Transform([ 'width' => $width, 'crop' => 'fit' ], 0, ['height']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleMaxWidth($width)
+    {
+        if ($this->Width <= $width) {
+            return $this;
+        }
+        return $this->Transform([ 'width' => $width, 'crop' => 'fit' ], 0, ['height']);
+    }
+
+    public function Size($width, $height)
+    {
+        return $this->Transform([ 'width' => $width, 'height' => $height ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleHeight($height)
+    {
+        return $this->Transform([ 'height' => $height, 'crop' => 'fit' ], 0, ['width']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ScaleMaxHeight($height)
+    {
+        if ($this->Height <= $height) {
+            return $this;
+        }
+        return $this->Transform([ 'height' => $height, 'crop' => 'fit' ], 0, ['width']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function Fit($width, $height)
+    {
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'crop' => 'fit' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function FitMax($width, $height)
+    {
+        if (
+            $this->Width < $width ||
+            $this->Height < $height
+        ) {
+            return $this;
+        }
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'crop' => 'fit' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function ResizedImage($width, $height)
+    {
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'crop' => 'scale' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function Fill($width, $height)
+    {
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'crop' => 'fill' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function FillMax($width, $height)
+    {
+        if (
+            $this->Width < $width ||
+            $this->Height < $height
+        ) {
+            return $this;
+        }
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'crop' => 'fill' ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function CropWidth($width)
+    {
+        return $this->Transform([ 'width' => $width, 'crop' => 'fill' ], 0, ['height']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function CropHeight($height)
+    {
+        return $this->Transform([ 'height' => $height, 'crop' => 'fill' ], 0, ['width']);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function Pad($width, $height, $backgroundColour = 'FFFFFF', $transparencyPercent = 0)
+    {
+        return $this->Transform([ 'width' => $width, 'height' => $height, 'background' => sprintf('rgb:%s', $backgroundColour), 'crop' => 'pad' ]);
+    }
+
+    /**
+     * @param string $crop
+     * @return CachedImage
+     */
+    public function Crop(string $crop = 'fill')
+    {
+        return $this->Transform([ 'crop' => $crop ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function PreviewLink($action = null)
+    {
+        // Size to width / height
+        $width = (int)$this->config()->get('asset_preview_width');
+        $height = (int)$this->config()->get('asset_preview_height');
+
+        $link = $this->Fit($width, $height);
+
+        $this->extend('updatePreviewLink', $link, $action);
+
+        return $link->forTemplate();
+    }
+
+    public function existingOnly()
+    {
+        return $this;
+    }
 
     /**
      * Adds a new transformation to an existing one, or appends
@@ -121,23 +254,84 @@ class Image extends File
         return $clone;
     }
 
-    /**
-     * @param int $width
-     * @param int $height
-     * @return CachedImage
-     */
-    public function Size($width, $height = false)
+    public function getURL($grant = true)
     {
-        return $this->Transform([ 'width' => $width, 'height' => $height ]);
+        return $this->forTemplate();
     }
 
     /**
-     * @param string $crop
+     * @return string
+     */
+    public function forTemplate()
+    {
+        if (!$this->PublicID) {
+            return '';
+        }
+        $transformations = [];
+
+        if (array_key_exists('transformation', $this->options)) {
+            $transformations = $this->options['transformation'];
+        }
+
+        if (array_key_exists('resource_type', $transformations[0]) === false || !$transformations[0]['resource_type']) {
+            $transformations[0]['resource_type'] = $this->ResourceType;
+        }
+
+        if (array_key_exists('gravity', $transformations[0]) === false || !$transformations[0]['gravity']) {
+            $transformations[0]['gravity'] = 'auto';
+        }
+
+        // These crops don't support gravity, Cloudinary returns a 400 if passed
+        $nonGravityCrops = static::config()->get('non_gravity_crops');
+
+        // Loop through all and apply the generic stuff
+        foreach ($transformations as &$transformation) {
+            // Remove gravity if specific crop is applied
+            if (array_key_exists('crop', $transformation) && in_array($transformation['crop'], $nonGravityCrops) || !array_key_exists('crop', $transformation)) {
+                unset($transformation['gravity']);
+            }
+        }
+
+        // Grab options
+        $options = $this->options;
+
+        // Fix type
+        if (!array_key_exists('type', $options)) {
+            $options['type'] = $this->Type;
+        }
+
+        // Reset the transformations of the object using what we gawt
+        $options['transformation'] = $transformations;
+
+        // Determine name
+        $fileName = $this->Format ? $this->PublicID . '.' . $this->Format : $this->PublicID;
+
+        // Generate image URL using options
+        return \Cloudinary::cloudinary_url($fileName, $options);
+    }
+
+    /**
+     * Makes a cache object
+     *
      * @return CachedImage
      */
-    public function Crop(string $crop = 'fill')
+    public function toCache()
     {
-        return $this->Transform([ 'crop' => $crop ]);
+        if ($this instanceof CachedImage) {
+            return clone $this;
+        }
+
+        return CachedImage::create(
+            $this->toMap()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->forTemplate();
     }
 
     /**
@@ -170,26 +364,6 @@ class Image extends File
     public function FetchFormat(string $fetchFormat = 'auto')
     {
         return $this->Transform([ 'fetch_format' => $fetchFormat ]);
-    }
-
-    /**
-     * @param int $width
-     * @param string $crop
-     * @return CachedImage
-     */
-    public function ResizeByWidth($width, string $crop = 'fit')
-    {
-        return $this->Transform([ 'width' => $width, 'crop' => $crop ], 0, ['height']);
-    }
-
-    /**
-     * @param int $height
-     * @param string $crop
-     * @return CachedImage
-     */
-    public function ResizeByHeight($height, string $crop = 'fit')
-    {
-        return $this->Transform([ 'height' => $height, 'crop' => $crop ], 0, ['width']);
     }
 
     /**
@@ -305,114 +479,6 @@ class Image extends File
     }
 
     /**
-     * Gets the Cloudinary URL for the image at the requested size, crop etc.
-     * NOTE: Uses the `is_bool` check because SS template passes `true`/`false` as string so uses json_decode
-     * @param Int $width
-     * @param Int $height
-     * @param String $crop
-     * @param String $quality
-     * @param String $gravity
-     * @param Boolean $fetchFormat
-     */
-    public function URL($width = 100, $height = 100, string $crop = null, string $quality = null, string $gravity = null, string $fetchFormat = 'auto')
-    {
-        $object = $this->Size($width, $height);
-
-        if ($crop) {
-            $object = $object->Crop($crop);
-        }
-
-        if ($quality) {
-            $object = $object->Quality($quality);
-        }
-
-        if ($gravity) {
-            $object = $object->Gravity($gravity);
-        }
-
-        return $object->FetchFormat($fetchFormat);
-    }
-
-    /**
-     * @return string
-     */
-    public function forTemplate()
-    {
-        if (!$this->PublicID) {
-            return '';
-        }
-        $transformations = [];
-
-        if (array_key_exists('transformation', $this->options)) {
-            $transformations = $this->options['transformation'];
-        }
-
-        if (array_key_exists('resource_type', $transformations[0]) === false || !$transformations[0]['resource_type']) {
-            $transformations[0]['resource_type'] = $this->ResourceType;
-        }
-
-        if ($this->ImageLink()->exists()) {
-            if (array_key_exists('gravity', $transformations[0]) === false || $transformations[0]['gravity'] === 'auto') {
-                $transformations[0]['gravity'] = $this->ImageLink()->Focus;
-            }
-        } else if (array_key_exists('gravity', $transformations[0]) === false || !$transformations[0]['gravity']) {
-            $transformations[0]['gravity'] = 'auto';
-        }
-
-        // These crops don't support gravity, Cloudinary returns a 400 if passed
-        $nonGravityCrops = static::config()->get('non_gravity_crops');
-        $isImage = in_array($this->Format, static::config()->get('valid_image_formats'));
-
-        // Loop through all and apply the generic stuff
-        foreach ($transformations as &$transformation) {
-            // Remove gravity if specific crop is applied
-            if (array_key_exists('crop', $transformation) && in_array($transformation['crop'], $nonGravityCrops) || !array_key_exists('crop', $transformation)) {
-                unset($transformation['gravity']);
-            }
-            if (
-                !$isImage &&
-                (!array_key_exists('width', $transformation) || empty($transformation['width'])) &&
-                (!array_key_exists('height', $transformation) || empty($transformation['height']))
-            ) {
-                unset($transformation['fetch_format']);
-            }
-        }
-
-        // Grab options
-        $options = $this->options;
-
-        // Fix type
-        if (!array_key_exists('type', $options)) {
-            $options['type'] = $this->Type;
-        }
-
-        // Reset the transformations of the object using what we gawt
-        $options['transformation'] = $transformations;
-
-        // Determine name
-        $fileName = $this->Format ? $this->PublicID . '.' . $this->Format : $this->PublicID;
-
-        // Generate image URL using options
-        return \Cloudinary::cloudinary_url($fileName, $options);
-    }
-
-    /**
-     * Makes a cache object
-     *
-     * @return CachedImage
-     */
-    public function toCache()
-    {
-        if ($this instanceof CachedImage) {
-            return clone $this;
-        }
-
-        return CachedImage::create(
-            $this->toMap()
-        );
-    }
-
-    /**
      * Makes a clone
      *
      * @return Image
@@ -425,14 +491,6 @@ class Image extends File
     }
 
     /**
-     * @return string
-     */
-    public function __toString()
-    {
-        return $this->forTemplate();
-    }
-
-    /**
      * @inheritdoc
      */
     public function Link()
@@ -440,118 +498,81 @@ class Image extends File
         return $this->Quality('auto')->Gravity('auto')->forTemplate();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function PreviewLink($action = null)
-    {
-        // Size to width / height
-        $width = (int)$this->config()->get('asset_preview_width');
-        $height = (int)$this->config()->get('asset_preview_height');
+//     public function getCredit($forceFromCloudinary = false)
+//     {
+// var_dump();die;
+//         if (!$forceFromCloudinary) {
+//             return $this->OriginalCredit;
+//         }
 
-        $link = $this->URL($width, $height, 'fill');
+//         $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
 
-        $this->extend('updatePreviewLink', $link, $action);
+//         if (!is_array($remoteData)) {
+//             return $this->OriginalCredit = '';
+//         }
 
-        return $link->forTemplate();
-    }
+//         if (!array_key_exists('image_metadata', $remoteData)) {
+//             return $this->OriginalCredit = '';
+//         }
 
-    public function getWidth($forceFromCloudinary = false)
-    {
-        if ($this->OriginalWidth && !$forceFromCloudinary) {
-            return $this->OriginalWidth;
-        }
+//         $metadata = $remoteData['image_metadata'];
 
-        $this->OriginalWidth = static::get_remote_data($this->PublicID, $this->ResourceType)['width'];
+//         if (array_key_exists('Copyright', $metadata)) {
+//             $this->OriginalCredit = $metadata['Copyright'];
+//         } else if (array_key_exists('By-line', $metadata)) {
+//             $this->OriginalCredit = $metadata['By-line'];
+//         } else if (array_key_exists('Artist', $metadata)) {
+//             $this->OriginalCredit = $metadata['Artist'];
+//         } else if (array_key_exists('Creator', $metadata)) {
+//             $this->OriginalCredit = $metadata['Creator'];
+//         } else if (array_key_exists('XPAuthor', $metadata)) {
+//             $this->OriginalCredit = $metadata['XPAuthor'];
+//         }
 
-        return $this->OriginalWidth;
-    }
+//         return $this->OriginalCredit;
+//     }
 
-    public function getHeight($forceFromCloudinary = false)
-    {
-        if ($this->OriginalHeight && !$forceFromCloudinary) {
-            return $this->OriginalHeight;
-        }
+//     public function getCaption($forceFromCloudinary = false)
+//     {
+//         if (!$forceFromCloudinary) {
+//             return $this->OriginalCaption;
+//         }
 
-        $this->OriginalHeight = static::get_remote_data($this->PublicID, $this->ResourceType)['height'];
+//         $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
 
-        return $this->OriginalHeight;
-    }
+//         $this->OriginalCaption = static::extract_caption($remoteData);
 
-    public function getCredit($forceFromCloudinary = false)
-    {
-        if (!$forceFromCloudinary) {
-            return $this->OriginalCredit;
-        }
+//         return $this->OriginalCaption;
+//     }
 
-        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
+//     public static function extract_caption($data)
+//     {
+//         if (!is_array($data)) {
+//             return null;
+//         }
 
-        if (!is_array($remoteData)) {
-            return $this->OriginalCredit = '';
-        }
+//         if (!array_key_exists('context', $data)) {
+//             return null;
+//         }
 
-        if (!array_key_exists('image_metadata', $remoteData)) {
-            return $this->OriginalCredit = '';
-        }
+//         if (!is_array($data['context'])) {
+//             return null;
+//         }
 
-        $metadata = $remoteData['image_metadata'];
+//         if (!array_key_exists('custom', $data['context'])) {
+//             return null;
+//         }
 
-        if (array_key_exists('Copyright', $metadata)) {
-            $this->OriginalCredit = $metadata['Copyright'];
-        } else if (array_key_exists('By-line', $metadata)) {
-            $this->OriginalCredit = $metadata['By-line'];
-        } else if (array_key_exists('Artist', $metadata)) {
-            $this->OriginalCredit = $metadata['Artist'];
-        } else if (array_key_exists('Creator', $metadata)) {
-            $this->OriginalCredit = $metadata['Creator'];
-        } else if (array_key_exists('XPAuthor', $metadata)) {
-            $this->OriginalCredit = $metadata['XPAuthor'];
-        }
+//         if (!is_array($data['context']['custom'])) {
+//             return null;
+//         }
 
-        return $this->OriginalCredit;
-    }
+//         if (!array_key_exists('alt', $data['context']['custom'])) {
+//             return null;
+//         }
 
-    public function getCaption($forceFromCloudinary = false)
-    {
-        if (!$forceFromCloudinary) {
-            return $this->OriginalCaption;
-        }
-
-        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
-
-        $this->OriginalCaption = static::extract_caption($remoteData);
-
-        return $this->OriginalCaption;
-    }
-
-    public static function extract_caption($data)
-    {
-        if (!is_array($data)) {
-            return null;
-        }
-
-        if (!array_key_exists('context', $data)) {
-            return null;
-        }
-
-        if (!is_array($data['context'])) {
-            return null;
-        }
-
-        if (!array_key_exists('custom', $data['context'])) {
-            return null;
-        }
-
-        if (!is_array($data['context']['custom'])) {
-            return null;
-        }
-
-        if (!array_key_exists('alt', $data['context']['custom'])) {
-            return null;
-        }
-
-        return $data['context']['custom']['alt'];
-    }
+//         return $data['context']['custom']['alt'];
+//     }
 
     /**
      * Gets the colours used in the image with the percentage of the image that has that colour
@@ -561,23 +582,10 @@ class Image extends File
      */
     public function getColors($forceFromCloudinary = false)
     {
-        if ($this->OriginalColours && !$forceFromCloudinary) {
-            return json_decode($this->OriginalColours);
+        if (!$this->config()->get('api_get_colors')) {
+            throw new \RuntimeException('You need to enable "File::api_get_colors" via the config to be able to get Colour data');
         }
-
-        $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
-
-        if (!is_array($remoteData)) {
-            return [];
-        }
-
-        if (!array_key_exists('colors', $remoteData)) {
-            return [];
-        }
-
-        $this->OriginalColours = json_encode($remoteData['colors']);
-
-        return $remoteData['colors'];
+        return $this->getRemoteDataProperty('colors');
     }
 
     /**
@@ -639,13 +647,13 @@ class Image extends File
      */
     public function getCloudinaryOrientation()
     {
-        $data = static::get_remote_data($this->PublicID, $this->ResourceType);
-        if (array_key_exists('image_metadata', $data)) {
-            if (array_key_exists('Orientation', $data['image_metadata'])) {
-                return $data['image_metadata']['Orientation'];
-            }
-        }
-        return false;
+        return $this->getCloudinaryImageMetaDataProperty('Orientation');
+    }
+
+    public function getCloudinaryImageMetaDataProperty($prop)
+    {
+        $data = $this->getRemoteDataProperty('image_metadata');
+        return array_key_exists($prop, $data) ? $data[$prop] : null;
     }
 
     public function Background($colour)
@@ -653,126 +661,9 @@ class Image extends File
         return $this->Transform(['background' => $colour]);
     }
 
-    // Below are standard SS resize methods so adding them for compatibility
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ScaleWidth($width)
+    public function updateApiResourceOptions(&$opts)
     {
-        return $this->ResizeByWidth($width);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ScaleMaxWidth($width)
-    {
-        if ($this->Width <= $width) {
-            return $this;
-        }
-        return $this->ResizeByWidth($width);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ScaleHeight($height)
-    {
-        return $this->ResizeByHeight($height);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ScaleMaxHeight($height)
-    {
-        if ($this->Height <= $height) {
-            return $this;
-        }
-        return $this->ResizeByHeight($height);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function Fit($width, $height)
-    {
-        return $this->Size($width, $height)->Crop('fit');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function FitMax($width, $height)
-    {
-        if (
-            $this->Width < $width ||
-            $this->Height < $height
-        ) {
-            return $this;
-        }
-        return $this->Size($width, $height)->Crop('fit');
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function ResizedImage($width, $height)
-    {
-        return $this->Size($width, $height)->Crop('scale');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function Fill($width, $height)
-    {
-        return $this->Size($width, $height)->Crop('fill');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function FillMax($width, $height)
-    {
-        if (
-            $this->Width < $width ||
-            $this->Height < $height
-        ) {
-            return $this;
-        }
-        return $this->Size($width, $height)->Crop('fill');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function CropWidth($width)
-    {
-        return $this->ResizeByWidth($width, 'fill');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function CropHeight($height)
-    {
-        return $this->ResizeByHeight($height, 'fill');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function Pad($width, $height, $backgroundColour = 'FFFFFF', $transparencyPercent = 0)
-    {
-        return $this->Transform([ 'width' => $width, 'height' => $height, 'background' => sprintf('rgb:%s', $backgroundColour), 'crop' => 'pad' ]);
-    }
-
-    public function getURL($grant = true)
-    {
-        return $this->forTemplate();
+        $opts['image_metadata'] = true;
     }
 }
 

@@ -11,41 +11,24 @@ After:
 
 SilverStripe\Core\Injector\Injector:
 
-  SilverStripe\AssetAdmin\Model\ThumbnailGenerator.graphql:
-    class: MadeHQ\Cloudinary\Model\ThumbnailGenerator
-
-  SilverStripe\AssetAdmin\Model\ThumbnailGenerator.assetadmin:
-    class: MadeHQ\Cloudinary\Model\ThumbnailGenerator
-
   SilverStripe\Assets\Storage\AssetStore:
     class: MadeHQ\Cloudinary\Storage\CloudinaryStorage
 
-  SilverStripe\Forms\FileHandleField:
-    class: MadeHQ\Cloudinary\Forms\UploadImageField
-
+  # Need to replace the Image class to overload ImageManipulation trait calls
   SilverStripe\Assets\Image:
     class: MadeHQ\Cloudinary\Model\Image
 
-  Image:
-    class: MadeHQ\Cloudinary\Model\Image
-
-  SilverStripe\Assets\File:
-    class: MadeHQ\Cloudinary\Model\File
-
-  File:
-    class: MadeHQ\Cloudinary\Model\File
-
-  DBFile:
-    class: MadeHQ\Cloudinary\Storage\DBFile
-
-SilverStripe\ORM\DatabaseAdmin:
-    classname_value_remapping:
-        File: MadeHQ\Cloudinary\Model\File
-        Image: MadeHQ\Cloudinary\Model\Image
 
 SilverStripe\Assets\File:
-    extensions:
-        - MadeHQ\Cloudinary\Extensions\FileExtension
+  app_categories:
+    image/supported:
+      - svg
+    image:
+      - svg
+  allowed_extensions:
+    - svg
+  extensions:
+    - MadeHQ\Cloudinary\Extensions\FileExtension
 
 ---
 Name: silverstripecloudinary-assetadmin-campaigns
