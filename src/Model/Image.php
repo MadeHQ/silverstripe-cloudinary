@@ -613,34 +613,6 @@ class Image extends SilverStripeImage
         return $map;
     }
 
-    public function updateFromCloudinary($resource)
-    {
-        parent::updateFromCloudinary($resource);
-
-        $this->getWidth(true);
-        $this->getHeight(true);
-        $this->getCredit(true);
-        $this->getCaption(true);
-        $this->getColors(true);
-
-        $this->write();
-    }
-
-    public static function createFromCloudinaryResource($resource)
-    {
-        $file = parent::createFromCloudinaryResource($resource);
-
-        $file->getWidth(true);
-        $file->getHeight(true);
-        $file->getCredit(true);
-        $file->getCaption(true);
-        $file->getColors(true);
-
-        $file->write();
-
-        return $file;
-    }
-
     /**
      * The default SS functionality works for normal `::getOrientation()`
      * @return mixed

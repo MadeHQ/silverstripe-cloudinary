@@ -5,6 +5,7 @@ namespace MadeHQ\Cloudinary\Extensions;
 use Cloudinary\Api;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Flushable;
+use SilverStripe\ORM\Connect\DatabaseException;
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\Queries\SQLUpdate;
@@ -30,7 +31,14 @@ class FileExtension extends DataExtension implements Flushable
     {
         $this->owner->PublicID = $resource['public_id'];
         $this->owner->ResourceType = $resource['resource_type'];
+        $filename = preg_replace('/^.*\//', '', $resource['public_id']);
+        if (strpos('.', $filename) === false && array_key_exists('format', $resource)) {
+            $filename.= '.' . $resource['format'];
+        }
+        $this->owner->Name = $this->owner->File->Filename = $filename;
+        $this->owner->Title = preg_replace('/\..*$/', '', $filename);
         $this->owner->write();
+
         if ($resource['access_mode'] === 'public') {
             $this->owner->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE);
         }
@@ -111,11 +119,19 @@ class FileExtension extends DataExtension implements Flushable
 
     public static function flush()
     {
-        SQLUpdate::create('File')->addAssignments([
-            'RemoteData' => NULL,
-        ])->execute();
-        SQLUpdate::create('File_Live')->addAssignments([
-            'RemoteData' => NULL,
-        ])->execute();
+        try {
+            SQLUpdate::create('File')->addAssignments([
+                'RemoteData' => NULL,
+            ])->execute();
+        } catch (DatabaseException $e) {
+            // Do nothing as it's because the table doesn't exist
+        }
+        try {
+            SQLUpdate::create('File_Live')->addAssignments([
+                'RemoteData' => NULL,
+            ])->execute();
+        } catch (DatabaseException $e) {
+            // Do nothing as it's because the table doesn't exist
+        }
     }
 }

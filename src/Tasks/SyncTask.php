@@ -6,8 +6,8 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 
 use Cloudinary\Api;
+use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
-use SilverStripe\Assets\Image;
 
 class SyncTask extends BuildTask
 {
