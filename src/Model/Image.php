@@ -5,6 +5,56 @@ use SilverStripe\Assets\Image as SilverStripeImage;
 
 class Image extends SilverStripeImage
 {
+    private static $valid_gravities = [
+        'north_east' => 'North East',
+        'north' => 'North',
+        'north_west' => 'North West',
+        'west' => 'West',
+        'south_west' => 'South West',
+        'south' => 'South',
+        'south_east' => 'South East',
+        'east' => 'East',
+        'center' => 'Center',
+
+        'face' => 'Face',
+        'face:auto' => 'Face',
+        'face:center' => 'Face',
+
+        'auto' => 'Auto',
+        'auto:subject' => 'Auto (Subject)',
+        'auto:classic' => 'Auto (Classic)',
+        'auto:body' => 'Auto (Body)',
+        'auto:no_faces' => 'Auto (No Faces)',
+        'auto:custom_no_override' => 'Auto (Custom No Override)',
+        'auto:none' => 'Auto (None)',
+
+        'faces' => 'Faces',
+        'faces:auto' => 'Faces (Auto)',
+        'faces:center' => 'Faces (Center)',
+
+        // 'liquid',       // Leaving this one out due to complexity at the moment
+        // 'xy_center',    // Need to be able to specify x/y values based on original image dimensions (Leaving out due to complexity)
+    ];
+
+    /**
+     * These gravities are only permitted if you have an Active Subscription and will use your Quota
+     * @var array
+     */
+    private static $ocr_gravities = [
+        'ocr_text',
+        'ocr_text:document',
+    ];
+
+    /**
+     * These gravities are only permitted if you have an Active Subscription and will use your Quota
+     * @var array
+     */
+    private static $adv_face_gravities = [
+        'auto:adv_face',
+        'auto:adv_faces',
+        'auto:adv_eyes',
+    ];
+
     /**
      * @var array
      * @config
@@ -16,6 +66,8 @@ class Image extends SilverStripeImage
         'pad',
         'lpad',
         'scale',
+        'immaga_crop',  // Required Active subscription "Image Crop & Scale add on"
+        'immaga_scale', // Required Active subscription "Image Crop & Scale add on"
     ];
 
     /**
@@ -353,6 +405,15 @@ class Image extends SilverStripeImage
      * @return CachedImage
      */
     public function Gravity(string $gravity = 'auto')
+    {
+        return $this->Transform([ 'gravity' => $gravity ]);
+    }
+
+    /**
+     * @param string $gravity
+     * @return CachedImage
+     */
+    public function setGravity(string $gravity = 'auto')
     {
         return $this->Transform([ 'gravity' => $gravity ]);
     }
