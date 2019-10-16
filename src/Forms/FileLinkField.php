@@ -78,6 +78,7 @@ class FileLinkField extends CompositeField
                         $field->setValue($value->$subField);
                             break;
                     }
+                });
             } else {
                 // var_dump($value, $record);die;
 // //         $className = static::class;
