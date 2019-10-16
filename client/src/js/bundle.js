@@ -9,6 +9,7 @@ import CloudinaryField from 'components/cloudinary-field';
 jQuery.entwine('ss', $ => {
     $('[data-resource-type]').entwine({
         HolderInstance: null,
+
         onmatch() {
             this._super();
 
@@ -33,6 +34,7 @@ jQuery.entwine('ss', $ => {
                 this.HolderInstance.get(0)
             );
         },
+
         onunmatch() {
             this._super();
 

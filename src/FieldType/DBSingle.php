@@ -240,11 +240,6 @@ abstract class DBSingle extends DBBase
         return $this->getJSONValue('url');
     }
 
-    public function Name()
-    {
-        return $this->getJSONValue('name');
-    }
-
     public function Title()
     {
         return $this->getJSONValue('title');

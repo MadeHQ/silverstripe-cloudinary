@@ -72,7 +72,7 @@ class Resource extends React.Component {
     }
 
     titleFieldPlaceholder() {
-        return this.state.name;
+        return this.state.title || this.state.name;
     }
 
     descriptionFieldLabel() {
@@ -92,7 +92,7 @@ class Resource extends React.Component {
     }
 
     render() {
-        const { title, description, credit } = this.state;
+        const { name, title, description, credit } = this.state;
         const { public_id, url } = this.props;
 
         const thumbnail = this.thumbnailUrl();
@@ -120,7 +120,7 @@ class Resource extends React.Component {
                         <label htmlFor={ `${public_id}_title` } className="cloudinary-field__label sr-only">{ this.titleFieldLabel() }</label>
 
                         <div className="cloudinary-field__input">
-                            <textarea id={ `${public_id}_title` } className="textarea" rows="2" placeholder={ this.titleFieldPlaceholder() } value={ title } onChange={ this.updateTitle } />
+                            <textarea id={ `${public_id}_title` } className="textarea" rows="2" placeholder={ this.titleFieldPlaceholder() } value={ title || name } onChange={ this.updateTitle } />
                         </div>
                     </div>
 

@@ -19,25 +19,26 @@ class CloudinaryField extends React.Component {
 
         const { value, isMultiple } = props;
 
-        let files = value;
+        let resources = value;
 
         try {
-            files = JSON.parse(files);
+            resources = JSON.parse(resources);
 
-            if (!isMultiple && isObject(files)) {
-                files = [files];
-            } else if (!isMultiple && isArray(files)) {
-                files = files.slice(0, 1);
+            if (!isMultiple && isObject(resources)) {
+                resources = [resources];
+            } else if (!isMultiple && isArray(resources)) {
+                resources = resources.slice(0, 1);
             }
         } catch (e) {
-            files = [];
+            resources = [];
         }
 
         this.state = {
             loading: true,
-            files: files,
+            resources: resources,
         };
 
+        this.setupLibrary = this.setupLibrary.bind(this);
         this.showLibrary = this.showLibrary.bind(this);
         this.insertHandler = this.insertHandler.bind(this);
         this.loadResources = this.loadResources.bind(this);
@@ -47,11 +48,10 @@ class CloudinaryField extends React.Component {
         this.processAudio = this.processAudio.bind(this);
         this.processImage = this.processImage.bind(this);
         this.processRaw = this.processRaw.bind(this);
-        this.onChange = this.onChange.bind(this);
         this.updateProperty = this.updateProperty.bind(this);
-        this.renderResources = this.renderResources.bind(this);
+        this.onChange = this.onChange.bind(this);
         this.onRemoveResource = this.onRemoveResource.bind(this);
-        this.setupLibrary = this.setupLibrary.bind(this);
+        this.renderResources = this.renderResources.bind(this);
 
         this.setupLibrary();
     }
@@ -82,7 +82,7 @@ class CloudinaryField extends React.Component {
 
         const options = {
             multiple: !!isMultiple,
-            max_files: maxFiles - this.state.files.length,
+            max_files: maxFiles - this.state.resources.length,
             folder: {
                 resource_type: resourceType,
             },
@@ -109,15 +109,15 @@ class CloudinaryField extends React.Component {
         });
 
         this.loadResources(response).then(resources => {
-            let newFiles = differenceBy(resources, this.state.files, 'public_id');
+            let newFiles = differenceBy(resources, this.state.resources, 'public_id');
 
-            newFiles = concat(this.state.files, newFiles);
+            newFiles = concat(this.state.resources, newFiles);
 
             this.lastResource = last(newFiles);
 
             this.setState({
                 loading: false,
-                files: newFiles,
+                resources: newFiles,
             });
 
             this.onChange(newFiles);
@@ -254,52 +254,52 @@ class CloudinaryField extends React.Component {
         };
     }
 
-    onChange(files) {
-        files = this.props.isMultiple ? files : first(files);
+    onChange(resources) {
+        resources = this.props.isMultiple ? resources : first(resources);
 
         this.props.onChange(
-            JSON.stringify(files)
+            JSON.stringify(resources)
         );
     }
 
-    updateProperty(publicId, property, value) {
-        const files = this.state.files.map(file => {
-            if (file.public_id !== publicId) {
-                return file;
-            }
-
-            file[property] = value;
-
-            return file;
+    onRemoveResource(publicId) {
+        const resources = this.state.resources.filter(resource => {
+            return resource.public_id !== publicId;
         });
 
         this.setState({
-            files: files,
+            resources: resources,
         });
 
-        this.onChange(files);
+        this.onChange(resources);
     }
 
-    onRemoveResource(publicId) {
-        const files = this.state.files.filter(file => {
-            return file.public_id !== publicId;
+    updateProperty(publicId, property, value) {
+        const resources = this.state.resources.map(resource => {
+            if (resource.public_id !== publicId) {
+                return resource;
+            }
+
+            resource[property] = value;
+
+            return resource;
         });
 
         this.setState({
-            files: files,
+            resources: resources,
         });
 
-        this.onChange(files);
+        this.onChange(resources);
     }
 
     renderResources() {
-        return this.state.files.map(file => {
-            const { actual_type } = file;
+        return this.state.resources.map(resource => {
+            const { actual_type } = resource;
 
             if (actual_type === 'video') {
                 return <Video
-                    { ...file }
-                    key={ file.public_id }
+                    { ...resource }
+                    key={ resource.public_id }
                     onChange={ this.updateProperty }
                     onRemoveResource={ this.onRemoveResource }
                 />;
@@ -307,8 +307,8 @@ class CloudinaryField extends React.Component {
 
             if (actual_type === 'audio') {
                 return <Audio
-                    { ...file }
-                    key={ file.public_id }
+                    { ...resource }
+                    key={ resource.public_id }
                     onChange={ this.updateProperty }
                     onRemoveResource={ this.onRemoveResource }
                 />;
@@ -316,16 +316,16 @@ class CloudinaryField extends React.Component {
 
             if (actual_type === 'image') {
                 return <Image
-                    { ...file }
-                    key={ file.public_id }
+                    { ...resource }
+                    key={ resource.public_id }
                     onChange={ this.updateProperty }
                     onRemoveResource={ this.onRemoveResource }
                 />;
             }
 
             return <File
-                { ...file }
-                key={ file.public_id }
+                { ...resource }
+                key={ resource.public_id }
                 onChange={ this.updateProperty }
                 onRemoveResource={ this.onRemoveResource }
             />;
@@ -336,9 +336,9 @@ class CloudinaryField extends React.Component {
         let showButton;
 
         if (this.props.isMultiple) {
-            showButton = this.state.files.length < this.props.maxFiles;
+            showButton = this.state.resources.length < this.props.maxFiles;
         } else {
-            showButton = !this.state.files.length;
+            showButton = !this.state.resources.length;
         }
 
         return (

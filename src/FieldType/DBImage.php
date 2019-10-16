@@ -18,6 +18,14 @@ class DBImage extends DBSingle
 
     public function Size(/* int */ $width, /* int */ $height)
     {
+        if (!$width || !strlen($width)) {
+            throw new BadFunctionCallException('Please provide a valid width value');
+        }
+
+        if (!$height || !strlen($height)) {
+            throw new BadFunctionCallException('Please provide a valid height value');
+        }
+
         return $this->AddTransformations([
             'width' => $width,
             'height' => $height,
@@ -26,16 +34,32 @@ class DBImage extends DBSingle
 
     public function Width(/* int */ $width)
     {
+        if (!$width || !strlen($width)) {
+            throw new BadFunctionCallException('Please provide a valid width value');
+        }
+
         return $this->AddTransformation('width', $width);
     }
 
     public function Height(/* int */ $height)
     {
+        if (!$height || !strlen($height)) {
+            throw new BadFunctionCallException('Please provide a valid height value');
+        }
+
         return $this->AddTransformation('height', $height);
     }
 
     public function ResizeByWidth(/* int */ $width, $crop = 'scale')
     {
+        if (!$width || !strlen($width)) {
+            throw new BadFunctionCallException('Please provide a valid width value');
+        }
+
+        if (!$crop || !strlen($crop)) {
+            throw new BadFunctionCallException('Please provide a valid crop value');
+        }
+
         return $this
             ->RemoveTransformation('height')
             ->AddTransformation('width', $width)
@@ -44,6 +68,14 @@ class DBImage extends DBSingle
 
     public function ResizeByHeight(/* int */ $height, $crop = 'scale')
     {
+        if (!$height || !strlen($height)) {
+            throw new BadFunctionCallException('Please provide a valid height value');
+        }
+
+        if (!$crop || !strlen($crop)) {
+            throw new BadFunctionCallException('Please provide a valid crop value');
+        }
+
         return $this
             ->RemoveTransformation('width')
             ->AddTransformation('height', $height)
@@ -52,28 +84,44 @@ class DBImage extends DBSingle
 
     public function Crop($crop = 'scale')
     {
+        if (!$crop || !strlen($crop)) {
+            throw new BadFunctionCallException('Please provide a valid crop value');
+        }
+
         return $this->AddTransformation('crop', $crop);
     }
 
     public function Gravity($gravity = 'auto')
     {
+        if (!$gravity || !strlen($gravity)) {
+            throw new BadFunctionCallException('Please provide a valid gravity value');
+        }
+
         return $this->AddTransformation('gravity', $gravity);
     }
 
     public function FetchFormat($fetchFormat = 'auto')
     {
+        if (!$fetchFormat || !strlen($fetchFormat)) {
+            throw new BadFunctionCallException('Please provide a valid fetch format');
+        }
+
         return $this->AddTransformation('fetch_format', $fetchFormat);
     }
 
     public function Quality($quality = 'auto')
     {
+        if (!$quality || !strlen($quality)) {
+            throw new BadFunctionCallException('Please provide a valid quality value');
+        }
+
         return $this->AddTransformation('quality', $quality);
     }
 
     public function Radius(...$args)
     {
         if (empty($args)) {
-            throw new BadFunctionCallException('Please provide rounding value(s)');
+            throw new BadFunctionCallException('Please provide valid rounding value(s)');
         }
 
         if (count($args) > 1) {
@@ -91,7 +139,26 @@ class DBImage extends DBSingle
 
     public function Rotate(/* string */ $rotate)
     {
+        if (!$rotate || !strlen($rotate)) {
+            throw new BadFunctionCallException('Please provide a valid rotate value');
+        }
+
         return $this->AddTransformation('rotate', $rotate);
+    }
+
+    public function Background($background)
+    {
+        if (!$background || !strlen($background)) {
+            throw new BadFunctionCallException('Please provide a valid background value');
+        }
+
+        if (strtolower($background) === 'top' && $colour = $this->TopColours()->first()) {
+            $background = 'rgb:' . strtolower(str_replace('#', '', $colour->Colour));
+        } else if (strtolower($background) === 'bottom' && $colour = $this->TopColours()->last()) {
+            $background = 'rgb:' . strtolower(str_replace('#', '', $colour->Colour));
+        }
+
+        return $this->AddTransformation('background', $background);
     }
 
     public function TopColours()
@@ -111,7 +178,7 @@ class DBImage extends DBSingle
             ]));
         }
 
-        return $return;
+        return $return->sort('Prominence', 'desc');
     }
 
     protected function parseTransformations(array &$transformations)
