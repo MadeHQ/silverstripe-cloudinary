@@ -130,7 +130,12 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function getAsURL($filename, $hash, $variant = null, $grant = true)
     {
-        return Cloudinary::cloudinary_url($filename);
+        $file = File::get_one(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => static::getHash($filename, $variant),
+            'FileVariant' => $variant,
+        ]);
+        return $file ? Cloudinary::cloudinary_url($file->PublicID) : false;
     }
 
     /**
