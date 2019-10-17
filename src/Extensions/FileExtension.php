@@ -4,6 +4,7 @@ namespace MadeHQ\Cloudinary\Extensions;
 
 use Cloudinary\Api;
 use MadeHQ\Cloudinary\Storage\CloudinaryStorage;
+use SilverStripe\Assets\Folder;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Flushable;
 use SilverStripe\ORM\Connect\DatabaseException;
@@ -12,24 +13,44 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\Queries\SQLUpdate;
 use SilverStripe\Versioned\Versioned;
 
+/**
+ *
+ */
 class FileExtension extends DataExtension implements Flushable
 {
     use Configurable;
 
+    /**
+     * @inheritdoc
+     */
     private static $db = [
         'PublicID' => 'Varchar(255)',
         'ResourceType' => 'Varchar(25)',
         'RemoteData' => 'Text',
     ];
 
+    /**
+     * @inheritdoc
+     */
     private static $indexes = [
         'PublicID' => [
             'type' => 'unique',
         ],
     ];
 
-    public function updateFromCloudinary($resource)
+    /**
+     * @var boolean
+     */
+    private static $clear_remote_data_on_flush = false;
+
+    /**
+     * @param array $resource
+     * @return void(0)
+     */
+    public function updateFromCloudinary(array $resource)
     {
+        $parentFolder = static::getParentFolderForResouce($resource);
+        $this->owner->Parent = $parentFolder;
         $this->owner->PublicID = $resource['public_id'];
         $this->owner->ResourceType = $resource['resource_type'];
         $filename = preg_replace('/^.*\//', '', $resource['public_id']);
@@ -47,11 +68,32 @@ class FileExtension extends DataExtension implements Flushable
         }
     }
 
-    public function getRemoteDataProperty($prop)
+    /**
+     * @param array $resource
+     * @return Folder
+     */
+    private static function getParentFolderForResouce(array $resource)
+    {
+        $publicId = $resource['public_id'];
+        $segments = explode('/', $publicId);
+        array_pop($segments);
+        $folderPath = implode('/', $segments);
+        return Folder::find_or_make($folderPath);
+    }
+
+    /**
+     * @param string $prop
+     * @return Mixed
+     */
+    public function getRemoteDataProperty(string $prop)
     {
         return $this->owner->CloudinaryData[$prop];
     }
 
+    /**
+     * @param string $publicId
+     * @return DataObject
+     */
     public function getOneByPublicId($publicId)
     {
         return DataObject::get_one($this->owner->ClassName, [
@@ -59,6 +101,10 @@ class FileExtension extends DataExtension implements Flushable
         ]);
     }
 
+    /**
+     * Gets the options to send to the cloudinary API
+     * @return array
+     */
     public function getApiResourceOptions()
     {
         $opts = [
@@ -93,6 +139,9 @@ class FileExtension extends DataExtension implements Flushable
         return $opts;
     }
 
+    /**
+     * @return array
+     */
     public function getCloudinaryData()
     {
         if (!$this->owner->RemoteData) {
@@ -120,21 +169,26 @@ class FileExtension extends DataExtension implements Flushable
         return json_decode($this->owner->RemoteData, true);
     }
 
+    /**
+     * @return void(0)
+     */
     public static function flush()
     {
-        try {
-            SQLUpdate::create('File')->addAssignments([
-                'RemoteData' => NULL,
-            ])->execute();
-        } catch (DatabaseException $e) {
-            // Do nothing as it's because the table doesn't exist
-        }
-        try {
-            SQLUpdate::create('File_Live')->addAssignments([
-                'RemoteData' => NULL,
-            ])->execute();
-        } catch (DatabaseException $e) {
-            // Do nothing as it's because the table doesn't exist
+        if ($this->owner->config()->get('clear_remote_data_on_flush')) {
+            try {
+                SQLUpdate::create('File')->addAssignments([
+                    'RemoteData' => NULL,
+                ])->execute();
+            } catch (DatabaseException $e) {
+                // Do nothing as it's because the table doesn't exist
+            }
+            try {
+                SQLUpdate::create('File_Live')->addAssignments([
+                    'RemoteData' => NULL,
+                ])->execute();
+            } catch (DatabaseException $e) {
+                // Do nothing as it's because the table doesn't exist
+            }
         }
     }
 }
