@@ -87,7 +87,13 @@ class SyncTask extends BuildTask
         if (!$file) {
             switch ($resource['resource_type']) {
                 case 'image':
-                    $file = Image::create();
+                    switch ($resource['format']) {
+                        case 'pdf':
+                            $file = File::create();
+                            break;
+                        default:
+                            $file = Image::create();
+                    }
                     break;
                 default:
                     $file = File::create();

@@ -29,14 +29,3 @@ SilverStripe\Assets\File:
     - svg
   extensions:
     - MadeHQ\Cloudinary\Extensions\FileExtension
-
----
-Name: silverstripecloudinary-assetadmin-campaigns
-After:
-  - '#assetadmincampaigns'
-Only:
-  moduleexists: 'silverstripe/campaign-admin'
----
-SilverStripe\Core\Injector\Injector:
-    SilverStripe\AssetAdmin\Forms\FileFormFactory:
-        class: MadeHQ\Cloudinary\Forms\FileFormFactory
