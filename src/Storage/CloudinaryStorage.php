@@ -2,10 +2,10 @@
 
 namespace MadeHQ\Cloudinary\Storage;
 
-use MadeHQ\Cloudinary\Model\File;
 use SilverStripe\Assets\Storage;
 use Cloudinary;
 use Cloudinary\Uploader;
+use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
 
@@ -31,6 +31,11 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
                 // self::CONFLICT_USE_EXISTING
             )
         );
+    }
+
+    public static function getHash($filename, $variant)
+    {
+        return base64_encode(md5($filename, $variant));
     }
 
     /**
@@ -133,7 +138,17 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function getMetadata($filename, $hash, $variant = null)
     {
-        return null;
+        $file = File::get_one(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => static::getHash($filename, $variant),
+            'FileVariant' => $variant,
+        ]);
+        if (!$file) {
+            return [];
+        }
+        return [
+            'size' => $file->getRemoteDataProperty('bytes'),
+        ];
     }
 
     /**
@@ -158,7 +173,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     public function exists($filename, $hash, $variant = null)
     {
         if (!\headers_sent()) {
-            header(sprintf('Checking-%s: %s', $hash, $filename));
+            @header(sprintf('Checking-%s: %s', $hash, $filename));
         }
         return true;
     }

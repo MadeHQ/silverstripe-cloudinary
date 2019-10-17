@@ -114,11 +114,6 @@ class Image extends SilverStripeImage
         return $this->Transform([ 'width' => $width, 'crop' => 'fit' ], 0, ['height']);
     }
 
-    public function Size($width, $height)
-    {
-        return $this->Transform([ 'width' => $width, 'height' => $height ]);
-    }
-
     /**
      * {@inheritdoc}
      */

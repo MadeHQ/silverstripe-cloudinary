@@ -3,6 +3,7 @@
 namespace MadeHQ\Cloudinary\Extensions;
 
 use Cloudinary\Api;
+use MadeHQ\Cloudinary\Storage\CloudinaryStorage;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Flushable;
 use SilverStripe\ORM\Connect\DatabaseException;
@@ -37,6 +38,8 @@ class FileExtension extends DataExtension implements Flushable
         }
         $this->owner->Name = $this->owner->File->Filename = $filename;
         $this->owner->Title = preg_replace('/\..*$/', '', $filename);
+        $this->owner->File->Variant = $resource['version'];
+        $this->owner->File->Hash = CloudinaryStorage::getHash($filename, $this->owner->File->Variant);
         $this->owner->write();
 
         if ($resource['access_mode'] === 'public') {
