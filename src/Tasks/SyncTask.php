@@ -43,21 +43,22 @@ class SyncTask extends BuildTask
      */
     public function run($request)
     {
-        ini_set('max_execution_time', 300); //300 seconds = 5 minutes
+        ini_set('max_execution_time', 300); // 300 seconds = 5 minutes
+        $count = 0;
 
         foreach(['image', 'raw', 'video'] as $resourceType) {
-            $count = 0;
             $data = $this->getPageFromCloudinary($resourceType, null);
             while ($data && count($data['resources'])) {
                 array_walk($data['resources'], array($this, 'addOrUpdateResource'));
                 $count+= count($data['resources']);
+
                 $data = (array_key_exists('next_cursor', $data)) ?
                     $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
                     false;
             }
         }
 
-        echo sprintf('Sync Complete: %d files synced stating %s', $count, static::config()->get('whenToStartSync'));
+        echo sprintf('Sync Complete: %d files synced starting %s', $count, static::config()->get('api_start_at'));
 
         return;
     }

@@ -21,24 +21,6 @@ class FileExtension extends DataExtension implements Flushable
     use Configurable;
 
     /**
-     * @inheritdoc
-     */
-    private static $db = [
-        'PublicID' => 'Varchar(255)',
-        'ResourceType' => 'Varchar(25)',
-        'RemoteData' => 'Text',
-    ];
-
-    /**
-     * @inheritdoc
-     */
-    private static $indexes = [
-        'PublicID' => [
-            'type' => 'unique',
-        ],
-    ];
-
-    /**
      * @var boolean
      */
     private static $clear_remote_data_on_flush = false;
@@ -51,14 +33,15 @@ class FileExtension extends DataExtension implements Flushable
     {
         $parentFolder = static::getParentFolderForResouce($resource);
         $this->owner->Parent = $parentFolder;
-        $this->owner->PublicID = $resource['public_id'];
-        $this->owner->ResourceType = $resource['resource_type'];
         $filename = preg_replace('/^.*\//', '', $resource['public_id']);
         if (strpos('.', $filename) === false && array_key_exists('format', $resource)) {
             $filename.= '.' . $resource['format'];
         }
         $this->owner->Name = $this->owner->File->Filename = $filename;
         $this->owner->Title = preg_replace('/\..*$/', '', $filename);
+
+        $this->owner->File->PublicID = $resource['public_id'];
+        $this->owner->File->ResourceType = $resource['resource_type'];
         $this->owner->File->Variant = $resource['version'];
         $this->owner->File->Hash = CloudinaryStorage::getHash($filename, $this->owner->File->Variant);
         $this->owner->write();
@@ -87,7 +70,7 @@ class FileExtension extends DataExtension implements Flushable
      */
     public function getRemoteDataProperty(string $prop)
     {
-        return $this->owner->CloudinaryData[$prop];
+        return @$this->owner->CloudinaryData[$prop];
     }
 
     /**
@@ -97,7 +80,7 @@ class FileExtension extends DataExtension implements Flushable
     public function getOneByPublicId($publicId)
     {
         return DataObject::get_one($this->owner->ClassName, [
-            'PublicID' => $publicId
+            'FilePublicID' => $publicId
         ]);
     }
 
@@ -108,7 +91,7 @@ class FileExtension extends DataExtension implements Flushable
     public function getApiResourceOptions()
     {
         $opts = [
-            'resource_type' => $this->owner->ResourceType,
+            'resource_type' => $this->owner->File->ResourceType,
             'max_results' => 500,
         ];
         if (!is_null($this->owner->config()->get('api_get_colors'))) {
@@ -144,29 +127,30 @@ class FileExtension extends DataExtension implements Flushable
      */
     public function getCloudinaryData()
     {
-        if (!$this->owner->RemoteData) {
+        return [];
+        if (!$this->owner->File->RemoteData) {
             $api = new Api();
             $opts = $this->getApiResourceOptions();
-            $data = $api->resource($this->owner->PublicID, $opts);
+            $data = $api->resource($this->owner->File->PublicID, $opts);
             $data = $data->getArrayCopy();
             while (array_key_exists('derived_next_cursor', $data) && ($data['derived_next_cursor'])) {
                 $opts['derived_next_cursor'] = $data['derived_next_cursor'];
-                $newData = $api->resource($this->owner->PublicID, $opts);
+                $newData = $api->resource($this->owner->File->PublicID, $opts);
                 $data['derived'] = array_merge($data['derived'], $newData->offsetGet('derived'));
                 $data['derived_next_cursor'] = @$newData->offsetGet('derived_next_cursor');
             }
 
-            $this->owner->RemoteData = json_encode($data);
+            $this->owner->File->RemoteData = json_encode($data);
             SQLUpdate::create('File')
-                ->addWhere(['PublicID = ?' => $this->owner->PublicID])
-                ->addAssignments(['RemoteData' => $this->owner->RemoteData])
+                ->addWhere(['FilePublicID = ?' => $this->owner->File->PublicID])
+                ->addAssignments(['FileRemoteData' => $this->owner->File->RemoteData])
                 ->execute();
             SQLUpdate::create('File_Live')
-                ->addWhere(['PublicID = ?' => $this->owner->PublicID])
-                ->addAssignments(['RemoteData' => $this->owner->RemoteData])
+                ->addWhere(['FilePublicID = ?' => $this->owner->File->PublicID])
+                ->addAssignments(['FileRemoteData' => $this->owner->File->RemoteData])
                 ->execute();
         }
-        return json_decode($this->owner->RemoteData, true);
+        return json_decode($this->owner->File->RemoteData, true);
     }
 
     /**
@@ -174,17 +158,17 @@ class FileExtension extends DataExtension implements Flushable
      */
     public static function flush()
     {
-        if ($this->owner->config()->get('clear_remote_data_on_flush')) {
+        if (static::config()->get('clear_remote_data_on_flush')) {
             try {
                 SQLUpdate::create('File')->addAssignments([
-                    'RemoteData' => NULL,
+                    'FileRemoteData' => NULL,
                 ])->execute();
             } catch (DatabaseException $e) {
                 // Do nothing as it's because the table doesn't exist
             }
             try {
                 SQLUpdate::create('File_Live')->addAssignments([
-                    'RemoteData' => NULL,
+                    'FileRemoteData' => NULL,
                 ])->execute();
             } catch (DatabaseException $e) {
                 // Do nothing as it's because the table doesn't exist

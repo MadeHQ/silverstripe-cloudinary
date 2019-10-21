@@ -29,3 +29,9 @@ SilverStripe\Assets\File:
     - svg
   extensions:
     - MadeHQ\Cloudinary\Extensions\FileExtension
+
+SilverStripe\Assets\Storage\DBFile:
+  composite_db:
+    PublicID: Varchar(255)
+    ResourceType: Varchar(25)
+    RemoteData: Text

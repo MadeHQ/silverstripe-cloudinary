@@ -311,7 +311,7 @@ class Image extends SilverStripeImage
      */
     public function forTemplate()
     {
-        if (!$this->PublicID) {
+        if (!$this->File->PublicID) {
             return '';
         }
         $transformations = [];
@@ -351,7 +351,7 @@ class Image extends SilverStripeImage
         $options['transformation'] = $transformations;
 
         // Determine name
-        $fileName = $this->Format ? $this->PublicID . '.' . $this->Format : $this->PublicID;
+        $fileName = $this->Format ? $this->File->PublicID . '.' . $this->Format : $this->File->PublicID;
 
         // Generate image URL using options
         return \Cloudinary::cloudinary_url($fileName, $options);

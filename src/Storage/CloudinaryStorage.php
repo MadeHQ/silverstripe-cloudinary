@@ -84,6 +84,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         $options = [
             'folder' => implode('/', $parts),
             'resource_type' => 'auto',
+            'public_id' => $pathParts['filename'],
         ];
         if ($preset = static::config()->get('upload_preset')) {
             $options['upload_preset'] = $preset;
@@ -92,12 +93,14 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         $response = Uploader::upload($tmpFile, $options);
 
         return [
-            'Filename' => $response['public_id'],
+            'Filename' => $justFileName,
             'PublicID' => $response['public_id'],
             'Format' => isset($response['format']) ? $response['format'] : $extension,
             'SecureURL' => $response['secure_url'],
             'ResourceType' => $response['resource_type'],
             'Type' => $response['type'],
+            'Variant' => $response['version'],
+            'Hash' => static::getHash($justFileName, $response['version']),
         ];
     }
 
@@ -135,7 +138,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
             'FileHash' => static::getHash($filename, $variant),
             'FileVariant' => $variant,
         ]);
-        return $file ? Cloudinary::cloudinary_url($file->PublicID) : false;
+        return $file ? Cloudinary::cloudinary_url($file->File->PublicID) : false;
     }
 
     /**

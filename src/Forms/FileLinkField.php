@@ -59,7 +59,7 @@ class FileLinkField extends CompositeField
         $fields = $this->FieldList();
         foreach ($fields as $field) {
             $subField = preg_replace('/.+\[(\w+)]/', '$1', $field->Name);
-            $field->setValue($value[$subField]);
+            $field->setValue(array_key_exists($subField, $value) ? $value[$subField] : null);
         }
     }
 
