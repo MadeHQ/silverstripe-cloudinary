@@ -49,7 +49,7 @@ class FileLinkField extends CompositeField
             }
         });
         $this->extend('saveIntoBeforeWrite', $record, $relatedRecord);
-        $relatedRecord->write(true);
+        $relatedRecord->write();
         $record->{$this->Name . 'ID'} = $relatedRecord->ID;
         $this->extend('saveIntoAfterWrite', $record, $relatedRecord);
     }
