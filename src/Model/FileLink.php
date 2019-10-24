@@ -66,12 +66,8 @@ class FileLink extends DataObject
         }
     }
 
-    public function test()
+    public function exists()
     {
-        var_dump(
-            $this->getFailover()->options,
-            $this->getFailover()->getOptions(),
-            $this->getFailover()->forTemplate()
-        );
+        return parent::exists() && $this->File()->exists();
     }
 }
