@@ -3,6 +3,7 @@
 namespace MadeHQ\Cloudinary\Model;
 
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\LiteralField;
 
 class ImageLink extends FileLink
 {
@@ -31,6 +32,11 @@ class ImageLink extends FileLink
 
     private static $defaults = [
         'Gravity' => 'auto',
+    ];
+
+    private static $summary_fields = [
+        'File.Title' => 'Title',
+        'SummaryPreview' => 'Preview',
     ];
 
     /**
@@ -64,5 +70,15 @@ class ImageLink extends FileLink
                 $this->setFailover($this->File());
             }
         }
+    }
+
+    /**
+     * @return Mixed
+     */
+    public function getSummaryPreview()
+    {
+        return $this->File()->exists() ?
+            LiteralField::create('SummaryPreview', sprintf('<img style="max-width: 200px; max-height: 200px;" src="%s" />', $this->File()->PreviewLink())) :
+            '';
     }
 }
