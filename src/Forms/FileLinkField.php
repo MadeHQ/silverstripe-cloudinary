@@ -6,14 +6,24 @@ use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectInterface;
+use SilverStripe\View\Requirements;
 
 class FileLinkField extends CompositeField
 {
+    protected $fileTitle;
+
     public function __construct($name, $title = null)
     {
+        Requirements::css('mademedia/silverstripe-cloudinary:client/dist/style.css');
         parent::__construct([]);
         $this->setName($name);
-        $this->setTitle($title);
+        $this->addExtraClass('form__file-link');
+
+        if ($title === null) {
+            $this->fileTitle = self::name_to_label($name);
+        } else {
+            $this->fileTitle = $title;
+        }
     }
 
     public function hasData()
@@ -32,6 +42,9 @@ class FileLinkField extends CompositeField
         $this->children->each(function ($field) use ($form, $fieldName) {
             $field->setForm($form);
             $field->setName(sprintf('%s[%s]', $fieldName, $field->getName()));
+            if ($field instanceOf UploadField) {
+                $field->setTitle($this->fileTitle);
+            }
         });
         return $this->children;
     }
