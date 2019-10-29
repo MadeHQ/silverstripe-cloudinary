@@ -26,6 +26,12 @@ class FileLinkField extends CompositeField
         }
     }
 
+    public function setTitle($title)
+    {
+        $this->fileTitle = $title;
+        return $this;
+    }
+
     public function hasData()
     {
         return true;
