@@ -58,7 +58,9 @@ class ImageLink extends FileLink
 
     public function setGravity($value)
     {
-        return $this->dbObject('Gravity')->setValue($value);
+        $this->record['Gravity'] = $value;
+        $this->dbObject('Gravity')->setValue($value);
+        return $this;
     }
 
     public function setFileToFailover()

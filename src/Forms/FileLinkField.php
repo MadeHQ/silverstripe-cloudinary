@@ -94,7 +94,7 @@ class FileLinkField extends CompositeField
                             $field->setValue($value->$subField());
                             break;
                         default:
-                        $field->setValue($value->$subField);
+                            $field->setValue($value->$subField);
                             break;
                     }
                 });
