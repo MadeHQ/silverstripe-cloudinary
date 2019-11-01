@@ -23,7 +23,7 @@ class ImageLink extends FileLink
      * {@inheritdoc}
      */
     private static $db = [
-        'Gravity' => 'Varchar(50)',
+        'Focus' => 'Varchar(50)',
     ];
 
     private static $has_one = [
@@ -31,7 +31,7 @@ class ImageLink extends FileLink
     ];
 
     private static $defaults = [
-        'Gravity' => 'auto',
+        'Focus' => 'auto',
     ];
 
     private static $summary_fields = [
@@ -46,28 +46,16 @@ class ImageLink extends FileLink
     {
         $fields = parent::getCMSFields();
 
-        $fields->push(DropdownField::create('Gravity', 'Gravity', Image::config()->get('valid_gravities')));
+        $fields->push(DropdownField::create('Focus', 'Focus', Image::config()->get('valid_gravities')));
 
         return $fields;
-    }
-
-    public function getGravity()
-    {
-        return $this->dbObject('Gravity')->getValue();
-    }
-
-    public function setGravity($value)
-    {
-        $this->record['Gravity'] = $value;
-        $this->dbObject('Gravity')->setValue($value);
-        return $this;
     }
 
     public function setFileToFailover()
     {
         if ($this->File()->exists()) {
-            if ($this->Gravity) {
-                $this->setFailover($this->File()->setGravity($this->Gravity));
+            if ($this->Focus) {
+                $this->setFailover($this->File()->setGravity($this->Focus));
             } else {
                 $this->setFailover($this->File());
             }

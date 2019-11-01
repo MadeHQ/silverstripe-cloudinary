@@ -98,16 +98,6 @@ class FileLinkField extends CompositeField
                             break;
                     }
                 });
-            } else {
-                // var_dump($value, $record);die;
-// //         $className = static::class;
-// var_dump(get_class($value), $this instanceof FileLinkField, $this instanceof FormField, $this instanceof CompositeField);
-// var_dump($value instanceof FileLinkField, $value instanceof FormField, $value instanceof CompositeField);
-// var_dump($value);
-// // var_dump($className);
-//                 if ($value instanceof FormField) {
-//                     var_dump($value->FieldList(), $record, $this);die;
-//                 }
             }
         }
     }
