@@ -2,12 +2,16 @@
 
 namespace MadeHQ\Cloudinary\Tasks;
 
+use Cloudinary;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 
 use Cloudinary\Api;
 use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
+use SilverStripe\Assets\Folder;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\DataObject;
 
 class SyncTask extends BuildTask
 {
@@ -16,9 +20,15 @@ class SyncTask extends BuildTask
     /**
      * How long into the past to start syncing
      * See (http://php.net/manual/en/function.strtotime.php) for details
-     * @var String
+     * @var Mixed
      */
-    private static $api_start_at = '-4 week';
+    private static $api_start_at = false;
+
+    /**
+     * Will make a HEAD request to check that all images (not just added) are still in Cloudinary
+     * @param Boolean
+     */
+    private static $test_existing_files_still_exist = true;
 
     /**
      * How many results to return with each request
@@ -37,6 +47,8 @@ class SyncTask extends BuildTask
      * @inheritdoc
      */
     protected $description = 'Fully syncronizes DB files with Cloudinary using the API. This is used if Cloudinary is unable to communicate with your servers (due to Firewall etc.). If possible it\'s better to use Cloudinarys Notification functionality';
+
+    private $processedPublicIDs = [];
 
     /**
      * @inheritdoc
@@ -57,10 +69,63 @@ class SyncTask extends BuildTask
                     false;
             }
         }
+        $timeInPastToSync = static::config()->get('api_start_at');
+        if ($timeInPastToSync) {
+            echo sprintf('Sync Complete: %d files synced starting %s', $count, $timeInPastToSync);
+        } else {
+            echo sprintf('Sync Complete: %d files synced', $count);
+        }
 
-        echo sprintf('Sync Complete: %d files synced starting %s', $count, static::config()->get('api_start_at'));
+        $this->doDeleteFilesMissingOnCloudinary();
 
         return;
+    }
+
+    /**
+     * Checks if the files exist (by making a HEAD request to cloudinary)
+     * If it returns with a 404 status code then it will be deleted from DB
+     */
+    private function doDeleteFilesMissingOnCloudinary()
+    {
+        if (!static::config()->get('test_existing_files_still_exist')) {
+            return;
+        }
+        $result = File::get(File::class);
+        if (!empty($this->processedPublicIDs)) {
+            $result = $result->filter([
+                'FilePublicID:not' => $this->processedPublicIDs,
+                'ClassName:not' => Folder::class,   // Don't want to test folders
+            ]);
+        }
+
+        foreach($result As $file) {
+            $opts = [
+                'resource_type' => $file->File->ResourceType,
+            ];
+            $url = Cloudinary::cloudinary_url($file->File->PublicID, $opts);
+            if ($url) {
+                $restResponse = static::curl_head_info($url);
+                if ($restResponse['http_code'] === 404) {
+                    // Not found on Cloudinary
+                    $file->doUnpublish();
+                    $file->doArchive();
+                }
+            } else {
+                // No URL
+                $file->doUnpublish();
+                $file->doArchive();
+            }
+        }
+    }
+
+    private static function curl_head_info($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
+        return $info;
     }
 
     private function getPageFromCloudinary($resourceType, $cursor = null)
@@ -84,6 +149,7 @@ class SyncTask extends BuildTask
 
     private function addOrUpdateResource($resource)
     {
+        array_push($this->processedPublicIDs, $resource['public_id']);
         $file = File::singleton()->getOneByPublicId($resource['public_id']);
         if (!$file) {
             switch ($resource['resource_type']) {
