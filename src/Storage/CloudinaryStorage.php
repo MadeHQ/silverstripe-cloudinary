@@ -4,16 +4,23 @@ namespace MadeHQ\Cloudinary\Storage;
 
 use SilverStripe\Assets\Storage;
 use Cloudinary;
+use Cloudinary\Api;
 use Cloudinary\Uploader;
 use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Versioned\Versioned;
 
 class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 {
     use Configurable;
 
     private static $upload_preset;
+
+    /**
+     * @var Api
+     */
+    protected static $api;
 
     /**
      * @inheritdoc
@@ -191,7 +198,11 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function delete($filename, $hash)
     {
-        // intentionally empty
+        $file = static::get_latest_file_by_filename_and_hash($filename, $hash);
+        $opts = [
+            'resource_type' => $file->File->ResourceType,
+        ];
+        static::get_api()->delete_resources($file->File->PublicID, $opts);
     }
 
     /**
@@ -249,5 +260,27 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     public function canView($filename, $hash)
     {
         // intentionally empty
+    }
+
+    /**
+     * @return Api
+     */
+    protected function get_api()
+    {
+        if (!static::$api) {
+            static::$api = new Api();
+        }
+        return static::$api;
+    }
+
+    /**
+     * @return File
+     */
+    protected function get_latest_file_by_filename_and_hash($filename, $hash)
+    {
+        return Versioned::get_including_deleted(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => $hash,
+        ])->First();
     }
 }
