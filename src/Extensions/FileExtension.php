@@ -127,7 +127,6 @@ class FileExtension extends DataExtension implements Flushable
      */
     public function getCloudinaryData()
     {
-        return [];
         if (!$this->owner->File->RemoteData) {
             $api = new Api();
             $opts = $this->getApiResourceOptions();
