@@ -10,8 +10,6 @@ use Cloudinary\Api;
 use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\DataObject;
 
 class SyncTask extends BuildTask
 {
