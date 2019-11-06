@@ -23,12 +23,14 @@ putenv('CLOUDINARY_URL=cloudinary://<API Key>:<API Secret>@<Cloud name>');
 ```php
 <?php
 
-use MadeHQ\Cloudinary\Model\FileLink;
 use MadeHQ\Cloudinary\Model\ImageLink;
+use SilverStripe\Assets\File;
+use MadeHQ\Cloudinary\Model\Image;
 
 private static $has_one = [
-    '<FileVariableName>' => FileLink::class,
-    '<ImageVariableName>' => ImageLink::class,
+    '<LinkedImageVariableName>' => ImageLink::class,
+    '<FileVariableName>' => File::class,
+    '<ImageVariableName>' => Image::class,
 ];
 ```
 
@@ -37,8 +39,8 @@ private static $has_one = [
 ```php
 <?php
 
-use MadeHQ\Cloudinary\Forms\UploadImageField;
-use MadeHQ\Cloudinary\Forms\UploadFileField;
+use MadeHQ\Cloudinary\Forms\FileLinkField;
+use SilverStripe\AssetAdmin\Forms\UploadField;
 
 public function getCMSFields()
 {
@@ -46,8 +48,9 @@ public function getCMSFields()
     $fields->addFieldsToTab(
         'Root.Media',
         [
-            UploadFileField::create('FileVariableName'),
-            UploadImageField::create('ImageVariableName'),
+            UploadField::create('<FileVariableName>'),
+            UploadField::create('<ImageVariableName>'),
+            FileLinkField::create('<LinkedImageVariableName>'),
         ]
     );
     return $fields;
@@ -56,46 +59,8 @@ public function getCMSFields()
 
 ### Output in template
 
-#### Files
+All standard SS calls for cropping etc. are supported so out of the box you gain access to a CDN
 
-Adding files to SilverStripe templates
+Additional functionality includes the ability to add extensions for `MadeHQ\Cloudinary\Model\Image` class that call `::Transform()` giving you full access to cloudinary's image manipulation functionality
 
-```ss
-<%-- File URL --%>
-$FileVariableName.URL
-
-<%-- File Title --%>
-$FileVariableName.Title
-```
-
-#### Images
-
-Adding images to SilverStripe templates
-
-```ss
-<%-- Original Image URL --%>
-$ImageVariableName.SecureURL
-
-<%-- Original Image Credit --%>
-$ImageVariableName.Credit
-
-<%-- Original Image Caption --%>
-$ImageVariableName.Caption
-
-<%-- Original Image Gravity --%>
-$ImageVariableName.Gravity
-
-<%-- Original Image at a specific size fill will default to "fill" --%>
-$ImageVariableName.URL(100, 200)
-
-<%-- Original Image at a specific size with a specific format --%>
-$ImageVariableName.URL(100, 200, 'fill', 'png')
-```
-
-## Development
-
-JS Amends are done in `client\src\js` and `client\src\styles`
-
-After changes you can run `yarn build` or during development use `yarn watch`
-
-Also required for development is `yarn`
+**NOTE**: The `ImageLink` class is pre-defined so that users are able to specify what part of the image they wish to focus on when cropping
