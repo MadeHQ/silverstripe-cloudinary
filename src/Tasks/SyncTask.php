@@ -99,6 +99,7 @@ class SyncTask extends BuildTask
         foreach($result As $file) {
             $opts = [
                 'resource_type' => $file->File->ResourceType,
+                'version' => $file->File->Variant,
             ];
             $url = Cloudinary::cloudinary_url($file->File->PublicID, $opts);
             if ($url) {

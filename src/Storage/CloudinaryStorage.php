@@ -218,7 +218,22 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function copy($filename, $hash, $newName)
     {
-        // intentionally empty
+        $file = File::get_one(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => $hash,
+        ]);
+        if ($file) {
+            if ($newName !== $file->File->PublicID && $file->File->PublicID != '') {
+                // Don't want to start appending extensions to the PublicID :O
+                $newName = preg_replace('/\.\w+$/', '', $newName);
+            }
+            if ($file->File->PublicID !== $newName) {
+                $uploadResult = Uploader::rename($file->File->PublicID, $newName);
+                $file->File->PublicID = $uploadResult['public_id'];
+                $file->File->Variant = $uploadResult['version'];
+                $file->write();
+            }
+        }
     }
 
     /**
@@ -259,13 +274,13 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function canView($filename, $hash)
     {
-        // intentionally empty
+var_dump(__METHOD__, $filename, $hash);die;
     }
 
     /**
      * @return Api
      */
-    protected function get_api()
+    protected static function get_api()
     {
         if (!static::$api) {
             static::$api = new Api();
