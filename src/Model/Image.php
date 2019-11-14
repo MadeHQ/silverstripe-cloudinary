@@ -301,11 +301,6 @@ class Image extends SilverStripeImage
         return $clone;
     }
 
-    public function getURL($grant = true)
-    {
-        return $this->forTemplate();
-    }
-
     /**
      * @return string
      */
