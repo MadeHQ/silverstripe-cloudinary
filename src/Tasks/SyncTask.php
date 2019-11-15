@@ -7,6 +7,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 
 use Cloudinary\Api;
+use Cloudinary\Error;
 use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
@@ -165,10 +166,15 @@ class SyncTask extends BuildTask
                     $file = File::create();
             }
         }
-
-        $file->updateFromCloudinary($resource);
-        if (!$file->write()) {
-            var_dump(sprintf('Error saving: %s', $resource['public_id']), $resource);
+        try {
+            $file->updateFromCloudinary($resource);
+            if (!$file->write()) {
+                var_dump(sprintf('Error saving: %s', $resource['public_id']), $resource);
+            }
+        } catch (Error $e) {
+            if ($e->getCode() === 404) {
+                $file->delete();
+            }
         }
         return $file;
     }
