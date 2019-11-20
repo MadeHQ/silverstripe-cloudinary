@@ -11,6 +11,28 @@ class Video extends Image
     private static $table_name = 'CloudinaryVideo';
 
     /**
+     * These are basically defaults
+     * @var array
+     */
+    protected $options = [
+        'secure' => true,
+        'resource_type' => 'video',
+        'transformation' => [
+            [
+                'quality' => 'auto',
+            ],
+        ],
+    ];
+
+    /**
+     * @inheritdoc
+     */
+    public function Link()
+    {
+        return $this->forTemplate();
+    }
+
+    /**
      * @inheritdoc
      */
     public function PreviewLink($action = null)
