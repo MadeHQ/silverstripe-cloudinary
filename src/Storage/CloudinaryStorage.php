@@ -15,7 +15,13 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 {
     use Configurable;
 
-    private static $upload_preset;
+    /**
+     * See (https://cloudinary.com/documentation/upload_images) for a list of options for uploading
+     * @var array
+     */
+    private static $default_options = [
+        'resource_type' => 'auto',
+    ];
 
     /**
      * @var Api
@@ -88,14 +94,9 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
             throw new \Exception('Could not copy uploaded file to ' . $tmpFile);
         }
 
-        $options = [
-            'folder' => implode('/', $parts),
-            'resource_type' => 'auto',
-            'public_id' => $pathParts['filename'],
-        ];
-        if ($preset = static::config()->get('upload_preset')) {
-            $options['upload_preset'] = $preset;
-        }
+        $options = static::config()->get('default_options');
+        $options['folder'] = implode('/', $parts);
+        $options['public_id'] = $pathParts['filename'];
 
         $response = Uploader::upload($tmpFile, $options);
 
