@@ -238,7 +238,7 @@ trait CloudinaryFileTrait
         }
 
         $dataObject = DataObject::get_one(File::class, [
-            'PublicID' => $publicID
+            '"File"."PublicID"' => $publicID
         ]);
 
         if ($dataObject && $dataObject->exists() && $dataObject->RemoteData && !$forceFromCloudinary) {
