@@ -8,6 +8,9 @@ use SilverStripe\Forms\TextField;
 
 class UploadImageField extends UploadFileField
 {
+    /** @var boolean */
+    private $multiUpload;
+
     /**
      * @var array
      * @config
@@ -68,4 +71,18 @@ class UploadImageField extends UploadFileField
 
         $this->removeField('Description');
     }
+
+
+    /**
+     * Set upload type to multiple or single
+     *
+     * @param bool $bool True for multiple, false for single
+     * @return $this
+     */
+    public function setIsMultiUpload($bool)
+    {
+        $this->multiUpload = $bool;
+        return $this;
+    }
+
 }
