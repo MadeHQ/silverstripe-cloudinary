@@ -3,13 +3,12 @@
 namespace MadeHQ\Cloudinary\Model;
 
 use Cloudinary\Api;
-use SilverStripe\Assets\File As BaseFile;
-use SilverStripe\Core\Flushable;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\ORM\Queries\SQLUpdate;
-use SilverStripe\ORM\DB;
-
 use MadeHQ\Cloudinary\Traits\CloudinaryFileTrait;
+use SilverStripe\Assets\File as BaseFile;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Flushable;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\Queries\SQLUpdate;
 
 class File extends BaseFile implements Flushable
 {
@@ -95,7 +94,7 @@ class File extends BaseFile implements Flushable
             DB::get_schema()->renameField($tableName . '_Versions', 'PublicID', '_obsolete_PublicID');
         }
     }
-    
+
     public function requireTable()
     {
         /*
@@ -104,7 +103,7 @@ class File extends BaseFile implements Flushable
         has no way of getting at the base class, so it can no longer build it, so any changes to that class do not show up,
         and so we get db errors, this method fixes that by manually finding and building the base class
 
-        In the future, if we need to extend an object, use an Extension, or if we MUST create a new class to replace it, 
+        In the future, if we need to extend an object, use an Extension, or if we MUST create a new class to replace it,
         do NOT have it extend the original class
         */
 

@@ -2,16 +2,13 @@
 
 namespace MadeHQ\Cloudinary\Traits;
 
-use SilverStripe\Assets\Folder;
-use SilverStripe\Versioned\Versioned;
-
-use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\FieldType\DBDatetime;
-
 use Cloudinary\Api;
 use Cloudinary\Api\NotFound;
-
 use MadeHQ\Cloudinary\Model\File;
+use SilverStripe\Assets\Folder;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBDatetime;
+use SilverStripe\Versioned\Versioned;
 
 /**
  *
@@ -241,7 +238,7 @@ trait CloudinaryFileTrait
         }
 
         $dataObject = DataObject::get_one(File::class, [
-            'PublicID' => $publicID
+            '"File"."PublicID"' => $publicID
         ]);
 
         if ($dataObject && $dataObject->exists() && $dataObject->RemoteData && !$forceFromCloudinary) {

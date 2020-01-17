@@ -3,29 +3,18 @@
 namespace MadeHQ\Cloudinary\Forms;
 
 use MadeHQ\Cloudinary\Model\FileLink;
-
 use SilverStripe\AssetAdmin\Controller\AssetAdmin;
 use SilverStripe\AssetAdmin\Forms\UploadField;
 use SilverStripe\Assets\Upload_Validator;
-
+use SilverStripe\Control\{HTTPRequest, HTTPResponse};
 use SilverStripe\Core\Injector\Injector;
-
-use SilverStripe\ORM\SS_List;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\DataObjectInterface;
-
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FileUploadReceiver;
 use SilverStripe\Forms\FormField;
-use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\TextareaField;
-
-use SilverStripe\View\Requirements;
-
-use SilverStripe\Control\{
-    HTTPRequest,
-    HTTPResponse
-};
+use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\DataObjectInterface;
 
 class UploadFileField extends FormField
 {

@@ -2,7 +2,7 @@
 
 namespace MadeHQ\Cloudinary\Forms;
 
-use SilverStripe\AssetAdmin\Forms\FileFormFactory As BaseFileFormFactory;
+use SilverStripe\AssetAdmin\Forms\FileFormFactory as BaseFileFormFactory;
 use SilverStripe\Forms\LiteralField;
 
 class FileFormFactory extends BaseFileFormFactory

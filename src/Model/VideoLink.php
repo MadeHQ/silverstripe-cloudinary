@@ -2,8 +2,6 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
-use MadeHQ\Cloudinary\Model\Image;
-
 class VideoLink extends FileLink
 {
     private static $db = [

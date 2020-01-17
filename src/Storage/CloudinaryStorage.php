@@ -2,11 +2,10 @@
 
 namespace MadeHQ\Cloudinary\Storage;
 
-use MadeHQ\Cloudinary\Model\File;
-use SilverStripe\Assets\Storage;
 use Cloudinary;
 use Cloudinary\Uploader;
-use SilverStripe\Control\Director;
+use MadeHQ\Cloudinary\Model\File;
+use SilverStripe\Assets\Storage;
 use SilverStripe\Core\Config\Configurable;
 
 class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter

@@ -2,20 +2,17 @@
 
 namespace MadeHQ\Cloudinary\Controllers;
 
-use SilverStripe\ORM\DB;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\ORM\Queries\SQLUpdate;
+use Cloudinary\Api;
+use Cloudinary\Api\Error as CloudinaryApiError;
+use MadeHQ\Cloudinary\Model\{File, Image, Video};
+use SilverStripe\Control\{Controller, Director, HTTPRequest, HTTPResponse};
 use SilverStripe\Core\Config\Config;
-use SilverStripe\Control\{ Controller, Director, HTTPRequest, HTTPResponse };
-use SilverStripe\Security\{ Permission, PermissionProvider };
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Convert;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\Queries\SQLUpdate;
+use SilverStripe\Security\{Permission, PermissionProvider};
 use SilverStripe\Versioned\Versioned;
-
-use Cloudinary\Api;
-use Cloudinary\Api\Error As CloudinaryApiError;
-
-use MadeHQ\Cloudinary\Model\{ Image, File, Video };
 
 class APIController extends Controller implements PermissionProvider
 {
