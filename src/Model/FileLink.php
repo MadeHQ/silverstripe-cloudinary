@@ -3,7 +3,6 @@
 namespace MadeHQ\Cloudinary\Model;
 
 use SilverStripe\ORM\DataObject;
-use MadeHQ\Cloudinary\Model\File;
 
 class FileLink extends DataObject
 {

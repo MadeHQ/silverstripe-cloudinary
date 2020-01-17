@@ -2,15 +2,11 @@
 
 namespace MadeHQ\Cloudinary\Tasks;
 
-use SilverStripe\Control\HTTPRequest;
-use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Convert;
-use SilverStripe\Dev\BuildTask;
-
 use Cloudinary\Api;
-
 use MadeHQ\Cloudinary\Model\File;
 use MadeHQ\Cloudinary\Model\Image;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Dev\BuildTask;
 
 class SyncTask extends BuildTask
 {

@@ -3,11 +3,8 @@
 namespace MadeHQ\Cloudinary\Forms;
 
 use SilverStripe\Core\Config\Config;
-
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\DataObjectInterface;
-use SilverStripe\ORM\DataObject;
 
 class UploadImageField extends UploadFileField
 {

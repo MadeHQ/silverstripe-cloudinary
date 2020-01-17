@@ -2,7 +2,7 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
-use SilverStripe\AssetAdmin\Model\ThumbnailGenerator As BaseThumbnailGenerator;
+use SilverStripe\AssetAdmin\Model\ThumbnailGenerator as BaseThumbnailGenerator;
 use SilverStripe\Assets\Storage\AssetContainer;
 
 class ThumbnailGenerator extends BaseThumbnailGenerator

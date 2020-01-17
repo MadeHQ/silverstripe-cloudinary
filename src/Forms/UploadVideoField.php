@@ -2,11 +2,6 @@
 
 namespace MadeHQ\Cloudinary\Forms;
 
-use SilverStripe\Core\Config\Config;
-
-use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\TextField;
-
 class UploadVideoField extends UploadFileField
 {
     // private static $gravities = [
