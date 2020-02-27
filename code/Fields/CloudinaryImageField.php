@@ -4,50 +4,56 @@ class CloudinaryImageField extends CloudinaryFileField
 {
     public $FileType = 'Image';
 
+    protected $hidden_fields = array('Width', 'Height', 'FileTitle');
+
     public function __construct($name, $title = null, $value = "", $form = null)
     {
         parent::__construct($name, $title, $value, $form);
         $file = singleton('CloudinaryImage');
         $frontEndFields = $file->getFrontEndFields();
+        $hiddenFields = $this->getHiddenFields();
 
-        $gravityField = $frontEndFields->fieldByName('Gravity');
-        $gravityField
-            ->setName($name . "[" . $gravityField->getName() . "]")
-            ->addExtraClass('_js-attribute');
-        $this->children->push($gravityField);
+        $children = $this->getChildren();
 
-        $captionField = $frontEndFields->fieldByName('Caption');
-        $captionField
-            ->setName($name . "[" . $captionField->getName() . "]")
-            ->addExtraClass('_js-attribute');
-        $this->children->push($captionField);
+        foreach ($frontEndFields as $frontEndField) {
+            $fieldName = $frontEndField->getName();
+            $newName = $name . "[" . $fieldName . "]";
 
-        $creditField = $frontEndFields->fieldByName('Credit');
-        $creditField
-            ->setName($name . "[" . $creditField->getName() . "]")
-            ->addExtraClass('_js-attribute');
-        $this->children->push($creditField);
+            if ($found = $children->find('Name', $newName)) {
+                if (in_array($fieldName, $hiddenFields)) {
+                    $found->HiddenFileField = true;
+                }
+                continue;
+            }
 
-        $heightField = $frontEndFields->fieldByName('Height');
-        $heightField->HiddenFileField = true;
-        $heightField
-            ->setName($name . "[" . $heightField->getName() . "]")
-            ->addExtraClass('_js-attribute');
-        $this->children->push($heightField);
+            if (in_array($fieldName, $hiddenFields)) {
+                $frontEndField->HiddenFileField = true;
+            }
+            $frontEndField
+                ->setName($newName)
+                ->addExtraClass('_js-attribute');
+            $this->children->push($frontEndField);
 
-        $widthField = $frontEndFields->fieldByName('Width');
-        $widthField->HiddenFileField = true;
-        $widthField
-            ->setName($name . "[" . $widthField->getName() . "]")
-            ->addExtraClass('_js-attribute');
-        $this->children->push($widthField);
-        $this->getChildren()->dataFieldByName($name . '[FileTitle]')->HiddenFileField = true;
+        }
 
+    }
+
+    public function getHiddenFields()
+    {
+        return $this->hidden_fields;
+    }
+
+    public function setHiddenFields($fields)
+    {
+        $this->hidden_fields = $fields;
+        return $this;
     }
 
     protected function getSubFields()
     {
-        return array_merge(parent::getSubFields(), array('Gravity'));
+        $fields = array_merge(parent::getSubFields(), array('Gravity'));
+        $this->extend('updateSubFields', $fields);
+        return $fields;
     }
 
     protected function updateFileBeforeSave(CloudinaryFile &$file, &$value = array(), DataObjectInterface &$record)
