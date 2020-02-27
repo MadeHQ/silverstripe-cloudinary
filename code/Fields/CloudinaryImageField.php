@@ -58,11 +58,12 @@ class CloudinaryImageField extends CloudinaryFileField
 
     protected function updateFileBeforeSave(CloudinaryFile &$file, &$value = array(), DataObjectInterface &$record)
     {
-        $file->Gravity = $value['Gravity'];
-        $file->Caption = $value['Caption'];
-        $file->Credit = $value['Credit'];
-        $file->Width = $value['Width'];
-        $file->Height = $value['Height'];
+        $subFields = $this->getSubFields();
+        foreach ($subFields as $subField) {
+            if (isset($value[$subField])) {
+                $file->$subField = $value[$subField];
+            }
+        }
         parent::updateFileBeforeSave($file, $value, $record);
     }
 }
