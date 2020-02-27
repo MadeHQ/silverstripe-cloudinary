@@ -70,6 +70,8 @@ class CloudinaryFileField extends FormField
                 if ($thisField->$fieldName) {
                     $field->setValue($thisField->$fieldName);
                 }
+                $this->extend('updateCloudinaryFileDataField', $field);
+
                 $dataFields->push($field);
             }
         }
