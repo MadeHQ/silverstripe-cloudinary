@@ -83,6 +83,8 @@ class CloudinaryImage extends CloudinaryFile
             unset($options['gravity']);
         }
 
+        $this->extend('updateDefaultImageOptions', $options);
+
         return $options;
     }
 
