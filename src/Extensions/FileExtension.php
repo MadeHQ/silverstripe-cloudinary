@@ -42,7 +42,9 @@ class FileExtension extends DataExtension implements Flushable
 
         $this->owner->File->PublicID = $resource['public_id'];
         $this->owner->File->ResourceType = $resource['resource_type'];
-        $this->owner->File->Variant = $resource['version'];
+        if (array_key_exists('version', $resource)) {
+            $this->owner->File->Variant = $resource['version'];
+        }
         $this->owner->File->Hash = CloudinaryStorage::getHash($filename, $this->owner->File->Variant);
         $this->owner->write();
 

@@ -7,7 +7,6 @@ use Cloudinary;
 use Cloudinary\Api;
 use Cloudinary\Uploader;
 use SilverStripe\Assets\File;
-use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Versioned\Versioned;
 
@@ -205,6 +204,10 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     public function delete($filename, $hash)
     {
         $file = static::get_latest_file_by_filename_and_hash($filename, $hash);
+        if (!$file) {
+            error_log(sprintf('Unable to find a file in DB for [%s][%s]', $filename, $hash));
+            return;
+        }
         $opts = [
             'resource_type' => $file->File->ResourceType,
         ];
