@@ -149,6 +149,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
         $opts = [
             'secure' => true,
             'resource_type' => $file->File->ResourceType,
+            'version' => $variant,
         ];
         return $file ? Cloudinary::cloudinary_url($file->File->PublicID, $opts) : false;
     }
