@@ -172,7 +172,7 @@ class SyncTask extends BuildTask
                 var_dump(sprintf('Error saving: %s', $resource['public_id']), $resource);
             }
         } catch (Error $e) {
-            if ($e->getCode() === 404) {
+            if ($e->getCode() === 404 && $file && $file->exists()) {
                 $file->delete();
             }
         }
