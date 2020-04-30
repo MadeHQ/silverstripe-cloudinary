@@ -48,7 +48,7 @@
     "graphql-tag": "^0.1.17",
     "history": "^2.1.2",
     "isomorphic-fetch": "https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz",
-    "jquery": "^3.2.1",
+    "jquery": "^3.5.0",
     "jquery-sizes": "^0.33.0",
     "json-js": "^1.1.2",
     "merge": "^1.2.0",
