@@ -7,6 +7,7 @@ use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Dev\BuildTask;
 
 use Cloudinary\Api;
+use Cloudinary\Api\RateLimited;
 use Cloudinary\Error;
 use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
@@ -59,30 +60,35 @@ class SyncTask extends BuildTask
      */
     public function run($request)
     {
-        ini_set('max_execution_time', 300); // 300 seconds = 5 minutes
-        $count = 0;
+        try {
+            ini_set('max_execution_time', 300); // 300 seconds = 5 minutes
+            $count = 0;
 
-        foreach(['image', 'raw', 'video'] as $resourceType) {
-            $data = $this->getPageFromCloudinary($resourceType, null);
-            while ($data && count($data['resources'])) {
-                array_walk($data['resources'], array($this, 'addOrUpdateResource'));
-                $count+= count($data['resources']);
+            foreach(['image', 'raw', 'video'] as $resourceType) {
+                $data = $this->getPageFromCloudinary($resourceType);
+                while ($data && count($data['resources'])) {
+                    array_walk($data['resources'], array($this, 'addOrUpdateResource'));
+                    $count+= count($data['resources']);
 
-                $data = (array_key_exists('next_cursor', $data)) ?
-                    $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
-                    false;
+                    $data = (array_key_exists('next_cursor', $data)) ?
+                        $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
+                        false;
+                }
             }
-        }
-        $timeInPastToSync = static::config()->get('api_start_at');
-        if ($timeInPastToSync) {
-            echo sprintf('Sync Complete: %d files synced starting %s', $count, $timeInPastToSync);
-        } else {
-            echo sprintf('Sync Complete: %d files synced', $count);
-        }
+            $timeInPastToSync = static::config()->get('api_start_at');
+            if ($timeInPastToSync) {
+                echo sprintf('Sync Complete: %d files synced starting %s', $count, $timeInPastToSync);
+            } else {
+                echo sprintf('Sync Complete: %d files synced', $count);
+            }
 
-        $this->doDeleteFilesMissingOnCloudinary();
+            $this->doDeleteFilesMissingOnCloudinary();
 
-        return;
+            return;
+        } catch (RateLimited $e) {
+            var_dump($e->getMessage());
+            return;
+        }
     }
 
     /**
@@ -103,6 +109,9 @@ class SyncTask extends BuildTask
         }
 
         foreach($result As $file) {
+            if (!$file->File->PublicID) {
+                continue;
+            }
             $opts = [
                 'resource_type' => $file->File->ResourceType,
                 'version' => $file->File->Variant,
@@ -154,7 +163,7 @@ class SyncTask extends BuildTask
 
     private function addOrUpdateResource($resource)
     {
-        if (static::config()->get('skip_backups_during_update') && $resource['backup']) {
+        if (static::config()->get('skip_backups_during_update') && array_key_exists('backup', $resource) && $resource['backup']) {
             return;
         }
         array_push($this->processedPublicIDs, $resource['public_id']);
