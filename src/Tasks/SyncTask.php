@@ -24,6 +24,11 @@ class SyncTask extends BuildTask
     private static $api_start_at = false;
 
     /**
+     *
+     */
+    private static $skip_backups_during_update = true;
+
+    /**
      * Will make a HEAD request to check that all images (not just added) are still in Cloudinary
      * @param Boolean
      */
@@ -149,8 +154,12 @@ class SyncTask extends BuildTask
 
     private function addOrUpdateResource($resource)
     {
+        if (static::config()->get('skip_backups_during_update') && $resource['backup']) {
+            return;
+        }
         array_push($this->processedPublicIDs, $resource['public_id']);
         $file = File::singleton()->getOneByPublicId($resource['public_id']);
+
         if (!$file) {
             switch ($resource['resource_type']) {
                 case 'image':
