@@ -237,7 +237,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
                 $newName = preg_replace('/\.\w+$/', '', $newName);
             }
             if ($file->File->PublicID !== $newName) {
-                $uploadResult = Uploader::rename($file->File->PublicID, $newName);
+                $uploadResult = Uploader::rename($file->File->PublicID, $newName, ['overwrite' => true]);
                 $file->File->PublicID = $uploadResult['public_id'];
                 $file->File->Variant = $uploadResult['version'];
                 $file->write();
