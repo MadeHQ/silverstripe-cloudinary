@@ -163,7 +163,12 @@ class SyncTask extends BuildTask
 
     private function addOrUpdateResource($resource)
     {
-        if (static::config()->get('skip_backups_during_update') && array_key_exists('backup', $resource) && $resource['backup']) {
+        if (
+            static::config()->get('skip_backups_during_update') &&
+            array_key_exists('backup', $resource) &&
+            $resource['backup'] &&
+            $resource['bytes'] === 0
+        ) {
             return;
         }
         array_push($this->processedPublicIDs, $resource['public_id']);
