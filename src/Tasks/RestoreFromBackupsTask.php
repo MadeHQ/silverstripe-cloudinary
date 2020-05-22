@@ -59,7 +59,10 @@ class RestoreFromBackupsTask extends BuildTask
                 }
 
                 if (count($this->restoreIds[$resourceType])) {
-                    static::getApi()->restore($this->restoreIds[$resourceType]);
+                    while ($ids = array_slice($this->restoreIds[$resourceType], 0, 100)) {
+                        $this->restoreIds[$resourceType] = array_slice($this->restoreIds[$resourceType], 100);
+                        static::getApi()->restore($ids);
+                    }
                 }
             }
 
