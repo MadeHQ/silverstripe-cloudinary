@@ -1,7 +1,10 @@
 <?php
 
+namespace MadeHQ\Cloudinary\Tasks;
+
 use Cloudinary\Api;
 use Cloudinary\Api\RateLimited;
+
 use SilverStripe\Dev\BuildTask;
 
 class RestoreFromBackupsTask extends BuildTask
