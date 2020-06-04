@@ -3,6 +3,7 @@
 namespace MadeHQ\Cloudinary\Extensions;
 
 use Cloudinary\Api;
+use Cloudinary\Api\NotFound;
 use MadeHQ\Cloudinary\Storage\CloudinaryStorage;
 use SilverStripe\Assets\Folder;
 use SilverStripe\Core\Config\Configurable;
@@ -14,7 +15,7 @@ use SilverStripe\ORM\Queries\SQLUpdate;
 use SilverStripe\Versioned\Versioned;
 
 /**
- *
+ * @property owner \SilverStripe\Assets\File
  */
 class FileExtension extends DataExtension implements Flushable
 {
@@ -132,24 +133,29 @@ class FileExtension extends DataExtension implements Flushable
         if (!$this->owner->File->RemoteData) {
             $api = new Api();
             $opts = $this->getApiResourceOptions();
-            $data = $api->resource($this->owner->File->PublicID, $opts);
-            $data = $data->getArrayCopy();
-            while (array_key_exists('derived_next_cursor', $data) && ($data['derived_next_cursor'])) {
-                $opts['derived_next_cursor'] = $data['derived_next_cursor'];
-                $newData = $api->resource($this->owner->File->PublicID, $opts);
-                $data['derived'] = array_merge($data['derived'], $newData->offsetGet('derived'));
-                $data['derived_next_cursor'] = @$newData->offsetGet('derived_next_cursor');
-            }
+            try {
+                $data = $api->resource($this->owner->File->PublicID, $opts);
+                $data = $data->getArrayCopy();
+                while (array_key_exists('derived_next_cursor', $data) && ($data['derived_next_cursor'])) {
+                    $opts['derived_next_cursor'] = $data['derived_next_cursor'];
+                    $newData = $api->resource($this->owner->File->PublicID, $opts);
+                    $data['derived'] = array_merge($data['derived'], $newData->offsetGet('derived'));
+                    $data['derived_next_cursor'] = @$newData->offsetGet('derived_next_cursor');
+                }
 
-            $this->owner->File->RemoteData = json_encode($data);
-            SQLUpdate::create('File')
-                ->addWhere(['FilePublicID = ?' => $this->owner->File->PublicID])
-                ->addAssignments(['FileRemoteData' => $this->owner->File->RemoteData])
-                ->execute();
-            SQLUpdate::create('File_Live')
-                ->addWhere(['FilePublicID = ?' => $this->owner->File->PublicID])
-                ->addAssignments(['FileRemoteData' => $this->owner->File->RemoteData])
-                ->execute();
+                $this->owner->File->RemoteData = json_encode($data);
+                SQLUpdate::create('File')
+                    ->addWhere(['FilePublicID = ?' => $this->owner->File->PublicID])
+                    ->addAssignments(['FileRemoteData' => $this->owner->File->RemoteData])
+                    ->execute();
+                SQLUpdate::create('File_Live')
+                    ->addWhere(['FilePublicID = ?' => $this->owner->File->PublicID])
+                    ->addAssignments(['FileRemoteData' => $this->owner->File->RemoteData])
+                    ->execute();
+            } catch (NotFound $e) {
+                $this->owner->delete();
+                $this->owner->File->RemoteData = '[]';
+            }
         }
         return json_decode($this->owner->File->RemoteData, true);
     }
