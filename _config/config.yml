@@ -32,6 +32,7 @@ SilverStripe\Assets\File:
 
 SilverStripe\Assets\Storage\DBFile:
   composite_db:
+    AssetID: Varchar(32)
     PublicID: Varchar(255)
     ResourceType: Varchar(25)
     RemoteData: Text

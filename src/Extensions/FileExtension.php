@@ -41,6 +41,7 @@ class FileExtension extends DataExtension implements Flushable
         $this->owner->Name = $this->owner->File->Filename = $filename;
         $this->owner->Title = preg_replace('/\..*$/', '', $filename);
 
+        $this->owner->File->AssetID = $resource['asset_id'];
         $this->owner->File->PublicID = $resource['public_id'];
         $this->owner->File->ResourceType = $resource['resource_type'];
         if (array_key_exists('version', $resource)) {
@@ -84,6 +85,17 @@ class FileExtension extends DataExtension implements Flushable
     {
         return DataObject::get_one($this->owner->ClassName, [
             'FilePublicID' => $publicId
+        ]);
+    }
+
+    /**
+     * @param string $publicId
+     * @return DataObject
+     */
+    public function getOneByAssetId($assetId)
+    {
+        return DataObject::get_one($this->owner->ClassName, [
+            'FileAssetID' => $assetId
         ]);
     }
 

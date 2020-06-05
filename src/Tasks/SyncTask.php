@@ -172,7 +172,10 @@ class SyncTask extends BuildTask
             return;
         }
         array_push($this->processedPublicIDs, $resource['public_id']);
-        $file = File::singleton()->getOneByPublicId($resource['public_id']);
+        $file = File::singleton()->getOneByAssetId($resource['asset_id']);
+        if (!$file) {
+            $file = File::singleton()->getOneByPublicId($resource['public_id']);
+        }
 
         if (!$file) {
             switch ($resource['resource_type']) {
