@@ -11,6 +11,8 @@ use Cloudinary\Api;
 use Cloudinary\Api\Error As CloudinaryApiError;
 use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
+use SilverStripe\Assets\Folder;
+use SilverStripe\Core\Convert;
 
 class APIController extends Controller// implements PermissionProvider
 {
@@ -43,44 +45,79 @@ class APIController extends Controller// implements PermissionProvider
 
         $notificationType = $data['notification_type'];
 
-        if ($notificationType === 'rename') {
-            $from = $data['from_public_id'];
-            $to = $data['to_public_id'];
+        switch ($notificationType) {
+            case 'rename':
+                return $this->renameResource($data);
 
-            $item = DataObject::get_one(File::class, [
-                'FilePublicID' => $from
-            ]);
+            case 'upload':
+                return $this->uploadResource($data);
 
-            if (!$item) {
-                throw $this->httpError(400, sprintf('Failed to rename %s', $from));
-            }
-            $item->File->PublicID = $to;
-            $item->write();
-            if ($item->isPublished()) {
-                $item->publishSingle();
-            }
-        }
+            case 'delete':
+                return $this->deleteResource($data);
 
-        if ($notificationType === 'upload') {
-            return $this->addOrUpdateResource($data);
-        }
+            case 'create_folder':
+                return $this->createFolder($data);
 
-        if ($notificationType === 'delete') {
-            foreach ($data['resources'] as $resource) {
-                $file = DataObject::get_one(File::class, [
-                    'FilePublicID' => $resource['public_id'],
-                    'FileVariant' => $resource['version'],
-                ]);
-
-                if ($file) {
-                    // Deletes from both Live & Draft
-                    $file->doArchive();
-                }
-            }
+            default:
+                throw $this->httpError(500, sprintf('Error: Unable to handle [%s] notification_type', $notificationType));
         }
     }
 
-    private function output(array $body = [], $statusCode = 200)
+    protected function renameResource($data)
+    {
+        $from = $data['from_public_id'];
+        $to = $data['to_public_id'];
+
+        $item = File::singleton()->getOneByPublicId($from);
+        if (!$item) {
+            throw $this->httpError(400, sprintf('Failed to rename %s', $from));
+        }
+        $item->File->PublicID = $to;
+        $item->write();
+        if ($item->isPublished()) {
+            $item->publishSingle();
+        }
+
+        $this->extend('updateRenameResource', $item, $data);
+
+        return $this->output($data);
+    }
+
+    protected function deleteResource($data)
+    {
+        foreach ($data['resources'] as $resource) {
+            $file = DataObject::get_one(File::class, [
+                'FilePublicID' => $resource['public_id'],
+                'FileVariant' => $resource['version'],
+            ]);
+            if (!$file) {
+                $file = DataObject::get_one(File::class, [
+                    'FilePublicID' => $resource['public_id'],
+                ]);
+            }
+
+            if ($file) {
+                // Deletes from both Live & Draft
+                $file->doArchive();
+
+                $this->extend('updateDeleteResource', $file, $resource, $data);
+            }
+
+        }
+
+        return $this->output($data);
+    }
+
+    protected function createFolder($data)
+    {
+        $folder = Folder::find_or_make($data['folder_path']);
+
+        $this->extend('updateCreateFolder', $folder, $data);
+
+        return $this->output($data);
+    }
+
+    protected function output(array $body = [], $statusCode = 200)
     {
         $response = new HTTPResponse(Convert::raw2json($body));
         $response->addHeader('content-type', 'application/json');
@@ -88,7 +125,7 @@ class APIController extends Controller// implements PermissionProvider
         return $response;
     }
 
-    private function addOrUpdateResource($resource)
+    protected function uploadResource($resource)
     {
         $file = File::singleton()->getOneByPublicId($resource['public_id']);
         if (!$file) {
@@ -111,6 +148,9 @@ class APIController extends Controller// implements PermissionProvider
         if (!$file->write()) {
             var_dump(sprintf('Error saving: %s', $resource['public_id']), $resource);
         }
-        return $file;
+
+        $this->extend('updateUploadResource', $file, $resource);
+
+        return $this->output($resource);
     }
 }
