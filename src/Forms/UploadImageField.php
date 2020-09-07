@@ -71,6 +71,6 @@ class UploadImageField extends UploadFileField
 
         $this->removeField('Description');
 
-        $this->extend('init');
+        $this->extend('imageFieldInit');
     }
 }
