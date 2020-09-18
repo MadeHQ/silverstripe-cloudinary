@@ -14,3 +14,12 @@
  * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @link https://github.com/MadeHQ/silverstripe-cloudinary.git
  */
+
+use MadeHQ\Cloudinary\Utils\ImageShortcodeProvider;
+use SilverStripe\View\Parsers\ShortcodeParser;
+
+ShortcodeParser::get('default')
+    ->register('image', [ImageShortcodeProvider::class, 'handle_shortcode']);
+
+ShortcodeParser::get('regenerator')
+    ->register('image', [ImageShortcodeProvider::class, 'regenerate_shortcode']);

@@ -2,44 +2,73 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
-use MadeHQ\Cloudinary\Model\Image;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\LiteralField;
 
 class ImageLink extends FileLink
 {
-    private static $db = [
-        'Gravity' => 'Varchar(15)',
-        'Alt' => 'Varchar(200)',
-        'Caption' => 'Text',
-        'Credit' => 'Text',
-    ];
+    /**
+     * {@inheritdoc}
+     */
+    private static $singular_name = 'Image Link';
 
     /**
-     * Has_one relationship
-     * @var array
+     * {@inheritdoc}
      */
+    private static $plural_name = 'Image Links';
+
+    private static $table_name = 'CloudinaryImageLink';
+
+    /**
+     * {@inheritdoc}
+     */
+    private static $db = [
+        'Focus' => 'Varchar(50)',
+    ];
+
     private static $has_one = [
         'File' => Image::class,
     ];
 
-    private static $table_name = 'CloudinaryImageLink';
+    private static $defaults = [
+        'Focus' => 'auto',
+    ];
 
-    public function getCredit()
+    private static $summary_fields = [
+        'File.Title' => 'Title',
+        'SummaryPreview' => 'Preview',
+    ];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCMSFields()
     {
-        return $this->dbObject('Credit')->value ?: $this->failover->Credit;
+        $fields = parent::getCMSFields();
+
+        $fields->push(DropdownField::create('Focus', 'Focus', Image::config()->get('valid_gravities')));
+
+        return $fields;
     }
 
-    public function getCaption()
+    public function setFileToFailover()
     {
-        return $this->dbObject('Caption')->value ?: $this->failover->Caption;
+        if ($this->File()->exists()) {
+            if ($this->Focus) {
+                $this->setFailover($this->File()->setGravity($this->Focus));
+            } else {
+                $this->setFailover($this->File());
+            }
+        }
     }
 
-    public function getGravity()
+    /**
+     * @return Mixed
+     */
+    public function getSummaryPreview()
     {
-        return $this->dbObject('Gravity')->value;
-    }
-
-    public function getFocus()
-    {
-        return $this->dbObject('Gravity')->value;
+        return $this->File()->exists() ?
+            LiteralField::create('SummaryPreview', sprintf('<img style="max-width: 200px; max-height: 200px;" src="%s" />', $this->File()->PreviewLink())) :
+            '';
     }
 }

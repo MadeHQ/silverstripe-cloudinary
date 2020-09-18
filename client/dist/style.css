@@ -1,0 +1,7 @@
+@media (min-width: 992px) {
+    .cms-edit-form .form-group--no-label.form__file-link.form-group:not(.stacked) .form__field-holder {
+        flex: none;
+        margin-left: 0;
+        max-width: 100%;
+    }
+}

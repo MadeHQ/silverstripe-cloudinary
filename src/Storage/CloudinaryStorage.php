@@ -2,18 +2,30 @@
 
 namespace MadeHQ\Cloudinary\Storage;
 
-use MadeHQ\Cloudinary\Model\File;
 use SilverStripe\Assets\Storage;
 use Cloudinary;
+use Cloudinary\Api;
 use Cloudinary\Uploader;
-use SilverStripe\Control\Director;
+use SilverStripe\Assets\File;
 use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Versioned\Versioned;
 
 class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 {
     use Configurable;
 
-    private static $upload_preset;
+    /**
+     * See (https://cloudinary.com/documentation/upload_images) for a list of options for uploading
+     * @var array
+     */
+    private static $default_options = [
+        'resource_type' => 'auto',
+    ];
+
+    /**
+     * @var Api
+     */
+    protected static $api;
 
     /**
      * @inheritdoc
@@ -31,6 +43,11 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
                 // self::CONFLICT_USE_EXISTING
             )
         );
+    }
+
+    public static function getHash($filename, $variant)
+    {
+        return base64_encode(md5($filename, $variant));
     }
 
     /**
@@ -76,23 +93,21 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
             throw new \Exception('Could not copy uploaded file to ' . $tmpFile);
         }
 
-        $options = [
-            'folder' => implode('/', $parts),
-            'resource_type' => 'auto',
-        ];
-        if ($preset = static::config()->get('upload_preset')) {
-            $options['upload_preset'] = $preset;
-        }
+        $options = static::config()->get('default_options');
+        $options['folder'] = implode('/', $parts);
+        $options['public_id'] = $pathParts['filename'];
 
         $response = Uploader::upload($tmpFile, $options);
 
         return [
-            'Filename' => $response['public_id'],
+            'Filename' => $justFileName,
             'PublicID' => $response['public_id'],
             'Format' => isset($response['format']) ? $response['format'] : $extension,
             'SecureURL' => $response['secure_url'],
             'ResourceType' => $response['resource_type'],
             'Type' => $response['type'],
+            'Variant' => $response['version'],
+            'Hash' => static::getHash($justFileName, $response['version']),
         ];
     }
 
@@ -125,7 +140,26 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function getAsURL($filename, $hash, $variant = null, $grant = true)
     {
-        return Cloudinary::cloudinary_url($filename);
+        $file = File::get_one(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => static::getHash($filename, $variant),
+            'FileVariant' => $variant,
+        ]);
+
+        if (!$file) {
+            // Try without the `Variant` parameter (empty string and NULL are not the same :/)
+            $file = File::get_one(File::class, [
+                'FileFilename' => $filename,
+                'FileHash' => static::getHash($filename, $variant),
+            ]);
+        }
+
+        $opts = [
+            'secure' => true,
+            'resource_type' => $file->File->ResourceType,
+            'version' => $variant,
+        ];
+        return $file ? Cloudinary::cloudinary_url($file->File->PublicID, $opts) : false;
     }
 
     /**
@@ -133,7 +167,17 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function getMetadata($filename, $hash, $variant = null)
     {
-        return null;
+        $file = File::get_one(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => static::getHash($filename, $variant),
+            'FileVariant' => $variant,
+        ]);
+        if (!$file) {
+            return [];
+        }
+        return [
+            'size' => $file->getRemoteDataProperty('bytes'),
+        ];
     }
 
     /**
@@ -157,7 +201,9 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function exists($filename, $hash, $variant = null)
     {
-        header(sprintf('Checking-%s: %s', $hash, $filename));
+        if (!\headers_sent()) {
+            @header(sprintf('Checking-%s: %s', $hash, $filename));
+        }
         return true;
     }
 
@@ -166,7 +212,15 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function delete($filename, $hash)
     {
-        // intentionally empty
+        $file = static::get_latest_file_by_filename_and_hash($filename, $hash);
+        if (!$file) {
+            error_log(sprintf('Unable to find a file in DB for [%s][%s]', $filename, $hash));
+            return;
+        }
+        $opts = [
+            'resource_type' => $file->File->ResourceType,
+        ];
+        static::get_api()->delete_resources($file->File->PublicID, $opts);
     }
 
     /**
@@ -182,7 +236,22 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function copy($filename, $hash, $newName)
     {
-        // intentionally empty
+        $file = File::get_one(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => $hash,
+        ]);
+        if ($file) {
+            if ($newName !== $file->File->PublicID && $file->File->PublicID != '') {
+                // Don't want to start appending extensions to the PublicID :O
+                $newName = preg_replace('/\.\w+$/', '', $newName);
+            }
+            if ($file->File->PublicID !== $newName) {
+                $uploadResult = Uploader::rename($file->File->PublicID, $newName, ['overwrite' => true]);
+                $file->File->PublicID = $uploadResult['public_id'];
+                $file->File->Variant = $uploadResult['version'];
+                $file->write();
+            }
+        }
     }
 
     /**
@@ -223,6 +292,28 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
      */
     public function canView($filename, $hash)
     {
-        // intentionally empty
+var_dump(__METHOD__, $filename, $hash);die;
+    }
+
+    /**
+     * @return Api
+     */
+    protected static function get_api()
+    {
+        if (!static::$api) {
+            static::$api = new Api();
+        }
+        return static::$api;
+    }
+
+    /**
+     * @return File
+     */
+    protected function get_latest_file_by_filename_and_hash($filename, $hash)
+    {
+        return Versioned::get_including_deleted(File::class, [
+            'FileFilename' => $filename,
+            'FileHash' => $hash,
+        ])->First();
     }
 }

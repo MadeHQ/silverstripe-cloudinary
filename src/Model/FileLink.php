@@ -2,30 +2,68 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
-use SilverStripe\ORM\DataObject;
-use MadeHQ\Cloudinary\Model\File;
+use SilverStripe\Assets\File;
+use Silverstripe\ORM\DataObject;
 
+/**
+ * This is a basic linking model for Files
+ */
 class FileLink extends DataObject
 {
-    private static $db = [
-        'Title' => 'Varchar(200)',
-        'Description' => 'HTMLText',
-    ];
+    /**
+     * {@inheritdoc}
+     */
+    private static $singular_name = 'File Link';
 
     /**
-     * Has_one relationship
-     * @var array
+     * {@inheritdoc}
+     */
+    private static $plural_name = 'File Links';
+
+    private static $table_name = 'CloudinaryFileLink';
+
+    /**
+     * {@inheritdoc}
      */
     private static $has_one = [
         'File' => File::class,
     ];
 
-    private static $table_name = 'CloudinaryFileLink';
+    /**
+     * {@inheritdoc}
+     */
+    private static $owns = [
+        'File',
+    ];
 
-    public function __construct($record = null, $isSingleton = false, $queryParams = array())
+    public function __construct($record = null, $isSingleton = false, $queryParams = [])
     {
         parent::__construct($record, $isSingleton, $queryParams);
-        $this->setFailover($this->File());
+        $this->setFileToFailover();
+    }
+
+    /**
+     * {@inheritdoc}
+     * Returned FieldList will NOT be tabbed
+     */
+    public function getCMSFields()
+    {
+        // Bypassing `DataObject::getCMSFields()` as NOT wanting to have tabbed fields
+        $fields = $this->scaffoldFormFields(array(
+            'includeRelations' => true,
+            'ajaxSafe' => true
+        ));
+
+        $this->extend('updateCMSFields', $fields);
+
+        return $fields;
+    }
+
+    public function setFileToFailover()
+    {
+        if ($this->File()->exists()) {
+            $this->setFailover($this->File());
+        }
     }
 
     public function exists()
