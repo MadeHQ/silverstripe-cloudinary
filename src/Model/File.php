@@ -10,6 +10,7 @@ use SilverStripe\ORM\Queries\SQLUpdate;
 use SilverStripe\ORM\DB;
 
 use MadeHQ\Cloudinary\Traits\CloudinaryFileTrait;
+use SilverStripe\ORM\Connect\DatabaseException;
 
 class File extends BaseFile implements Flushable
 {
@@ -76,26 +77,32 @@ class File extends BaseFile implements Flushable
                 ->execute();
         }
         if (array_key_exists('PublicID', $fields)) {
-            // This is used as part of migration from older structure
-            $parentTableName = BaseFile::config()->get('table_name');
-            $sql = sprintf(
-                'UPDATE "%1$s" SET "%1$s"."PublicID" = (SELECT "PublicID" FROM "%2$s" WHERE "%1$s"."ID" = "%2$s"."ID")',
-                $parentTableName,
-                $tableName
-            );
-            $liveSql = sprintf(
-                'UPDATE "%1$s_Live" SET "%1$s_Live"."PublicID" = (SELECT "PublicID" FROM "%2$s_Live" WHERE "%1$s_Live"."ID" = "%2$s_Live"."ID")',
-                $parentTableName,
-                $tableName
-            );
-            DB::query($sql);
-            DB::query($liveSql);
-            DB::get_schema()->renameField($tableName, 'PublicID', '_obsolete_PublicID');
-            DB::get_schema()->renameField($tableName . '_Live', 'PublicID', '_obsolete_PublicID');
-            DB::get_schema()->renameField($tableName . '_Versions', 'PublicID', '_obsolete_PublicID');
+            try {
+                // This is used as part of migration from older structure
+                $parentTableName = BaseFile::config()->get('table_name');
+                $sql = sprintf(
+                    'UPDATE "%1$s" SET "%1$s"."PublicID" = (SELECT "PublicID" FROM "%2$s" WHERE "%1$s"."ID" = "%2$s"."ID")',
+                    $parentTableName,
+                    $tableName
+                );
+                $liveSql = sprintf(
+                    'UPDATE "%1$s_Live" SET "%1$s_Live"."PublicID" = (SELECT "PublicID" FROM "%2$s_Live" WHERE "%1$s_Live"."ID" = "%2$s_Live"."ID")',
+                    $parentTableName,
+                    $tableName
+                );
+                DB::query($sql);
+                DB::query($liveSql);
+                DB::get_schema()->renameField($tableName, 'PublicID', '_obsolete_PublicID');
+                DB::get_schema()->renameField($tableName . '_Live', 'PublicID', '_obsolete_PublicID');
+                DB::get_schema()->renameField($tableName . '_Versions', 'PublicID', '_obsolete_PublicID');
+            } catch (DatabaseException $e) {
+                if (strpos($e->getMessage(), "Unknown column 'File.PublicID' in 'field list'") === false) {
+                    throw $e;
+                }
+            }
         }
     }
-    
+
     public function requireTable()
     {
         /*
@@ -104,7 +111,7 @@ class File extends BaseFile implements Flushable
         has no way of getting at the base class, so it can no longer build it, so any changes to that class do not show up,
         and so we get db errors, this method fixes that by manually finding and building the base class
 
-        In the future, if we need to extend an object, use an Extension, or if we MUST create a new class to replace it, 
+        In the future, if we need to extend an object, use an Extension, or if we MUST create a new class to replace it,
         do NOT have it extend the original class
         */
 

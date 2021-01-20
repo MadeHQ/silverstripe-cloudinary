@@ -10,7 +10,7 @@ class ThumbnailGenerator extends BaseThumbnailGenerator
     /**
      * @inheritdoc
      */
-    public function generateThumbnailLink(AssetContainer $file, $width, $height)
+    public function generateThumbnailLink(AssetContainer $file, $width, $height, $graceful = false)
     {
         if (!($file instanceof File)) {
             return null;
