@@ -2,6 +2,7 @@
 
 namespace MadeHQ\Cloudinary\Model;
 
+use BadMethodCallException;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\LiteralField;
 
@@ -51,14 +52,20 @@ class ImageLink extends FileLink
         return $fields;
     }
 
-    public function setFileToFailover()
+    /**
+     * Used to prevent errors when the base File is deleted
+     *
+     * @param string $method
+     * @param array $arguments
+     *
+     * @return mixed
+     */
+    public function __call($method, $arguments)
     {
-        if ($this->File()->exists()) {
-            if ($this->Focus) {
-                $this->setFailover($this->File()->setGravity($this->Focus));
-            } else {
-                $this->setFailover($this->File());
-            }
+        try {
+            return parent::__call($method, $arguments);
+        } catch (BadMethodCallException $e) {
+            return '';
         }
     }
 
