@@ -323,6 +323,10 @@ class Image extends SilverStripeImage
             $transformations[0]['gravity'] = 'auto';
         }
 
+        if (!array_key_exists('version', $this->options)) {
+            $this->options['version'] = $this->File->Variant;
+        }
+
         // These crops don't support gravity, Cloudinary returns a 400 if passed
         $nonGravityCrops = static::config()->get('non_gravity_crops');
 
@@ -548,82 +552,6 @@ class Image extends SilverStripeImage
     {
         return $this->Quality('auto')->Gravity('auto')->forTemplate();
     }
-
-//     public function getCredit($forceFromCloudinary = false)
-//     {
-// var_dump();die;
-//         if (!$forceFromCloudinary) {
-//             return $this->OriginalCredit;
-//         }
-
-//         $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
-
-//         if (!is_array($remoteData)) {
-//             return $this->OriginalCredit = '';
-//         }
-
-//         if (!array_key_exists('image_metadata', $remoteData)) {
-//             return $this->OriginalCredit = '';
-//         }
-
-//         $metadata = $remoteData['image_metadata'];
-
-//         if (array_key_exists('Copyright', $metadata)) {
-//             $this->OriginalCredit = $metadata['Copyright'];
-//         } else if (array_key_exists('By-line', $metadata)) {
-//             $this->OriginalCredit = $metadata['By-line'];
-//         } else if (array_key_exists('Artist', $metadata)) {
-//             $this->OriginalCredit = $metadata['Artist'];
-//         } else if (array_key_exists('Creator', $metadata)) {
-//             $this->OriginalCredit = $metadata['Creator'];
-//         } else if (array_key_exists('XPAuthor', $metadata)) {
-//             $this->OriginalCredit = $metadata['XPAuthor'];
-//         }
-
-//         return $this->OriginalCredit;
-//     }
-
-//     public function getCaption($forceFromCloudinary = false)
-//     {
-//         if (!$forceFromCloudinary) {
-//             return $this->OriginalCaption;
-//         }
-
-//         $remoteData = static::get_remote_data($this->PublicID, $this->ResourceType);
-
-//         $this->OriginalCaption = static::extract_caption($remoteData);
-
-//         return $this->OriginalCaption;
-//     }
-
-//     public static function extract_caption($data)
-//     {
-//         if (!is_array($data)) {
-//             return null;
-//         }
-
-//         if (!array_key_exists('context', $data)) {
-//             return null;
-//         }
-
-//         if (!is_array($data['context'])) {
-//             return null;
-//         }
-
-//         if (!array_key_exists('custom', $data['context'])) {
-//             return null;
-//         }
-
-//         if (!is_array($data['context']['custom'])) {
-//             return null;
-//         }
-
-//         if (!array_key_exists('alt', $data['context']['custom'])) {
-//             return null;
-//         }
-
-//         return $data['context']['custom']['alt'];
-//     }
 
     /**
      * Gets the colours used in the image with the percentage of the image that has that colour
