@@ -202,7 +202,7 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     public function exists($filename, $hash, $variant = null)
     {
         if (!\headers_sent()) {
-            @header(sprintf('Checking-%s: %s', $hash, $filename));
+            @header(sprintf('Checking-%s: %s', rawurlencode($hash), $filename));
         }
         return true;
     }
