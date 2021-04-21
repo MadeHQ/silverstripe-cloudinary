@@ -69,6 +69,17 @@ class ImageLink extends FileLink
         }
     }
 
+    public function setFileToFailover()
+    {
+        if ($this->File()->exists()) {
+            if ($this->Focus) {
+                $this->setFailover($this->File()->setGravity($this->Focus));
+            } else {
+                $this->setFailover($this->File());
+            }
+        }
+    }
+
     /**
      * @return Mixed
      */
