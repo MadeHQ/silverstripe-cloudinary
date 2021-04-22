@@ -73,6 +73,11 @@ class APIController extends Controller// implements PermissionProvider
             throw $this->httpError(400, sprintf('Failed to rename %s', $from));
         }
         $item->File->PublicID = $to;
+        $parentFolder = Folder::find_or_make(dirname($to));
+        if (!$parentFolder->exists()) {
+            $parentFolder->write();
+        }
+        $item->ParentID = $parentFolder->ID;
         $item->write();
         if ($item->isPublished()) {
             $item->publishSingle();
