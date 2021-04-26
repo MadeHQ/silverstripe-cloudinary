@@ -152,6 +152,21 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
                 'FileFilename' => $filename,
                 'FileHash' => static::getHash($filename, $variant),
             ]);
+
+            if (!$file) {
+                $file = File::get_one(File::class, [
+                    'FileFilename' => $filename,
+                    'FileHash' => $hash,
+                    'FileVariant' => $variant,
+                ]);
+
+                if (!$file) {
+                    $file = File::get_one(File::class, [
+                        'FileFilename' => $filename,
+                        'FileHash' => $hash,
+                    ]);
+                }
+            }
         }
 
         $opts = [
