@@ -6,31 +6,31 @@ use SilverStripe\Assets\Image as SilverStripeImage;
 class Image extends SilverStripeImage
 {
     private static $valid_gravities = [
-        'north_east' => 'North East',
-        'north' => 'North',
-        'north_west' => 'North West',
-        'west' => 'West',
-        'south_west' => 'South West',
-        'south' => 'South',
-        'south_east' => 'South East',
-        'east' => 'East',
-        'center' => 'Center',
+        'north_east' => 'North East => Sets focal point to top right',
+        'north' => 'North => Sets focal point to top',
+        'north_west' => 'North West => Sets focal point to top left',
+        'west' => 'West => Sets focal point to left',
+        'south_west' => 'South West => Sets focal point to bottom left',
+        'south' => 'South => Sets focal point to bottom',
+        'south_east' => 'South East => Sets focal point to bottom right',
+        'east' => 'East => Sets focal point to right',
+        'center' => 'Center => Sets focal point to center',
 
-        'face' => 'Face',
-        'face:auto' => 'Face',
-        'face:center' => 'Face',
+        'face' => 'Face => Automatically detect the largest face in an image',
+        'face:auto' => 'Face (Auto) => Same as face, but defaults to auto if no face is detected',
+        'face:center' => 'Face (Center) => Same as face, but defaults to center if no face is detected',
 
-        'auto' => 'Auto',
-        'auto:subject' => 'Auto (Subject)',
-        'auto:classic' => 'Auto (Classic)',
-        'auto:body' => 'Auto (Body)',
-        'auto:no_faces' => 'Auto (No Faces)',
-        'auto:custom_no_override' => 'Auto (Custom No Override)',
-        'auto:none' => 'Auto (None)',
+        'auto' => 'Auto => Automatically identify the most interesting regions',
+        'auto:subject' => 'Auto (Subject) => Focus on subjects that are most likely to attract a person\'s gaze',
+        'auto:classic' => 'Auto (Classic) => Focus on significant regions in the image',
+        'auto:body' => 'Auto (Body) => Focus on bodies',
+        'auto:no_faces' => 'Auto (No Faces) => Same as auto but avoids focusing on faces',
+        'auto:custom_no_override' => 'Auto (Custom No Override) => Same as auto',
+        'auto:none' => 'Auto (None) => Same as auto',
 
-        'faces' => 'Faces',
-        'faces:auto' => 'Faces (Auto)',
-        'faces:center' => 'Faces (Center)',
+        'faces' => 'Faces => Same as face, but detects all the faces in an image',
+        'faces:auto' => 'Faces (Auto) => Same as faces, but defaults to auto if no face is detected',
+        'faces:center' => 'Faces (Center) =>  Same as faces, but defaults to center if no face is detected',
 
         // 'liquid',       // Leaving this one out due to complexity at the moment
         // 'xy_center',    // Need to be able to specify x/y values based on original image dimensions (Leaving out due to complexity)
