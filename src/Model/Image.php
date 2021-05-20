@@ -17,8 +17,8 @@ class Image extends SilverStripeImage
         'center' => 'Center => Sets focal point to center',
 
         'face' => 'Face => Automatically detect the largest face in an image',
-        'face:auto' => 'Face => Same as face, but defaults to auto if no face is detected',
-        'face:center' => 'Face => Same as face, but defaults to center if no face is detected',
+        'face:auto' => 'Face (Auto) => Same as face, but defaults to auto if no face is detected',
+        'face:center' => 'Face (Center) => Same as face, but defaults to center if no face is detected',
 
         'auto' => 'Auto => Automatically identify the most interesting regions',
         'auto:subject' => 'Auto (Subject) => Focus on subjects that are most likely to attract a person\'s gaze',
