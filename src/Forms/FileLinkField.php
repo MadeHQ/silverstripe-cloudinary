@@ -46,6 +46,8 @@ class FileLinkField extends CompositeField
         $form = $this->getForm();
         $this->children = $form && $form->Record->hasMethod($this->getName()) ? $form->Record->{$this->getName()}()->getCMSFields() : parent::FieldList();
 
+        $this->extend('updateFieldList');
+
         $this->children->each(function ($field) use ($form, $fieldName) {
             $field->setForm($form);
             $field->setName(sprintf('%s[%s]', $fieldName, $field->getName()));
