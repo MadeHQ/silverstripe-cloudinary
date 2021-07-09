@@ -12,6 +12,7 @@ use Cloudinary\Error;
 use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
+use SilverStripe\ORM\ValidationException;
 
 class SyncTask extends BuildTask
 {
@@ -65,14 +66,18 @@ class SyncTask extends BuildTask
             $count = 0;
 
             foreach(['image', 'raw', 'video'] as $resourceType) {
-                $data = $this->getPageFromCloudinary($resourceType);
-                while ($data && count($data['resources'])) {
-                    array_walk($data['resources'], array($this, 'addOrUpdateResource'));
-                    $count+= count($data['resources']);
+                try {
+                    $data = $this->getPageFromCloudinary($resourceType);
+                    while ($data && count($data['resources'])) {
+                        array_walk($data['resources'], array($this, 'addOrUpdateResource'));
+                        $count+= count($data['resources']);
 
-                    $data = (array_key_exists('next_cursor', $data)) ?
-                        $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
-                        false;
+                        $data = (array_key_exists('next_cursor', $data)) ?
+                            $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
+                            false;
+                    }
+                } catch (ValidationException $e) {
+                    continue;
                 }
             }
             $timeInPastToSync = static::config()->get('api_start_at');
