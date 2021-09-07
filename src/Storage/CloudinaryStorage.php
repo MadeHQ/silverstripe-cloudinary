@@ -5,14 +5,20 @@ namespace MadeHQ\Cloudinary\Storage;
 use SilverStripe\Assets\Storage;
 use Cloudinary;
 use Cloudinary\Api;
+use Cloudinary\Error;
 use Cloudinary\Uploader;
+use MadeHQ\Cloudinary\Utils\Utils;
+use Normalizer;
 use SilverStripe\Assets\File;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Versioned\Versioned;
 
 class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
 {
     use Configurable;
+
+    private static $do_exists_check = false;
 
     /**
      * See (https://cloudinary.com/documentation/upload_images) for a list of options for uploading
@@ -212,12 +218,23 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
     }
 
     /**
+     * Also outputs a header for filename being checked
+     *
+     * Option to check with Cloudinary if the file exists or just assume `true`
+     *
      * @inheritdoc
      */
     public function exists($filename, $hash, $variant = null)
     {
-        if (!\headers_sent()) {
-            @header(sprintf('Checking-%s: %s', rawurlencode($hash), $filename));
+        if (!\headers_sent() && Director::isDev()) {
+            header(sprintf('File-exists-check: %s', $filename), false);
+        }
+        if (static::config()->get('do_exists_check')) {
+            $file = File::get_one(File::class, [
+                'FileFilename' => $filename,
+                'FileHash' => $hash,
+            ]);
+            return Utils::exists_in_cloudinary($file);
         }
         return true;
     }
@@ -260,13 +277,31 @@ class CloudinaryStorage implements Storage\AssetStore, Storage\AssetStoreRouter
                 // Don't want to start appending extensions to the PublicID :O
                 $newName = preg_replace('/\.\w+$/', '', $newName);
             }
-            if ($file->File->PublicID !== $newName) {
-                $uploadResult = Uploader::rename($file->File->PublicID, $newName, ['overwrite' => true]);
-                $file->File->PublicID = $uploadResult['public_id'];
-                $file->File->Variant = $uploadResult['version'];
-                $file->write();
+            if (static::remove_accents($file->File->PublicID) !== static::remove_accents($newName)) {
+                try {
+                    $uploadResult = Uploader::rename($file->File->PublicID, $newName, ['overwrite' => true]);
+                    $file->File->PublicID = $uploadResult['public_id'];
+                    $file->File->Variant = $uploadResult['version'];
+                    $file->write();
+                } catch (Error $e) {
+                    if ($e->getCode() === 404) {
+                        $file->delete();    // Not found on Cloudinary so delete
+                    }
+                }
             }
         }
+    }
+
+    /**
+     * Removes Accents/Umlaut fromt the string
+     * @see (https://stackoverflow.com/questions/27680624/compare-two-string-and-ignore-but-not-replace-accents-php#answer-67381756)
+     *
+     * @param string
+     * @return string
+     */
+    private static function remove_accents($str)
+    {
+        return preg_replace('/[\x{0300}-\x{036f}]/u', '', normalizer_normalize($str, Normalizer::FORM_D));
     }
 
     /**

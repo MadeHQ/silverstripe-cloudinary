@@ -10,6 +10,7 @@ use Cloudinary\Api;
 use Cloudinary\Api\RateLimited;
 use Cloudinary\Error;
 use MadeHQ\Cloudinary\Model\Image;
+use MadeHQ\Cloudinary\Utils\Utils;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
 use SilverStripe\ORM\ValidationException;
@@ -117,34 +118,8 @@ class SyncTask extends BuildTask
             if (!$file->File->PublicID) {
                 continue;
             }
-            $opts = [
-                'resource_type' => $file->File->ResourceType,
-                'version' => $file->File->Variant,
-            ];
-            $url = Cloudinary::cloudinary_url($file->File->PublicID, $opts);
-            if ($url) {
-                $restResponse = static::curl_head_info($url);
-                if ($restResponse['http_code'] === 404) {
-                    // Not found on Cloudinary
-                    $file->doUnpublish();
-                    $file->doArchive();
-                }
-            } else {
-                // No URL
-                $file->doUnpublish();
-                $file->doArchive();
-            }
+            Utils::exists_in_cloudinary($file);
         }
-    }
-
-    private static function curl_head_info($url)
-    {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_exec($ch);
-        $info = curl_getinfo($ch);
-        curl_close($ch);
-        return $info;
     }
 
     private function getPageFromCloudinary($resourceType, $cursor = null)

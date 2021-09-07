@@ -50,7 +50,7 @@ class FileExtension extends DataExtension implements Flushable
         $this->owner->File->Hash = CloudinaryStorage::getHash($filename, $this->owner->File->Variant);
         $this->owner->write();
 
-        if ($resource['access_mode'] === 'public') {
+        if (array_key_exists('access_mode', $resource) && $resource['access_mode'] === 'public') {
             $this->owner->copyVersionToStage(Versioned::DRAFT, Versioned::LIVE);
         }
     }
