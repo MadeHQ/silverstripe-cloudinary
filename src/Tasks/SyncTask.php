@@ -73,7 +73,7 @@ class SyncTask extends BuildTask
                         array_walk($data['resources'], array($this, 'addOrUpdateResource'));
                         $count+= count($data['resources']);
 
-                        $data = (array_key_exists('next_cursor', $data)) ?
+                        $data = (property_exists($data, 'next_cursor')) ?
                             $this->getPageFromCloudinary($resourceType, $data['next_cursor']) :
                             false;
                     }
