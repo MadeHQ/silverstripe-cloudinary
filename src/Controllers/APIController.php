@@ -13,6 +13,7 @@ use MadeHQ\Cloudinary\Model\Image;
 use SilverStripe\Assets\File;
 use SilverStripe\Assets\Folder;
 use SilverStripe\Core\Convert;
+use SilverStripe\ORM\Queries\SQLUpdate;
 
 class APIController extends Controller// implements PermissionProvider
 {
@@ -72,16 +73,38 @@ class APIController extends Controller// implements PermissionProvider
         if (!$item) {
             throw $this->httpError(400, sprintf('Failed to rename %s', $from));
         }
-        $item->File->PublicID = $to;
-        $parentFolder = Folder::find_or_make(dirname($to));
-        if (!$parentFolder->exists()) {
-            $parentFolder->write();
+
+        $parentID = 0;
+
+        $dirName = dirname($to);
+
+        if ($dirName !== '.') {
+            $parentFolder = Folder::find_or_make($dirName);
+            $parentID = $parentFolder->ID;
         }
-        $item->ParentID = $parentFolder->ID;
+
+        $item->FilePublicID = $to;
+
         $item->write();
+
+        SQLUpdate::create('File')
+            ->addWhere([ 'ID = ?' => $item->ID ])
+            ->addAssignments([ 'ParentID' => $parentID ])
+            ->execute();
+
         if ($item->isPublished()) {
             $item->publishSingle();
+
+            SQLUpdate::create('File_Live')
+                ->addWhere([ 'ID = ?' => $item->ID ])
+                ->addAssignments([ 'ParentID' => $parentID ])
+                ->execute();
         }
+
+        SQLUpdate::create('File_Versions')
+            ->addWhere([ 'RecordID = ?' => $item->ID, 'Version' => $item->Version ])
+            ->addAssignments([ 'ParentID' => $parentID ])
+            ->execute();
 
         $this->extend('updateRenameResource', $item, $data);
 

@@ -14,7 +14,7 @@
     }
   ],
   "require": {
-    "cloudinary/cloudinary_php": "^2",
+    "cloudinary/cloudinary_php": "1.20.0",
     "php": ">=7.0.0",
     "silverstripe/assets": "^1",
     "silverstripe/asset-admin": "^1"
