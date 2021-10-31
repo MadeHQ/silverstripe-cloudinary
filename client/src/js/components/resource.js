@@ -254,9 +254,9 @@ export default class Resource extends Component {
                                                 <span>None</span>
                                             </label>
 
-                                            {top_colours.map(({colour}) => {
+                                            {top_colours.map(({colour}, index) => {
                                                 return (
-                                                    <label className={classnames('cloudinary-field__colour', foreground_colour === colour && 'cloudinary-field__colour--selected')} style={{ backgroundColor: colour }}>
+                                                    <label key={index} className={classnames('cloudinary-field__colour', foreground_colour === colour && 'cloudinary-field__colour--selected')} style={{ backgroundColor: colour }}>
                                                         <input type="radio" checked={ foreground_colour === colour } value={ colour } onChange={ this.updateFgColour } />
                                                         <span>{ colour }</span>
                                                     </label>
@@ -282,9 +282,9 @@ export default class Resource extends Component {
                                                 <span>None</span>
                                             </label>
 
-                                            {top_colours.map(({colour}) => {
+                                            {top_colours.map(({colour}, index) => {
                                                 return (
-                                                    <label className={classnames('cloudinary-field__colour', background_colour === colour && 'cloudinary-field__colour--selected')} style={{ backgroundColor: colour }}>
+                                                    <label key={index} className={classnames('cloudinary-field__colour', background_colour === colour && 'cloudinary-field__colour--selected')} style={{ backgroundColor: colour }}>
                                                         <input type="radio" checked={ background_colour === colour } value={ colour } onChange={ this.updateBgColour } />
                                                         <span>{ colour }</span>
                                                     </label>
@@ -306,6 +306,8 @@ export default class Resource extends Component {
 
 Resource.propTypes = {
     public_id: PropTypes.string.isRequired,
+    resource_type: PropTypes.string.isRequired,
+    top_colours: PropTypes.array.isRequired,
     name: PropTypes.string.isRequired,
     title: PropTypes.string,
     description: PropTypes.string,

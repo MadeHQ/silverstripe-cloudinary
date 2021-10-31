@@ -5,7 +5,7 @@ import Field from './components/field';
 
 jQuery.noConflict();
 
-jQuery.entwine('ss', ($) => {
+jQuery.entwine('ss', $ => {
     $('[data-resource-type]').entwine({
         HolderInstance: null,
 

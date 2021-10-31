@@ -1,10 +1,15 @@
+/* global CLOUDINARY_CONFIG, cloudinary,  */
 import React, { Component } from 'react';
 import { get, first, isObject, isArray, differenceBy, concat, last } from 'lodash';
 import PropTypes from 'prop-types';
+import jQuery from 'jquery';
 
 import Image from './image';
 import Video from './video';
 import File from './file';
+import Audio from './audio';
+
+jQuery.noConflict();
 
 export default class Field extends Component {
     constructor(props) {
@@ -345,6 +350,7 @@ Field.propTypes = {
     resourceType: PropTypes.string.isRequired,
     buttonLabel: PropTypes.string.isRequired,
     isMultiple: PropTypes.bool.isRequired,
+    gravityOptions: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     maxFiles: PropTypes.number,
     fields: PropTypes.string,

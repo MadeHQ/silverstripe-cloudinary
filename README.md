@@ -110,7 +110,7 @@ public function getCMSFields()
 
 #### Additional methods
 
-`ImageField`, `MediaField`, and `FileField`provides the following options:
+`ImageField`, `MediaField`, and `FileField` provides the following options:
 
 | Method                             | Description                                                  | Default |
 | ---------------------------------- | ------------------------------------------------------------ | ------- |
@@ -377,7 +377,9 @@ This version of the module is still in its infancy. We will flesh it out as our 
 - [ ] Document the code further
 - [ ] Update the README to include descriptions about the transformation methods
 - [ ] Make the supplemtary fields easily extensible
+- [ ] Reduce duplicate code in the React components
 - [ ] Provide more transformations
+- [ ] Provide better support for colours
 
 [^1]: Username in this instance is interchangeable with email. Provide the email you used to sign up for Cloudinary.
 [^2]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.
