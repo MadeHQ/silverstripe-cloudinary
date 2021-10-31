@@ -1,16 +1,35 @@
 <?php
 
-/**
- * Silverstripe Cloudinary Module configuration file.
- *
- * PHP version >=5.6.0
- *
- * For full copyright and license information, please view the
- * LICENSE.md file that was distributed with this source code.
- *
- * @package Vendor\Module
- * @author Made Media <developers@mademedia.co.uk>
- * @copyright 2017 Made Media Ltd.
- * @license https://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @link https://github.com/MadeHQ/silverstripe-cloudinary.git
- */
+use SilverStripe\Admin\CMSMenu;
+use SilverStripe\AssetAdmin\Controller\AssetAdmin;
+use SilverStripe\Core\Config\Config;
+use Cloudinary\Configuration\Configuration;
+use Cloudinary\Utils;
+
+CMSMenu::remove_menu_class(AssetAdmin::class);
+
+$settings = Config::inst()->get('MadeHQ\\Cloudinary');
+
+$options = ['cloud_name', 'api_key', 'api_secret', 'username'];
+
+$valid = true;
+
+foreach ($options as $name) {
+    if (array_key_exists($name, $settings) === false || empty($settings[$name]) === true) {
+        $valid = false;
+    }
+}
+
+if ($valid === true) {
+    Configuration::instance([
+        'cloud' => [
+            'cloud_name' => $settings['cloud_name'],
+            'api_key' => $settings['api_key'],
+            'api_secret' => $settings['api_secret'],
+            'signature_algorithm' => Utils::ALGO_SHA256,
+        ],
+        'url' => [
+            'secure' => true,
+        ],
+    ]);
+}

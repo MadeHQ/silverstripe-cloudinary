@@ -1,87 +1,78 @@
 {
-  "name": "silverstripe-cloudinary",
-  "version": "4.0.0",
-  "description": "Replaces the Silverstripe File management with Cloudinary",
-  "bin": {
-    "webpack": "./node_modules/webpack/webpack.js"
-  },
-  "engines": {
-    "node": "^6.x"
-  },
-  "scripts": {
-    "build": "yarn && yarn test && NODE_ENV=production webpack -p --bail --progress",
-    "buildNoTest": "NODE_ENV=production webpack -p --bail --progress",
-    "dev": "NODE_ENV=development webpack --progress",
-    "watch": "NODE_ENV=development webpack --watch --progress",
-    "watchProd": "NODE_ENV=production webpack --watch --progress",
-    "css": "WEBPACK_CHILD=css npm run build",
-    "test": "jest",
-    "coverage": "jest --coverage",
-    "lint": "eslint client/src && sass-lint -v",
-    "js-fix": "eslint client/src --fix"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:MadeHQ/silverstripe-cloudinary.git"
-  },
-  "keywords": [
-    "silverstripe",
-    "cloudinary"
-  ],
-  "author": "Made Media Ltd.",
-  "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/MadeHQ/silverstripe-cloudinary/issues"
-  },
-  "dependencies": {
-    "apollo-client": "^0.5.5",
-    "babel-polyfill": "^6.26.0",
-    "bootstrap": "4.0.0-beta",
-    "chosen-js": "^1.5.1",
-    "classnames": "^2.2.5",
-    "cloudinary-jquery-file-upload": "^2.3.0",
-    "deep-equal": "^1.0.1",
-    "deep-freeze-strict": "^1.1.1",
-    "detect-browser": "^1.12.0",
-    "es6-promise": "^3.1.2",
-    "graphql-fragments": "^0.1.0",
-    "graphql-tag": "^0.1.17",
-    "history": "^2.1.2",
-    "isomorphic-fetch": "https://registry.npmjs.org/isomorphic-fetch/-/isomorphic-fetch-2.2.1.tgz",
-    "jquery": "^3.2.1",
-    "jquery-sizes": "^0.33.0",
-    "json-js": "^1.1.2",
-    "merge": "^1.2.0",
-    "modernizr": "^3.5.0",
-    "moment": "^2.18.1",
-    "page.js": "^4.13.3",
-    "qs": "^6.1.0",
-    "react": "15.3.1",
-    "react-addons-css-transition-group": "15.3.1",
-    "react-addons-test-utils": "15.3.1",
-    "react-apollo": "^0.7.0",
-    "react-bootstrap-ss": "^0.30.10",
-    "react-dnd": "^2.2.3",
-    "react-dnd-html5-backend": "^2.2.3",
-    "react-dom": "15.3.1",
-    "react-redux": "^4.4.1",
-    "react-router": "^2.4.1",
-    "react-router-redux": "^4.0.5",
-    "react-select": "^1.0.0-rc.5",
-    "redux": "https://registry.npmjs.org/redux/-/redux-3.0.5.tgz",
-    "redux-form": "^6.0.2",
-    "redux-thunk": "^2.1.0",
-    "tether": "^1.3.2",
-    "toposort": "^1.0.3",
-    "url": "^0.11.0",
-    "validator": "^6.1.0"
-  },
-  "devDependencies": {
-    "@silverstripe/eslint-config": "^0.0.2",
-    "@silverstripe/webpack-config": "^0.4.0",
-    "babel-jest": "^20.0.3",
-    "copy-webpack-plugin": "^4.2.0",
-    "jest-cli": "^19.0.2"
-  },
-  "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary"
+    "name": "silverstripe-cloudinary",
+    "version": "2.0.0",
+    "description": "Adds the Cloudinary browser to the CMS.",
+    "bin": {
+        "webpack": "./node_modules/webpack/webpack.js"
+    },
+    "engines": {
+        "node": "^12.22.7"
+    },
+    "config": {
+        "paths": {
+            "js": "client/src/js",
+            "css": "client/src/css",
+            "dist": "client/dist"
+        }
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "npm run lint && npm run build-js && npm run build-css",
+        "build-js": "NODE_ENV=production webpack --progress",
+        "build-css": "npm run build-css-sass && npm run build-css-postcss",
+        "build-css-sass": "dart-sass $npm_package_config_paths_css/bundle.scss $npm_package_config_paths_dist/bundle.css",
+        "build-css-postcss": "postcss --use autoprefixer --use postcss-pxtorem --use cssnano --replace $npm_package_config_paths_dist/bundle.css --map",
+        "lint": "npm run lint-js && npm run lint-css",
+        "lint-js": "eslint webpack.config.js $npm_package_config_paths_js",
+        "lint-css": "stylelint $npm_package_config_paths_css/{**/*,*}.scss --custom-syntax postcss-scss",
+        "watch": "concurrently --kill-others 'npm run watch-js' 'npm run watch-css'",
+        "watch-js": "webpack --watch",
+        "watch-css": "watch 'npm run lint-css && npm run build-css' $npm_package_config_paths_css"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MadeHQ/silverstripe-cloudinary.git"
+    },
+    "keywords": [
+        "silverstripe",
+        "cloudinary",
+        "mademedia",
+        "madehq"
+    ],
+    "author": "Hiren Patel <hiren.patel@made.media>",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/MadeHQ/silverstripe-cloudinary/issues"
+    },
+    "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary#readme",
+    "devDependencies": {
+        "@babel/core": "^7.15.8",
+        "@babel/eslint-parser": "^7.15.8",
+        "@babel/preset-env": "^7.15.8",
+        "@babel/preset-react": "^7.14.5",
+        "autoprefixer": "^10.3.7",
+        "babel-loader": "^8.2.3",
+        "babel-plugin-lodash": "^3.3.4",
+        "concurrently": "^6.3.0",
+        "cssnano": "^5.0.8",
+        "eslint": "^8.1.0",
+        "eslint-plugin-react": "^7.26.1",
+        "eslint-webpack-plugin": "^3.0.1",
+        "path": "^0.12.7",
+        "postcss": "^8.3.11",
+        "postcss-cli": "^9.0.1",
+        "postcss-pxtorem": "^6.0.0",
+        "postcss-scss": "^4.0.1",
+        "stylelint": "^14.0.1",
+        "stylelint-config-standard": "^23.0.0",
+        "uglifyjs-webpack-plugin": "^2.2.0",
+        "watch": "^1.0.2",
+        "webpack": "^5.60.0",
+        "webpack-cli": "^4.9.1"
+    },
+    "dependencies": {
+        "cloudinary-core": "^2.12.0",
+        "dart-sass": "^1.25.0",
+        "lodash": "^4.17.21"
+    }
 }

@@ -1,101 +1,383 @@
-# Silverstripe Cloudinary Module
+## SilverStripe Cloudinary
 
-This module provides fields & DataObjects for managing files, audio & images that are stored in Cloudinary.
+Bring the power of [Cloudinary](https://cloudinary.com/) to SilverStripe!
 
-## Installation
+Cloudinary is a cloud-based media management platform that provides an easy solution for developers to store, manage, and serve highly optimised on-the-fly digital assets.
 
-```bash
-composer require mademedia/silverstripe-cloudinary
+### Table of Contents
+
+* [Inspiration](#silverstripe-has-a-asset-manager-why-do-i-need-this)
+* [Setup a free Cloudinary account](https://cloudinary.com/)
+* [Provide Cloudinary config](#provide-cloudinary-config)
+* [Create database fields](#create-database-fields)
+* [Set form fields](#set-form-fields)
+* [Rendering the assets](#rendering-the-assets)
+* [Supplementary methods](#supplementary-methods)
+* [Global configuration](#global-configuration)
+* [Multi resource fields](#multi-resource-fields)
+* [Contributing](#contributing)
+* [Todo](#todo)
+
+### SilverStripe has a asset manager, why do I need this?
+
+The out of the box asset manager has one fatal flaw: the assets live on the server. You may be thinking "well, duh, where else are they gonna live?"
+
+Assets being stored a server is fine for smaller sites that don't require much more than a server and some good caching. It becomes a problem when you have a multi-server setup and all instances need to serve the same asset.
+
+Keeping assets in sync across multiple servers is a real pain in the ass. Yes, it could be automated, but it needs to be done, which means there has to be some devop nerd who has to put the processes in place for it to happen, and some code monkey who has to be on hand in case something inadvertently goes wrong. A real headache.
+
+The simplest solution is to move the assets to the cloud. Here's that voice again saying "there's already an S3 module that does this."
+
+Yes, there is. But you have to go through putting it in place. Then you have to setup S3, probably stick a caching layer in there somewhere. It can get pretty time consuming, especially if you're doing it frequently.
+
+Cloudinary fixes that problem.
+
+It offers a media manager, cloud storage, on-the-fly asset manipulations and transformations, and much more. The only thing you have to worry about is keeping track of the asset in the database.
+
+Actually, that's a lie. You don't even have to worry about that, because this module takes care of that for you.
+
+### Provide Cloudinary config
+
+You'll need to provide the Cloud Name, API Key, API Secret, and Username[^1]. These values are the core requirements that enables the module to talk to Cloudinary.
+
+Put these values in any YAML file you may be using to configure other parts of SilverStripe.
+
+I believe a fresh install of SilverStripe comes with a `_config/mysite.yml` file. If you're having trouble fiding this, you may have renamed it.
+
+```yaml
+MadeHQ\Cloudinary:
+    cloud_name: 'CLOUDINARY_CLOUD_NAME'
+    api_key: 'CLOUDINARY_API_KEY'
+    api_secret: 'CLOUDINARY_API_SECRET'
+    username: 'CLOUDINARY_USERNAME'
 ```
 
-## Usage
+### Create database fields
 
-### Setup
+The module comes provides support for six database fields:
+
+* `CloudinaryImage` – store an image
+* `CloudinaryMedia` – store a video or audio[^2]
+* `CloudinaryFile` – store a raw file such as documents
+* `CloudinaryMultiImage` – store multiple images
+* `CloudinaryMultiMedia` – store multiple videos or audio[^2]
+* `CloudinaryMultiFile` – store multiple files
+
+Use these as you would use any other database fields – add an entry in the `$db` static:
 
 ```php
-<?php
-
-putenv('CLOUDINARY_URL=cloudinary://<API Key>:<API Secret>@<Cloud name>');
-```
-
-### Add DataObjects
-
-```php
-<?php
-
-use MadeHQ\Cloudinary\Model\FileLink;
-use MadeHQ\Cloudinary\Model\ImageLink;
-
-private static $has_one = [
-    '<FileVariableName>' => FileLink::class,
-    '<ImageVariableName>' => ImageLink::class,
+private static $db = [
+    'MainImage' => 'CloudinaryImage',
+    'BackgroundVideo' => 'CloudinaryMedia',
+    'Brochure' => 'CloudinaryFile',
+    'ImageGallery' => 'CloudinaryMultiImage',
+    'VideoGallery' => 'CloudinaryMultiMedia',
+    'Downloads' => 'CloudinaryMultiFile',
 ];
 ```
 
-### Add CMSFields
+The beauty of these fields is at their core they're just text fields, so absolutely no relationships or additional tables.
+
+### Set form fields
+
+All classes that extends `DataObject` excluding `SiteTree` should automatically scaffold the necessary form field based on the database field.
+
+For `SiteTree` extended classes, including `Page`, the form fields must be manually provided via `getCMSFields`:
 
 ```php
-<?php
+use MadeHQ\Cloudinary\Forms\ImageField;
+use MadeHQ\Cloudinary\Forms\MediaField;
+use MadeHQ\Cloudinary\Forms\FileField;
 
-use MadeHQ\Cloudinary\Forms\UploadImageField;
-use MadeHQ\Cloudinary\Forms\UploadFileField;
-
+// [...]
 public function getCMSFields()
 {
     $fields = parent::getCMSFields();
-    $fields->addFieldsToTab(
-        'Root.Media',
-        [
-            UploadFileField::create('FileVariableName'),
-            UploadImageField::create('ImageVariableName'),
-        ]
-    );
+
+    // Single asset fields
+    $fields->addToTab('Root.Main', ImageField::create('MainImage'));
+    $fields->addToTab('Root.Main', MediaField::create('BackgroundVideo'));
+    $fields->addToTab('Root.Main', FileField::create('Brochure'));
+
+    // Multiple asset fields
+    $fields->addToTab('Root.Main', ImageField::create('ImageGallery')->setMultiple(true));
+    $fields->addToTab('Root.Main', MediaField::create('VideoGallery')->setMultiple(true));
+    $fields->addToTab('Root.Main', FileField::create('Downloads')->setMultiple(true));
+
     return $fields;
 }
 ```
 
-### Output in template
+#### Additional methods
 
-#### Files
+`ImageField`, `MediaField`, and `FileField`provides the following options:
 
-Adding files to SilverStripe templates
+| Method                             | Description                                                  | Default |
+| ---------------------------------- | ------------------------------------------------------------ | ------- |
+| `->setMultiple(boolean $multiple)` | Sets the field to accept multiple files - for use where `CloudinaryImage`, `CloudinaryMedia`, `CloudinaryFile` database fields are used. | `false` |
+| `->setMaxFiles(int $maxFiles)` | Sets the maximum number of files that can be chosen when a field is set to accept multiple files. | `25` |
+| `->setButtonLabelSingular(string $label)` | Sets what label appears on the Cloudinary picker button for single asset mode. | `Choose Image` for `ImageField`<br />`Choose Media` for `MediaField`<br />`Choose File` for `FileField` |
+| `->setButtonLabelPlural(string $label)` | Sets what label appears on the Cloudinary picker button for multiple asset mode. | `Choose Images` for `ImageField`<br />`Choose Media` for `MediaField`<br />`Choose Files` for `FileField` |
+| `->setFields(array $fields)` | Sets what supplementary fields are shown along with the Cloudinary picker to provide additional information about the asset (see below for list of supported fields). | `BaseField::FIELD_TITLE`, `BaseField::FIELD_DESCRIPTION`, and `BaseField::FIELD_CREDIT` for `ImageField`<br />`BaseField::FIELD_TITLE`, and `BaseField::FIELD_DESCRIPTION` for `MediaField`<br />`BaseField::FIELD_TITLE` for `FileField` |
 
-```ss
-<%-- File URL --%>
-$FileVariableName.URL
+**List of supplementary fields supported by each core field type**
 
-<%-- File Title --%>
-$FileVariableName.Title
-```
+| Field                          | `ImageField` | `MediaField` | `FileField` |
+| ------------------------------ | ------------ | ------------ | ----------- |
+| `BaseField::FIELD_TITLE`       | &check;      | &check;      | &check;     |
+| `BaseField::FIELD_DESCRIPTION` | &check;      | &check;      | &check;     |
+| `BaseField::FIELD_CREDIT`      | &check;      | &check;      |             |
+| `BaseField::FIELD_GRAVITY`     | &check;      | &check;      |             |
+| `BaseField::FIELD_FG_COLOUR`   | &check;      |              |             |
+| `BaseField::FIELD_BG_COLOUR`   | &check;      |              |             |
+
+### Rendering the assets
+
+To give the developer more control over how they use the asset, this module will simply output the URL to the asset instead of outputting any HTML tags.
+
+There's not an easy way to go around outputting a HTML tag directly, because each site may have a different requirement, and it's simply not enough to just output an `img` tag in the day of modern web development – we now have to consider different screen sizes, alternative file formats, etc.
+
+It's just easier to give the developer a URL and they choose to deal with that as they please.
 
 #### Images
 
-Adding images to SilverStripe templates
+Render an image as is:
 
-```ss
-<%-- Original Image URL --%>
-$ImageVariableName.SecureURL
-
-<%-- Original Image Credit --%>
-$ImageVariableName.Credit
-
-<%-- Original Image Caption --%>
-$ImageVariableName.Caption
-
-<%-- Original Image Gravity --%>
-$ImageVariableName.Gravity
-
-<%-- Original Image at a specific size fill will default to "fill" --%>
-$ImageVariableName.URL(100, 200)
-
-<%-- Original Image at a specific size with a specific format --%>
-$ImageVariableName.URL(100, 200, 'fill', 'png')
+```html
+<img src="$MainImage" alt="$MainImage.Description" />
 ```
 
-## Development
+The `description` in this example is one of the supplementary fields.
 
-JS Amends are done in `client\src\js` and `client\src\styles`
+Render a resized image:
 
-After changes you can run `yarn build` or during development use `yarn watch`
+```html
+<img src="$MainImage.Fill(640, 480)" alt="$MainImage.Description" />
+```
 
-Also required for development is `yarn`
+Render a picture tag for better device support and art direction:
+
+```html
+<picture>
+    <source media="(max-width: 420px)" srcset="$MainImage.Fill(420, 220), $MainImage.Fill(420, 220).DPR(2.0) 2x">
+    <source media="(min-width: 421px) and (max-width: 768px)" srcset="$MainImage.Fill(708, 371), $MainImage.Fill(708, 371).DPR(2.0) 2x">
+    <source media="(min-width: 769px) and (max-width: 1023px)" srcset="$MainImage.Fill(963, 504), $MainImage.Fill(963, 504).DPR(2.0) 2x">
+    <source media="(min-width: 1024px) and (max-width: 1366px)" srcset="$MainImage.Fill(375, 196), $MainImage.Fill(375, 196).DPR(2.0) 2x">
+    <source media="(min-width: 1367px) and (max-width: 1920px)" srcset="$MainImage.Fill(560, 293), $MainImage.Fill(560, 293).DPR(2.0) 2x">
+    <source media="(min-width: 1921px)" srcset="$MainImage.Fill(1208, 632), $MainImage.Fill(1208, 632).DPR(2.0) 2x">
+    <img src="$MainImage.Fill(420, 220)" alt="$MainImage.Description">
+</picture>
+```
+
+##### Supported transformations
+
+| Transformation                    | Description |
+| --------------------------------- | ----------- |
+| `$Fill(width, height, gravity)` |             |
+| `$FillByWidth(width, gravity)`   |             |
+| `$FillByHeight(height, gravity)` |             |
+| `$LimitFill(width, height, gravity)` |             |
+| `$LimitFillByWidth(width, gravity)`   |             |
+| `$LimitFillByHeight(height, gravity)` |             |
+| `$Crop(width, height, gravity)` |             |
+| `$CropByWidth(width, gravity)`   |             |
+| `$CropByHeight(height, gravity)` |             |
+| `$Thumb(width, height, gravity)` |             |
+| `$ThumbByWidth(width, gravity)`   |             |
+| `$ThumbByHeight(height, gravity)` |             |
+| `$Scale(width, height, aspectRatio)` |             |
+| `$ScaleByWidth(width, aspectRatio)`   |             |
+| `$ScaleByHeight(height, aspectRatio)` |             |
+| `$Fit(width, height, aspectRatio)` |             |
+| `$FitByWidth(width, aspectRatio)`   |             |
+| `$FitByHeight(height, aspectRatio)` |             |
+| `$Limit(width, height, aspectRatio)` |             |
+| `$LimitByWidth(width, aspectRatio)`   |             |
+| `$LimitByHeight(height, aspectRatio)` |             |
+| `$MinimumFit(width, height, aspectRatio)` |             |
+| `$MinimumFitByWidth(width, aspectRatio)`   |             |
+| `$MinimumFitByHeight(height, aspectRatio)` |             |
+| `$Quality(quality)` |             |
+| `$Format(format)` |             |
+| `$DPR(dpr)` |             |
+
+#### Videos
+
+Render a cross-browser compatible video:
+
+```html
+<video autoplay muted>
+    <source src="$MainVideo.FitByWidth(1024).Format('videoWebm')" type="video/webm">
+    <source src="$MainVideo.FitByWidth(1024).Format('videoMp4')" type="video/mp4">
+</video>
+```
+
+##### Supported transformations
+
+| Transformation                    | Description |
+| --------------------------------- | ----------- |
+| `$Fill(width, height, gravity)` |             |
+| `$FillByWidth(width, gravity)`  |             |
+| `$FillByHeight(height, gravity)` |             |
+| `$Crop(width, height, gravity)` |             |
+| `$CropByWidth(width, gravity)`  |             |
+| `$CropByHeight(height, gravity)` |             |
+| `$Scale(width, height, aspectRatio)` |             |
+| `$ScaleByWidth(width, aspectRatio)`  |             |
+| `$ScaleByHeight(height, aspectRatio)` |             |
+| `$Fit(width, height, aspectRatio)` |             |
+| `$FitByWidth(width, aspectRatio)`  |             |
+| `$FitByHeight(height, aspectRatio)` |             |
+| `$Limit(width, height, aspectRatio)` |             |
+| `$LimitByWidth(width, aspectRatio)`  |             |
+| `$LimitByHeight(height, aspectRatio)` |             |
+| `$Quality(quality)` |             |
+| `$Format(format)` |             |
+| `$VideoCodec(videoCodec)` |             |
+| `$BitRate(bitRate)` |             |
+| `$VideoSampling(videoSampling)` |             |
+| `$AudioCodec(audioCodec)` |             |
+| `$AudioFrequency(audioFrequency)` |             |
+
+#### Files
+
+Render a download link for a file:
+
+```html
+<a href="$Brochure" target="_blank">Download our brochure</a>
+```
+
+##### Supported transformations
+
+Cloudinary has no support for transforming files.
+
+### Supplementary methods
+
+In addition to the transformation methods, the module also exposes additional methods to help output information about the asset themselves.
+
+Some of these are available for all fields as standard while others can be filled in by content editors, given the corresponding fields have been enabled using the `->setFields` method documented above.
+
+| Method                                           | Description                                                  | Images | Media | Files |
+| ------------------------------------------------ | ------------------------------------------------------------ | ------ | ----- | ----- |
+| `->getPublicID()` or `$PublicID`                 | Returns the Cloudinary ID of the resource.                | &check; | &check; | &check; |
+| `->getName()` or `$Name`                         | Returns the uploaded name of the resource.                | &check; | &check; | &check; |
+| `->getTitle()` or `$Title`                       | Returns the friendly name of the resource if enabled and filled in otherwise will fallback to the name. | &check; | &check; | &check; |
+| `->getDescription()` or `$Description`           | Returns the description of the resource if enabled and filled in. | &check; | &check; | &check; |
+| `->getFormat()` or `$Format`                     | Returns the file format of the resource.       | &check; | &check; | &check; |
+| `->getResourceType()` or `$ResourceType`         | Returns the Cloudinary resource type. Will be either `image`, `media`, or `raw`. | &check; | &check; | &check; |
+| `->getActualType()` or `$ActualType`             | Returns the actual type of the resource. This exists to differenciate between audio and video since Cloudinary refers to them as simply `media`. Will be either `image`, `video`, `audio`, or `raw`. | &check; | &check; | &check; |
+| `->getVersion()` or `$Version`                   | Returns the Cloudinary version of the resource.           | &check; | &check; | &check; |
+| `->getFileSize()` or `$FileSize`                 | Returns the file size of the resource in bytes.           | &check; | &check; | &check; |
+| `->getFriendlyFileSize()` or `$FriendlyFileSize` | Returns the human readable file size of the resource e.g. `20K`, `1M`, etc. | &check; | &check; | &check; |
+| `->getCredit()` or `$Credit`                     | Returns the copyright attribution of the resource if enabled and filled in. The module will automatically try to find the attribution from resource meta data such as the exif data from a photo. | &check; | &check; |       |
+| `->getTopColours()` or `$TopColours` | Returns a list of most prominent colours from an image. |&check;|||
+| `->getForegroundColour()` or `$ForegroundColour` | Returns the foreground colour if enabled and selected. |&check;|||
+| `->getBackgroundColour()` or `$BackgroundColour` | Returns the background colour if enabled and selected. |&check;|||
+| `->getDuration` or `$Duration` | Returns the duration of a video or audio resource. ||&check;||
+
+### Global configuration
+
+Some global configuration options are provided in case your requirements don't change across the project, or to further enhance the module.
+
+These can go inside a YAML file you may be using to configure your SilverStripe such as the `_config/mysite.yml`.
+
+```yaml
+MadeHQ\Cloudinary\FieldType\DBImageResource:
+    # Set the default output format of the images
+    default_format: 'auto'
+    # Set the default output quality of the images
+    default_quality: 'auto'
+
+MadeHQ\Cloudinary\Forms\BaseField:
+    # Set the default number of files that can be selected for all the resources in it's multiple mode
+    default_max_files: 25
+
+MadeHQ\Cloudinary\Forms\ImageField:
+    # Same as above but only for images
+    default_max_files: 25
+    # Set the list of available gravity options to choose from for images
+    default_gravity_options:
+        auto: 'Auto'
+        auto:face: 'Auto (Face)'
+        auto:faces: 'Auto (Faces)'
+        auto:no_faces: 'Auto (No Faces)'
+        center: 'Center'
+        east: 'East'
+        face: 'Face'
+        faces: 'Faces'
+        face:auto: 'Face (Auto)'
+        faces:auto: 'Faces (Auto)'
+        face:center: 'Face (Center)'
+        faces:center: 'Faces (Center)'
+        north: 'North'
+        north_east: 'North East'
+        north_west: 'North West'
+        south: 'South'
+        south_east: 'South East'
+        south_west: 'South West'
+        west: 'West'
+    # Set the default supplementary fields that appear in the CMS
+    default_fields:
+        - title
+        - description
+        - credit
+
+MadeHQ\Cloudinary\Forms\MediaField:
+    # Same as above but only for media
+    default_max_files: 25
+    # Set the list of available gravity options to choose from for media
+    default_gravity_options:
+        auto: 'Auto'
+        center: 'Center'
+        east: 'East'
+        north: 'North'
+        north_east: 'North East'
+        north_west: 'North West'
+        south: 'South'
+        south_east: 'South East'
+        south_west: 'South West'
+        west: 'West'
+    # Set the default supplementary fields that appear in the CMS
+    default_fields:
+        - title
+        - description
+
+MadeHQ\Cloudinary\Forms\FileField:
+    # Same as above but only for files
+    default_max_files: 25
+    # Set the default supplementary fields that appear in the CMS
+    default_fields:
+        - title
+```
+
+### Multi resource fields
+
+As mentioned above, using the `->setMultiple(boolean $multiple)` method on one of the three fields enables support to select multiple resources from Cloudinary. This is great for instances where you're building a carousel, or providing a list of downloads.
+
+At it's core, all this really does is provide each chosen resource as an iterator that can be looped through in the template. The methods, transformation or otherwise, available on each individual resource within the list remains the same as documented above, however, enabling this mode does expose the `->getLink()` or  `$Link` method which can be used to let the end-user download all the assets in single zipped file.
+
+Example usuage:
+
+```html
+<ul>
+    <% loop Downloads %>
+        <li><a href="$Me" target="_blank">$Me.Title ($Me.FriendlyFileSize)</a></li>
+    <% end_loop %>
+</ul>
+
+<p><a href="$Downloads.Link" target="_blank">Download all</a></p>
+```
+
+### Contributing
+
+This version of the module is still in its infancy. We will flesh it out as our scope increases. If you think there's something we're missing out on, feel free to raise an issue and we'll be happy to review and see if it can be accommodated.
+
+### Todo
+
+- [ ] Document the code further
+- [ ] Update the README to include descriptions about the transformation methods
+- [ ] Make the supplemtary fields easily extensible
+- [ ] Provide more transformations
+
+[^1]: Username in this instance is interchangeable with email. Provide the email you used to sign up for Cloudinary.
+[^2]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.
