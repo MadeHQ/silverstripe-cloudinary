@@ -156,7 +156,6 @@ export default class Resource extends Component {
     render() {
         const { name, title, description, credit, gravity, foreground_colour, background_colour } = this.state;
         const { public_id, resource_type, top_colours, gravityOptions } = this.props;
-        console.log(this.state, this.props);
 
         const thumbnail = this.thumbnailUrl();
 

@@ -152,6 +152,7 @@ class API extends RequestHandler
             $return['duration'] = $data['duration'];
             $return['actual_type'] = $isAudio ? 'audio' : 'video';
             $return['gravity'] = $isAudio ? null : 'auto';
+            $return['transformations'] = null;
         } else if ($resourceType === 'image') {
             $return['credit'] = $this->extractCredit($data);
             $return['top_colours'] = $this->extractTopColours($data);
@@ -159,6 +160,7 @@ class API extends RequestHandler
             $return['gravity'] = 'auto';
             $return['foreground_colour'] = null;
             $return['background_colour'] = null;
+            $return['transformations'] = null;
         } else {
             $return['actual_type'] = 'raw';
         }

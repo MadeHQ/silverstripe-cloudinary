@@ -15,6 +15,7 @@ Cloudinary is a cloud-based media management platform that provides an easy solu
 * [Supplementary methods](#supplementary-methods)
 * [Global configuration](#global-configuration)
 * [Multi resource fields](#multi-resource-fields)
+* [Retaining transformations](#retaining-transformations)
 * [Contributing](#contributing)
 * [Todo](#todo)
 
@@ -54,7 +55,7 @@ MadeHQ\Cloudinary:
 
 ### Create database fields
 
-The module comes provides support for six database fields:
+The provides support for six database fields:
 
 * `CloudinaryImage` – store an image
 * `CloudinaryMedia` – store a video or audio[^2]
@@ -110,7 +111,7 @@ public function getCMSFields()
 
 #### Additional methods
 
-`ImageField`, `MediaField`, and `FileField` provides the following options:
+`ImageField`, `MediaField`, and `FileField` provides the following methods:
 
 | Method                             | Description                                                  | Default |
 | ---------------------------------- | ------------------------------------------------------------ | ------- |
@@ -368,6 +369,32 @@ Example usuage:
 <p><a href="$Downloads.Link" target="_blank">Download all</a></p>
 ```
 
+### Retaining transformations
+
+By default, the module will skip any user applied transformations on resources to give the developer more control over how they wish the assets to be displayed.
+
+The reasoning behind this is the developer should control the overall look of the assets including, but not limited to, setting the sizes, crops, effects, etc.
+
+But, we're also aware some content editors may wish to have at least some control over how they want their images to appear, so they may wish to use the media library to pick out their transformations before inserting the asset.
+
+A sensible middle ground to overcome this issue is to let the developer specify a list of transformations that can be applied by content editors.
+
+The module exposes the following configuration option to make this possible:
+
+```yaml
+MadeHQ\Cloudinary\FieldType\DBImageResource:
+    retain_transformations:
+        - effect
+
+MadeHQ\Cloudinary\FieldType\DBMediaResource:
+    retain_transformations:
+        - effect
+        - video_sampling
+        - keyframe_interval
+```
+
+Only the transformations mentioned in the supported transformations documented previously can be retained for the time being. This may change as we add more supported transformations.
+
 ### Contributing
 
 This version of the module is still in its infancy. We will flesh it out as our scope increases. If you think there's something we're missing out on, feel free to raise an issue and we'll be happy to review and see if it can be accommodated.
@@ -376,6 +403,7 @@ This version of the module is still in its infancy. We will flesh it out as our 
 
 - [ ] Document the code further
 - [ ] Update the README to include descriptions about the transformation methods
+- [ ] Update the README to include examples screenshots
 - [ ] Make the supplemtary fields easily extensible
 - [ ] Reduce duplicate code in the React components
 - [ ] Provide more transformations
