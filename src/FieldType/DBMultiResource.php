@@ -45,7 +45,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
         foreach ($json as $item) {
             if ($item->resource_type === 'image') {
                 $item = DBImageResource::create()->setJSON($item);
-            } else if ($item->resource_type === 'image') {
+            } else if ($item->resource_type === 'video') {
                 $item = DBMediaResource::create()->setJSON($item);
             } else {
                 $item = DBFileResource::create()->setJSON($item);

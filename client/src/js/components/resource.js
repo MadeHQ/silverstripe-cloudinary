@@ -155,14 +155,14 @@ export default class Resource extends Component {
 
     render() {
         const { name, title, description, credit, gravity, foreground_colour, background_colour } = this.state;
-        const { public_id, resource_type, top_colours, gravityOptions } = this.props;
+        const { actual_type, public_id, resource_type, top_colours, gravityOptions } = this.props;
 
         const thumbnail = this.thumbnailUrl();
 
         return (
-            <div className="cloudinary-field__item cloudinary-field__item--file">
-                <div className="cloudinary-field__media">
-                    <div className="cloudinary-field__preview">
+            <div className={`cloudinary-field__item cloudinary-field__item--${actual_type}`}>
+                <div className={`cloudinary-field__media cloudinary-field__media--${actual_type}`}>
+                    <div className={`cloudinary-field__preview cloudinary-field__preview--${actual_type}`}>
                         { thumbnail && <img src={ thumbnail } /> }
                     </div>
 
@@ -304,6 +304,7 @@ export default class Resource extends Component {
 }
 
 Resource.propTypes = {
+    actual_type: PropTypes.string.isRequired,
     public_id: PropTypes.string.isRequired,
     resource_type: PropTypes.string.isRequired,
     top_colours: PropTypes.array.isRequired,

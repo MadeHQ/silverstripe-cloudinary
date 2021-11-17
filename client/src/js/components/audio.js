@@ -10,13 +10,13 @@ export default class Audio extends Resource {
         return url(public_id, {
             resource_type: 'video',
             width: 200,
-            height: 200,
-            crop: 'thumb',
+            height: 150,
+            crop: 'fit',
             quality: 'auto',
             fetch_format: 'auto',
             flags: 'waveform',
-            color: '#ecf0f1',
-            background: '#bdc3c7',
+            color: '#5589a7',
+            background: '#fafbfc',
         });
     }
 }

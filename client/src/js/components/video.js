@@ -10,13 +10,11 @@ export default class Video extends Resource {
         return url(public_id, {
             resource_type: 'video',
             width: 200,
-            height: 200,
-            crop: 'fill',
+            height: 150,
+            crop: 'pad',
             quality: 'auto',
-            format: 'gif',
-            audio_codec: 'none',
-            video_sampling: 10,
-            effect: 'loop',
+            format: 'jpg',
+            background: '#000000',
         });
     }
 }

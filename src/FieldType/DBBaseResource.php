@@ -66,11 +66,6 @@ abstract class DBBaseResource extends DBText
     protected static $cloudinary_instance = null;
 
     /**
-     * @var string $resourceType
-     */
-    protected $resourceType = null;
-
-    /**
      * @var array $json
      */
     protected $json = null;
@@ -119,6 +114,8 @@ abstract class DBBaseResource extends DBText
     protected function setJSON(stdClass $json)
     {
         $this->json = $json;
+
+        $this->setValue(json_encode($json));
 
         return $this;
     }

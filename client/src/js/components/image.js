@@ -15,15 +15,22 @@ export default class Image extends Resource {
     }
 
     thumbnailUrl() {
-        const { public_id } = this.props;
+        const { public_id, top_colours } = this.props;
+
+        let background = '#5589a7';
+
+        if (top_colours && top_colours.length) {
+            background = top_colours[0].colour;
+        }
 
         return url(public_id, {
             resource_type: 'image',
             width: 200,
-            height: 200,
-            crop: 'thumb',
+            height: 150,
+            crop: 'pad',
             quality: 'auto',
             fetch_format: 'auto',
+            background: background,
         });
     }
 }
