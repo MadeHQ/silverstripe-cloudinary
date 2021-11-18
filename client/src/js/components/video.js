@@ -14,7 +14,7 @@ export default class Video extends Resource {
             crop: 'pad',
             quality: 'auto',
             format: 'jpg',
-            background: '#000000',
+            background: 'auto',
         });
     }
 }
