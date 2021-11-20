@@ -26,6 +26,7 @@
     "require": {
         "php": ">=7.0.0",
         "cloudinary/cloudinary_php": "^2.4",
+        "ozdemirburak/iris": "^2.4",
         "silverstripe/framework": "^4.6.0"
     },
     "autoload": {

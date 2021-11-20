@@ -12,6 +12,13 @@ abstract class DBSingleResource extends DBBaseResource
 {
     /**
      * @config
+     * @var array $retain_transformations
+     */
+    private static $retain_transformations = [
+    ];
+
+    /**
+     * @config
      * @var array
      */
     private static $casting = [
@@ -83,11 +90,6 @@ abstract class DBSingleResource extends DBBaseResource
         $resourceType = $this->getResourceType();
         $publicId = $this->getPublicID();
         $version = $this->getVersion();
-        $transformations = null;
-
-        if (property_exists($json, 'transformations') && is_string($json->transformations) && strlen($json->transformations)) {
-            $transformations = CommonTransformation::fromParams($this->convertRawTransformations($json->transformations));
-        }
 
         if ($resourceType === 'image') {
             $this->asset = static::cloudinary()->image($publicId)->version($version);
@@ -95,6 +97,24 @@ abstract class DBSingleResource extends DBBaseResource
             $this->asset = static::cloudinary()->video($publicId)->version($version);
         } else {
             $this->asset = static::cloudinary()->raw($publicId)->version($version);
+        }
+
+        $retainTransformations = static::config()->get('retain_transformations');
+
+        if (empty($retainTransformations)) {
+            return $this;
+        }
+
+        $transformations = [];
+
+        if (property_exists($json, 'transformations') && is_string($json->transformations) && strlen($json->transformations)) {
+            $transformations = $this->convertRawTransformations($json->transformations);
+
+            $transformations = array_filter($transformations, function ($transformation) use ($retainTransformations) {
+                return in_array($transformation, $retainTransformations);
+            }, ARRAY_FILTER_USE_KEY);
+
+            $transformations = CommonTransformation::fromParams($transformations);
         }
 
         if (($resourceType === 'image' || $resourceType === 'video') && $transformations !== null) {

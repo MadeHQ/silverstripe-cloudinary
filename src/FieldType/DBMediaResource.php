@@ -41,6 +41,11 @@ class DBMediaResource extends DBSingleResource
     private static $casting = [
         'Credit' => 'Text',
         'CustomGravity' => 'Text',
+        'Width' => 'Int',
+        'Height' => 'Int',
+        'IsPortrait' => 'Boolean',
+        'IsLandscape' => 'Boolean',
+        'IsSquare' => 'Boolean',
     ];
 
     /**
@@ -73,6 +78,66 @@ class DBMediaResource extends DBSingleResource
         $duration = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 
         return DBTime::create()->setValue($duration);
+    }
+
+    /**
+     * @return int
+     */
+    public function getWidth()
+    {
+        if ($this->getActualType() === 'audio') {
+            return null;
+        }
+
+        return $this->getJSONValue('width');
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeight()
+    {
+        if ($this->getActualType() === 'audio') {
+            return null;
+        }
+
+        return $this->getJSONValue('height');
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsPortrait()
+    {
+        if ($this->getActualType() === 'audio') {
+            return null;
+        }
+
+        return $this->getHeight() > $this->getWidth();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsLandscape()
+    {
+        if ($this->getActualType() === 'audio') {
+            return null;
+        }
+
+        return $this->getWidth() > $this->getHeight();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsSquare()
+    {
+        if ($this->getActualType() === 'audio') {
+            return null;
+        }
+
+        return $this->getWidth() === $this->getHeight();
     }
 
     /**

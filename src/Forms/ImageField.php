@@ -9,6 +9,7 @@ class ImageField extends BaseField
      * @var array $fallback_gravity_options
      */
     private static $fallback_gravity_options = [
+        '' => '',
         'auto' => 'Auto',
         'auto:face' => 'Auto (Face)',
         'auto:faces' => 'Auto (Faces)',

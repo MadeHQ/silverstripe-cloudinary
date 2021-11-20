@@ -16,7 +16,13 @@ trait Fill
     {
         $clone = $this->clone();
 
-        if ($customGravity = $this->getCustomGravity()) {
+        if (empty($gravity) === true) {
+            $gravity = 'auto';
+        }
+
+        $customGravity = $this->getCustomGravity();
+
+        if (empty($customGravity) === false) {
             $gravity = $customGravity;
         }
 

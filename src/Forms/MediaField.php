@@ -9,6 +9,7 @@ class MediaField extends BaseField
      * @var array $fallback_gravity_options
      */
     private static $fallback_gravity_options = [
+        '' => '',
         'auto' => 'Auto',
         'center' => 'Center',
         'east' => 'East',

@@ -16,6 +16,7 @@ Cloudinary is a cloud-based media management platform that provides an easy solu
 * [Global configuration](#global-configuration)
 * [Multi resource fields](#multi-resource-fields)
 * [Retaining transformations](#retaining-transformations)
+* [Predominant Colours](#predominant-colours)
 * [Contributing](#contributing)
 * [Todo](#todo)
 
@@ -271,7 +272,7 @@ Some of these are available for all fields as standard while others can be fille
 | `->getFileSize()` or `$FileSize`                 | Returns the file size of the resource in bytes.           | &check; | &check; | &check; |
 | `->getFriendlyFileSize()` or `$FriendlyFileSize` | Returns the human readable file size of the resource e.g. `20K`, `1M`, etc. | &check; | &check; | &check; |
 | `->getCredit()` or `$Credit`                     | Returns the copyright attribution of the resource if enabled and filled in. The module will automatically try to find the attribution from resource meta data such as the exif data from a photo. | &check; | &check; |       |
-| `->getTopColours()` or `$TopColours` | Returns a list of most prominent colours from an image. |&check;|||
+| `->getTopColours()` or `$TopColours` | Returns a list of most predominant colours from an image. See [Predominant Colours](#predominant-colours) for more details. |&check;|||
 | `->getForegroundColour()` or `$ForegroundColour` | Returns the foreground colour if enabled and selected. |&check;|||
 | `->getBackgroundColour()` or `$BackgroundColour` | Returns the background colour if enabled and selected. |&check;|||
 | `->getDuration` or `$Duration` | Returns the duration of a video or audio resource. ||&check;||
@@ -395,6 +396,45 @@ MadeHQ\Cloudinary\FieldType\DBMediaResource:
 
 Only the transformations mentioned in the supported transformations documented previously can be retained for the time being. This may change as we add more supported transformations.
 
+### Predominant Colours
+
+When an image is selected, the module will automatically extract the most predominant colours from it. This is returned as an `ArrayList` so it can be both easily looped through in templates or in PHP code. This can be accessed by `->getTopColours()` or `$TopColours`.
+
+The `ArrayList` is ordered by how predominant a colour is with most predominant being first, and least being the last.
+
+Each item within the array is comprised of `Predominance` and a neat `Colour` object that provides a nice selection of helper functions to allow easy manipulation of the colour:
+
+| Method                                             | Description                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| `->getColour()` or `$Colour`                       | Colour string e.g. `#775313`                                 |
+| `->getProminence()` or `$Prominence`               | How predominant a colour is e.g. `12.8`                      |
+| `->getHex()` or `$Hex`                             | Hex representation of the colour e.g. `#775313`              |
+| `->getHsl()` or `$Hsl`                             | HSL representation of the colour e.g. `hsl(38,72%,27%)`      |
+| `->getHsla()` or `$Hsla`                           | HSL representation of the colour with alpha transparency e.g. `hsla(38,72%,27%,1)` |
+| `->getHsv()` or `$Hsv`                             | HSV representation of the colour e.g. `hsv(38,84%,47%)`      |
+| `->getRgb()` or `$Rgb`                             | RGB representation of the colour e.g. `rgb(119,83,19)`       |
+| `->getRgba()` or `$Rgba`                           | RGB representation of the colour with alpha transparency e.g. `rgba(119,83,19,1)` |
+| `->Saturate($percent)` or `$Saturate(percent)`     | Saturates the base colour by percent e.g. `#7d540c`          |
+| `->Desaturate($percent)` or `$Desaturate(percent)` | Desaturates the base colour by percent e.g. `#70501a`        |
+| `->Grayscale()` or `$Grayscale`                    | Grayscale version of the base colour e.g. `#454545`          |
+| `->Brighten($percent)` or `$Brighten(percent)`     | Brighten the base colour by percent e.g. `#916d2d`           |
+| `->Lighten($percent)` or `$Lighten(percent)`       | Lighten the base colour by percent e.g. `#a2701a`            |
+| `->Darken($percent)` or `$Darken(percent)`         | Darken the base colour by percent e.g. `#4b340c`             |
+| `->IsLight()` or `$IsLight`                        | Is the base colour light e.g. `false` (or nothing in template) |
+| `->IsDark()` or `$IsDark`                          | Is the base colour dark e.g. `true` (or `1` in template)     |
+| `->Spin($percent)` or `$Spin(percent)`             | Spin the base colour by percent e.g. `#766313`               |
+| `->Tint($percent)` or `$Tint(percent)`             | Mix the base colour with white by percent e.g. `#85642b`     |
+| `->Shade($percent)` or `$Shade(percent)`           | Mix the base colour with black by percent e.g. `#6b4b11`     |
+| `->Fade($percent)` or `$Fade(percent)`             | Set the absolute opacity of the base colour by percent e.g. `rgba(119,83,19,0.1)` |
+| `->FadeIn($percent)` or `$FadeIn(percent)`         | Increase the opacity of the base colour by percent e.g. `rgba(119,83,19,1)` |
+| `->FadeOut($percent)` or `$FadeOut(percent)`       | Decrease the opacity of the base colour by percent e.g. `rgba(119,83,19,0.9)` |
+
+The base colour used for above examples was `#775313` and all enhancements were made by `10` percent.
+
+It's worth noting that all methods here that returns a colour will return a `Colour` object so you can effectively carry out chained manipulations e.g. `$Grayscale.Darken(10).FadeOut(10)`. When used in PHP, `Colour` can be cast as a string to get the literal value. The type of colour format (rgb, hex, etc.) will depend on the original input colour and/or the manipulation method.
+
+**The module uses [Iris](https://github.com/ozdemirburak/iris) to provide colour manipulation and conversion functionality.**
+
 ### Contributing
 
 This version of the module is still in its infancy. We will flesh it out as our scope increases. If you think there's something we're missing out on, feel free to raise an issue and we'll be happy to review and see if it can be accommodated.
@@ -407,7 +447,7 @@ This version of the module is still in its infancy. We will flesh it out as our 
 - [ ] Make the supplemtary fields easily extensible
 - [ ] Reduce duplicate code in the React components
 - [ ] Provide more transformations
-- [ ] Provide better support for colours
+- [x] Provide better support for colours
 
 [^1]: Username in this instance is interchangeable with email. Provide the email you used to sign up for Cloudinary.
 [^2]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.

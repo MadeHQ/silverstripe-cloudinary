@@ -3,7 +3,6 @@
 namespace MadeHQ\Cloudinary\FieldType;
 
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\View\ArrayData;
 use Cloudinary\Transformation\Delivery;
 use Cloudinary\Transformation\Format as TransformationFormat;
 use MadeHQ\Cloudinary\Forms\ImageField;
@@ -19,6 +18,7 @@ use MadeHQ\Cloudinary\Traits\MinimumFit;
 use MadeHQ\Cloudinary\Traits\Quality;
 use MadeHQ\Cloudinary\Traits\Scale;
 use MadeHQ\Cloudinary\Traits\Thumb;
+use MadeHQ\Cloudinary\Utils\Colour;
 
 class DBImageResource extends DBSingleResource
 {
@@ -56,6 +56,11 @@ class DBImageResource extends DBSingleResource
         'CustomGravity' => 'Text',
         'ForegroundColour' => 'Text',
         'BackgroundColour' => 'Text',
+        'Width' => 'Int',
+        'Height' => 'Int',
+        'IsPortrait' => 'Boolean',
+        'IsLandscape' => 'Boolean',
+        'IsSquare' => 'Boolean',
     ];
 
     /**
@@ -104,13 +109,52 @@ class DBImageResource extends DBSingleResource
         $return = ArrayList::create();
 
         foreach ($colours as $colour) {
-            $return->push(ArrayData::create([
-                'Colour' => $colour->colour,
-                'Prominence' => $colour->prominence,
-            ]));
+            $return->push(
+                Colour::create($colour->colour, $colour->predominance)
+            );
         }
 
-        return $return->sort('Prominence', 'desc');
+        return $return->sort('Predominance', 'desc');
+    }
+
+    /**
+     * @return int
+     */
+    public function getWidth()
+    {
+        return $this->getJSONValue('width');
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeight()
+    {
+        return $this->getJSONValue('height');
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsPortrait()
+    {
+        return $this->getHeight() > $this->getWidth();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsLandscape()
+    {
+        return $this->getWidth() > $this->getHeight();
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getIsSquare()
+    {
+        return $this->getWidth() === $this->getHeight();
     }
 
     /**
