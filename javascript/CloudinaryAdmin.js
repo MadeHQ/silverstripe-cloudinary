@@ -61,7 +61,7 @@
     $('#cloudinary-cms-content').entwine({
 
         onmatch : function() {
-            var scriptSrc = '//widget.cloudinary.com/global/all.js';
+            var scriptSrc = '//widget.cloudinary.com/v2.0/global/all.js';
             if($('script[src="' + scriptSrc + '"]')){
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
