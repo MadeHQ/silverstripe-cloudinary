@@ -2,7 +2,7 @@
 
 namespace MadeHQ\Cloudinary\FieldType;
 
-use MadeHQ\Cloudinary\Forms\ImageField;
+use MadeHQ\Cloudinary\Forms\MultiImageField;
 
 class DBMultiImageResource extends DBMultiResource
 {
@@ -11,7 +11,7 @@ class DBMultiImageResource extends DBMultiResource
      */
     public function scaffoldFormField($title = null, $params = null)
     {
-        return ImageField::create($this->name, $title)->setMultiple(true);
+        return MultiImageField::create($this->name, $title);
     }
 
     /**
@@ -19,6 +19,6 @@ class DBMultiImageResource extends DBMultiResource
      */
     protected function getResourceType()
     {
-        return ImageField::create('Dummy')->getResourceType();
+        return MultiImageField::create('Dummy')->getResourceType();
     }
 }

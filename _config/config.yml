@@ -4,6 +4,7 @@ After:
  - '#coreconfig'
 ---
 
+
 ---
 Name: silverstripecloudinaryfieldtypes
 After:
@@ -61,3 +62,12 @@ After:
 SilverStripe\Control\Director:
   rules:
     'cloudinary-api': 'MadeHQ\Cloudinary\Controllers\API'
+
+
+---
+Name: silverstripecloudinaryextensions
+---
+
+SilverStripe\Admin\LeftAndMain:
+  extensions:
+    - MadeHQ\Cloudinary\Extensions\LeftAndMain

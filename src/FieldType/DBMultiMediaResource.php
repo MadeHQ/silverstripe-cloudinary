@@ -2,7 +2,7 @@
 
 namespace MadeHQ\Cloudinary\FieldType;
 
-use MadeHQ\Cloudinary\Forms\MediaField;
+use MadeHQ\Cloudinary\Forms\MultiMediaField;
 
 class DBMultiMediaResource extends DBMultiResource
 {
@@ -11,7 +11,7 @@ class DBMultiMediaResource extends DBMultiResource
      */
     public function scaffoldFormField($title = null, $params = null)
     {
-        return MediaField::create($this->name, $title)->setMultiple(true);
+        return MultiMediaField::create($this->name, $title);
     }
 
     /**
@@ -19,6 +19,6 @@ class DBMultiMediaResource extends DBMultiResource
      */
     protected function getResourceType()
     {
-        return MediaField::create('Dummy')->getResourceType();
+        return MultiMediaField::create('Dummy')->getResourceType();
     }
 }

@@ -9,17 +9,16 @@ class MediaField extends BaseField
      * @var array $fallback_gravity_options
      */
     private static $fallback_gravity_options = [
-        '' => '',
-        'auto' => 'Auto',
-        'center' => 'Center',
-        'east' => 'East',
-        'north' => 'North',
-        'north_east' => 'North East',
-        'north_west' => 'North West',
-        'south' => 'South',
-        'south_east' => 'South East',
-        'south_west' => 'South West',
-        'west' => 'West',
+        'auto' => 'Auto - sets automatic gravity',
+        'center' => 'Center - The center of the image',
+        'east' => 'East - middle east part (right)',
+        'north' => 'North - north center part (top center)',
+        'north_east' => 'North - north east corner (top right)',
+        'north_west' => 'North - north west corner (top left)',
+        'south' => 'South - south center part (bottom center)',
+        'south_east' => 'South - south east corner (bottom right)',
+        'south_west' => 'South - south west corner (bottom left)',
+        'west' => 'West - middle west part (left)',
     ];
 
     /**

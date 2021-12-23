@@ -2,7 +2,7 @@
 
 namespace MadeHQ\Cloudinary\FieldType;
 
-use MadeHQ\Cloudinary\Forms\FileField;
+use MadeHQ\Cloudinary\Forms\MultiFileField;
 
 class DBMultiFileResource extends DBMultiResource
 {
@@ -11,7 +11,7 @@ class DBMultiFileResource extends DBMultiResource
      */
     public function scaffoldFormField($title = null, $params = null)
     {
-        return FileField::create($this->name, $title)->setMultiple(true);
+        return MultiFileField::create($this->name, $title);
     }
 
     /**
@@ -19,6 +19,6 @@ class DBMultiFileResource extends DBMultiResource
      */
     protected function getResourceType()
     {
-        return FileField::create('Dummy')->getResourceType();
+        return MultiFileField::create('Dummy')->getResourceType();
     }
 }

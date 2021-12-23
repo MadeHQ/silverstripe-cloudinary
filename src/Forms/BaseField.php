@@ -4,8 +4,6 @@ namespace MadeHQ\Cloudinary\Forms;
 
 use Exception;
 use SilverStripe\Forms\TextareaField;
-use SilverStripe\ORM\FieldType\DBDatetime;
-use SilverStripe\View\Requirements;
 use SilverStripe\Core\Config\Config;
 
 abstract class BaseField extends TextareaField
@@ -119,7 +117,6 @@ abstract class BaseField extends TextareaField
         $attributes = parent::getAttributes();
 
         $attributes['data-resource-type'] = $this->resourceType;
-
         $attributes['data-is-multiple'] = $this->isMultiple ? 1 : 0;
         $attributes['data-button-label'] = $this->getButtonLabel();
         $attributes['data-max-files'] = $this->getMaxFiles();
@@ -132,53 +129,11 @@ abstract class BaseField extends TextareaField
     /**
      * {@inheritdoc}
      */
-    public function Field($properties = array())
-    {
-        $cloudName = Config::inst()->get('MadeHQ\\Cloudinary', 'cloud_name');
-        $apiKey = Config::inst()->get('MadeHQ\\Cloudinary', 'api_key');
-        $apiSecret = Config::inst()->get('MadeHQ\\Cloudinary', 'api_secret');
-        $username = Config::inst()->get('MadeHQ\\Cloudinary', 'username');
-
-        $timestamp = DBDatetime::now()->getTimestamp();
-
-        $signature = hash('sha256', sprintf(
-            'cloud_name=%s&timestamp=%s&username=%s%s', $cloudName, $timestamp, $username, $apiSecret
-        ));
-
-        $options = [
-            'cloud_name' => $cloudName,
-            'api_key' => $apiKey,
-            'username' => $username,
-            'timestamp' => $timestamp,
-            'signature' => $signature,
-        ];
-
-        $script = sprintf('const CLOUDINARY_CONFIG = %s;', json_encode($options));
-
-        Requirements::customScript($script, self::class);
-
-        return parent::Field($properties);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function setupDefaultClasses()
     {
         parent::setupDefaultClasses();
 
         $this->addExtraClass('stacked');
-    }
-
-    /**
-     * @param boolean $isMultiple
-     * @return $this
-     */
-    public function setMultiple($isMultiple)
-    {
-        $this->isMultiple = $isMultiple;
-
-        return $this;
     }
 
     /**
@@ -305,11 +260,14 @@ abstract class BaseField extends TextareaField
      */
     public function getGravityOptions()
     {
-        $options = static::config()->get('default_gravity_options');
+        $options = static::config()->uninherited('default_gravity_options');
 
         if (empty($options)) {
             $options = static::config()->get('fallback_gravity_options');
         }
+
+        // First option should always be empty
+        $options = [ '' => '' ] + $options;
 
         return $options;
     }
