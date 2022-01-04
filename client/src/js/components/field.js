@@ -15,9 +15,6 @@ export default class Field extends Component {
     constructor(props) {
         super(props);
 
-        this.library = null;
-        this.lastResource = null;
-
         const { value, isMultiple } = props;
 
         let resources = value;
@@ -39,7 +36,6 @@ export default class Field extends Component {
             resources: resources,
         };
 
-        this.setupLibrary = this.setupLibrary.bind(this);
         this.showLibrary = this.showLibrary.bind(this);
         this.insertHandler = this.insertHandler.bind(this);
         this.loadResources = this.loadResources.bind(this);
@@ -53,8 +49,6 @@ export default class Field extends Component {
         this.onRemoveResource = this.onRemoveResource.bind(this);
         this.updateProperty = this.updateProperty.bind(this);
         this.renderResources = this.renderResources.bind(this);
-
-        this.setupLibrary();
     }
 
     componentDidMount() {
@@ -63,54 +57,48 @@ export default class Field extends Component {
         });
     }
 
-    setupLibrary() {
-        const options = {
-            ...CLOUDINARY_CONFIG,
-            button_label: this.props.buttonLabel,
-        };
-
-        this.library = cloudinary.createMediaLibrary(options, {
-            insertHandler: this.insertHandler,
-        });
-    }
-
     showLibrary() {
         const { isMultiple, maxFiles, resourceType } = this.props;
 
         const options = {
+            ...CLOUDINARY_CONFIG,
             multiple: !!isMultiple,
             max_files: maxFiles - this.state.resources.length,
-            folder: {
-                resource_type: resourceType,
-            },
         };
 
-        if (this.lastResource) {
-            let path = this.lastResource.public_id.split('/');
-
-            if (path.length === 1) {
-                path = '';
-            } else {
-                path = path.slice(0, -1).join('/');
-            }
-
-            options.folder.path = path;
+        // Safari is the devil. Force users to login manually.
+        if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+            delete options.username;
+            delete options.timestamp;
+            delete options.signature;
         }
 
-        this.library.show(options);
+        cloudinary.openMediaLibrary(options, {
+            insertHandler: this.insertHandler,
+        });
     }
 
     insertHandler(response) {
+        const { resourceType } = this.props;
+
+        let assets = get(response, 'assets', []);
+
+        assets = assets.filter(asset => {
+            return asset.resource_type === resourceType;
+        });
+
+        if (assets.length === 0) {
+            return alert(`You can only select ${resourceType} files for this field`);
+        }
+
         this.setState({
             loading: true,
         });
 
-        this.loadResources(response).then(resources => {
+        this.loadResources(assets).then(resources => {
             let newFiles = differenceBy(resources, this.state.resources, 'public_id');
 
             newFiles = concat(this.state.resources, newFiles);
-
-            this.lastResource = last(newFiles);
 
             this.setState({
                 loading: false,
@@ -121,10 +109,8 @@ export default class Field extends Component {
         });
     }
 
-    loadResources(data) {
+    loadResources(assets) {
         return new Promise(resolve => {
-            let assets = get(data, 'assets', []);
-
             if (!assets.length) {
                 return resolve([]);
             }
