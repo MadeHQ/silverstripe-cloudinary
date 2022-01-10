@@ -45,11 +45,11 @@ abstract class DBSingleResource extends DBBaseResource
             $resourceType = $this->getResourceType();
 
             if ($resourceType === 'image') {
-                $this->asset = new Image($this->asset);
+                $clone->asset = new Image($this->asset);
             } else if ($resourceType === 'video') {
-                $this->asset = new Media($this->asset);
+                $clone->asset = new Media($this->asset);
             } else {
-                $this->asset = new File($this->asset);
+                $clone->asset = new File($this->asset);
             }
         }
 

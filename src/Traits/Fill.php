@@ -20,7 +20,7 @@ trait Fill
             $gravity = 'auto';
         }
 
-        $customGravity = $this->getCustomGravity();
+        $customGravity = $this->getGravity();
 
         if (empty($customGravity) === false) {
             $gravity = $customGravity;

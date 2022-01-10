@@ -74,7 +74,7 @@ class DBImageResource extends DBSingleResource
     /**
      * @return string
      */
-    public function getCustomGravity()
+    public function getGravity()
     {
         return $this->getJSONValue('gravity');
     }

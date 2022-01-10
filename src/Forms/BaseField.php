@@ -256,11 +256,25 @@ abstract class BaseField extends TextareaField
     }
 
     /**
+     * @param array
+     * @return $this
+     */
+    public function setGravityOptions($gravityOptions)
+    {
+        $this->gravityOptions = $gravityOptions;
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getGravityOptions()
     {
-        $options = static::config()->uninherited('default_gravity_options');
+        $options = $this->gravityOptions;
+
+        if (empty($options)) {
+            $options = static::config()->uninherited('default_gravity_options');
+        }
 
         if (empty($options)) {
             $options = static::config()->get('fallback_gravity_options');
