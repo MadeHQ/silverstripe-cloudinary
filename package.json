@@ -6,7 +6,7 @@
         "webpack": "./node_modules/webpack/webpack.js"
     },
     "engines": {
-        "node": "^12.22.7"
+        "node": "^16.13.2"
     },
     "config": {
         "paths": {
@@ -65,8 +65,8 @@
         "postcss-scss": "^4.0.1",
         "stylelint": "^14.0.1",
         "stylelint-config-standard": "^23.0.0",
-        "uglifyjs-webpack-plugin": "^2.2.0",
-        "watch": "^1.0.2",
+        "uglifyjs-webpack-plugin": "^1.1.2",
+        "watch": "^0.13.0",
         "webpack": "^5.60.0",
         "webpack-cli": "^4.9.1"
     },
