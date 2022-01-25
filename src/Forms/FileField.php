@@ -15,11 +15,6 @@ class FileField extends BaseField
     /**
      * {@inheritdoc}
      */
-    protected $resourceType = 'raw';
-
-    /**
-     * {@inheritdoc}
-     */
     protected $buttonLabelSingular = 'Choose File';
 
     /**

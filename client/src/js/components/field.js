@@ -83,9 +83,11 @@ export default class Field extends Component {
 
         let assets = get(response, 'assets', []);
 
-        assets = assets.filter(asset => {
-            return asset.resource_type === resourceType;
-        });
+        if (resourceType) {
+            assets = assets.filter(asset => {
+                return asset.resource_type === resourceType;
+            });
+        }
 
         if (assets.length === 0) {
             return alert(`You can only select ${resourceType} files for this field`);
