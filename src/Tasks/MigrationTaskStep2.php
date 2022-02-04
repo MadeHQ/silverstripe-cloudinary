@@ -2,8 +2,8 @@
 
 namespace MadeHQ\Cloudinary\Tasks;
 
-use Cloudinary\Api;
-use Cloudinary\Api\NotFound;
+use Cloudinary\Api\Exception\NotFound;
+use Cloudinary\Cloudinary;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DataObject;
@@ -23,10 +23,14 @@ class MigrationTaskStep2 extends BuildTask
 
     public function run($request)
     {
+        echo '<pre>';
         $dataObjectClasses = ClassInfo::subclassesFor(DataObject::class, false);
 
         $schema = DataObject::getSchema();
-        $api = new Api();
+        $cloudinary = new Cloudinary();
+        $api = $cloudinary->adminApi();
+        $searchApi = $cloudinary->searchApi();
+
         $usableFields = [
             'bytes',
             'format',
@@ -43,12 +47,13 @@ SELECT ft.*, lt.Focus, lt.Caption, lt.AltText FROM "{LinkTable}" As lt
 INNER JOIN "{FileTable}" As ft ON "ft"."ID" = "lt"."FileID"
 WHERE "lt"."ID" = (SELECT "{FieldName}ID" FROM "{TableName}" WHERE "ID" = '{ID}')
 SQL;
-echo '<pre>';
+
         /**
          *
          */
+        $count = 0;
         foreach($dataObjectClasses As $className) {
-            DataObject::get($className)->each(function (DataObject $do) use ($schema, $sqlTemplate, $api, $usableFields) {
+            DataObject::get($className)->each(function (DataObject $do) use (&$count, $schema, $sqlTemplate, $api, $searchApi, $usableFields) {
                 foreach($schema->databaseFields($do->ClassName, false) As $fieldName => $fieldType) {
                     if ($fieldType === 'CloudinaryImage') {
                         $tableName = $schema->tableName($do->ClassName);
@@ -67,20 +72,44 @@ echo '<pre>';
                             continue;
                         }
                         try {
-                            $resourceData = (array)$api->resource($data['FilePublicID']);
+                            var_dump(sprintf('Requesting [%d]: %s', ++$count, $data['FilePublicID']));
+                            $resourceData = $api->asset(
+                                $data['FilePublicID'],
+                                [
+                                    'colors' => true,
+                                ]
+                            );
+                            if($resourceData->rateLimitRemaining < 10) {
+                                var_dump(sprintf('WARNING: Only %d requests remaining this hour', $resourceData->rateLimitRemaining));
+                            }
+                            $resourceData = (array)$resourceData;
                         } catch (NotFound $e) {
-                            var_dump(sprintf('Unable to find: %s', $data['FilePublicID']));
-                            continue;
+                            $searchResultData = (array)$searchApi
+                                ->expression(sprintf('%s*', $data['FilePublicID']))
+                                ->execute();
+
+                            if ($searchResultData['total_count']) {
+                                $resourceData = $searchResultData['resources'][0];
+                            } else {
+                                var_dump(sprintf('Unable to find: %s', $data['FilePublicID']));
+                                continue;
+                            }
                         }
+
                         $newData = [
                             'transformations' => null,
                             'name' => $data['Title'],
                             'title' => $data['Title'],
                             'gravity' => $data['Focus'],
+                            'actual_type' => $resourceData['resource_type'],
                         ];
+                        if (array_key_exists('colors', $resourceData)) {
+                            $newData['top_colours'] = $resourceData['colors'];
+                        }
+
                         foreach($usableFields As $field) {
                             if (!array_key_exists($field, $resourceData)) {
-                                var_dump($data['FilePublicID'], $data, $resourceData);
+                                var_dump($data, $resourceData);
                                 die;
                             }
                             $newData[$field] = $resourceData[$field];
@@ -95,20 +124,11 @@ echo '<pre>';
                         );
 var_dump($sql);
                         DB::query($sql);
-
-                        // var_dump(
-                        //     $fieldName,
-                        //     $fieldType,
-                        //     $do->ClassName,
-                        //     $tableName,
-                        //     // $data,
-                        //     (array)$resourceData,
-                        //     $newData
-                        // );
-                        // die;
                     }
                 }
             });
         }
+
+        var_dump('COMPLETE!!');
     }
 }
