@@ -4,6 +4,10 @@ After:
  - '#coreconfig'
 ---
 
+SilverStripe\Core\Injector\Injector:
+  MadeHQ\Cloudinary\Tasks\MigrationTaskStep2:
+    constructor:
+      - '%$Cloudinary\Cloudinary'
 
 ---
 Name: silverstripecloudinaryfieldtypes

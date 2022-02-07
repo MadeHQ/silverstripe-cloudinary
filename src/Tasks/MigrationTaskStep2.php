@@ -4,10 +4,12 @@ namespace MadeHQ\Cloudinary\Tasks;
 
 use Cloudinary\Api\Exception\NotFound;
 use Cloudinary\Cloudinary;
+use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
+use SilverStripe\Versioned\Versioned;
 
 class MigrationTaskStep2 extends BuildTask
 {
@@ -21,15 +23,35 @@ class MigrationTaskStep2 extends BuildTask
      */
     protected $description = 'This step will get all the data from the old related FileLinks and set in the new fields';
 
+    /**
+     * @var Cloudinary
+     */
+    private $cloudinary;
+
+    private static $sql_template = <<<SQL
+SELECT ft.*, lt.Focus, lt.Caption, lt.AltText FROM "{LinkTable}" As lt
+INNER JOIN "{FileTable}" As ft ON "ft"."ID" = "lt"."FileID"
+WHERE "lt"."ID" = (SELECT "{FieldName}ID" FROM "{TableName}" WHERE "ID" = '{ID}')
+SQL;
+
+    private $assetCache = [];
+
+    private $requestCount = 0;
+
+    public function __construct(Cloudinary $cloudinary)
+    {
+        $this->cloudinary = $cloudinary;
+    }
+
     public function run($request)
     {
-        echo '<pre>';
+        if (!Director::is_cli()) {
+            echo '<pre>';
+        }
+
         $dataObjectClasses = ClassInfo::subclassesFor(DataObject::class, false);
 
         $schema = DataObject::getSchema();
-        $cloudinary = new Cloudinary();
-        $api = $cloudinary->adminApi();
-        $searchApi = $cloudinary->searchApi();
 
         $usableFields = [
             'bytes',
@@ -42,58 +64,43 @@ class MigrationTaskStep2 extends BuildTask
             'width',
             'height',
         ];
-        $sqlTemplate = <<<SQL
-SELECT ft.*, lt.Focus, lt.Caption, lt.AltText FROM "{LinkTable}" As lt
-INNER JOIN "{FileTable}" As ft ON "ft"."ID" = "lt"."FileID"
-WHERE "lt"."ID" = (SELECT "{FieldName}ID" FROM "{TableName}" WHERE "ID" = '{ID}')
-SQL;
 
         /**
          *
          */
-        $count = 0;
         foreach($dataObjectClasses As $className) {
-            DataObject::get($className)->each(function (DataObject $do) use (&$count, $schema, $sqlTemplate, $api, $searchApi, $usableFields) {
-                foreach($schema->databaseFields($do->ClassName, false) As $fieldName => $fieldType) {
-                    if ($fieldType === 'CloudinaryImage') {
-                        $tableName = $schema->tableName($do->ClassName);
+            DataObject::get($className)->each(function (DataObject $do) use ($schema, $usableFields) {
+                $stages = [
+                    Versioned::DRAFT => '',
+                ];
+                if ($do->has_extension(Versioned::class)) {
+                    $stages[Versioned::LIVE] = '_Live';
+                }
+                foreach($stages As $stage => $suffix) {
+                    Versioned::set_stage($stage);
+
+                    foreach($schema->databaseFields($do->ClassName) As $fieldName => $fieldType) {
+                        if ($fieldType !== 'CloudinaryImage') {
+                            continue;
+                        }
+                        $tableName = $schema->tableForField($do->ClassName, $fieldName) . $suffix;
 
                         $data = DB::query(strtr(
-                            $sqlTemplate,
+                            static::config()->get('sql_template'),
                             [
                                 '{LinkTable}' => 'CloudinaryImageLink',
-                                '{FileTable}' => 'File',
+                                '{FileTable}' => 'File' . $suffix,
                                 '{FieldName}' => $fieldName,
                                 '{TableName}' => $tableName,
                                 '{ID}' => $do->ID,
                             ]
                         ))->first();
-                        if (!$data) {
+                        if (!$data || !array_key_exists('FilePublicID', $data) || !$data['FilePublicID']) {
                             continue;
                         }
-                        try {
-                            var_dump(sprintf('Requesting [%d]: %s', ++$count, $data['FilePublicID']));
-                            $resourceData = $api->asset(
-                                $data['FilePublicID'],
-                                [
-                                    'colors' => true,
-                                ]
-                            );
-                            if($resourceData->rateLimitRemaining < 10) {
-                                var_dump(sprintf('WARNING: Only %d requests remaining this hour', $resourceData->rateLimitRemaining));
-                            }
-                            $resourceData = (array)$resourceData;
-                        } catch (NotFound $e) {
-                            $searchResultData = (array)$searchApi
-                                ->expression(sprintf('%s*', $data['FilePublicID']))
-                                ->execute();
-
-                            if ($searchResultData['total_count']) {
-                                $resourceData = $searchResultData['resources'][0];
-                            } else {
-                                var_dump(sprintf('Unable to find: %s', $data['FilePublicID']));
-                                continue;
-                            }
+                        $resourceData = $this->getAsset($data['FilePublicID']);
+                        if (!$resourceData) {
+                            continue;
                         }
 
                         $newData = [
@@ -130,5 +137,41 @@ var_dump($sql);
         }
 
         var_dump('COMPLETE!!');
+    }
+
+    private function getAsset($publicId)
+    {
+        if (!array_key_exists($publicId, $this->assetCache)) {
+            $api = $this->cloudinary->adminApi();
+
+            try {
+                var_dump(sprintf('Requesting [%d]: %s', ++$this->requestCount, $publicId));
+                $resourceData = $api->asset(
+                    $publicId,
+                    ['colors' => true]
+                );
+                $resourceData = $api->asset($publicId);
+                if($resourceData->rateLimitRemaining < 10) {
+                    var_dump(sprintf('WARNING: Only %d requests remaining this hour', $resourceData->rateLimitRemaining));
+                }
+                $resourceData = (array)$resourceData;
+            } catch (NotFound $e) {
+                $searchApi = $this->cloudinary->searchApi();
+                $searchResultData = (array)$searchApi
+                    ->expression(sprintf('%s*', $publicId))
+                    ->execute();
+
+                if ($searchResultData['total_count']) {
+                    $resourceData = $searchResultData['resources'][0];
+                } else {
+                    var_dump(sprintf('Unable to find: %s', $publicId));
+                    $resourceData = false;
+                }
+            }
+
+            $this->assetCache[$publicId] = $resourceData;
+        }
+
+        return $this->assetCache[$publicId];
     }
 }
