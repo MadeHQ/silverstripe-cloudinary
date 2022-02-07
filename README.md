@@ -6,19 +6,32 @@ Cloudinary is a cloud-based media management platform that provides an easy solu
 
 ### Table of Contents
 
-* [Inspiration](#silverstripe-has-a-asset-manager-why-do-i-need-this)
-* [Setup a free Cloudinary account](https://cloudinary.com/)
-* [Provide Cloudinary config](#provide-cloudinary-config)
-* [Create database fields](#create-database-fields)
-* [Set form fields](#set-form-fields)
-* [Rendering the assets](#rendering-the-assets)
-* [Supplementary methods](#supplementary-methods)
-* [Global configuration](#global-configuration)
-* [Multi resource fields](#multi-resource-fields)
-* [Retaining transformations](#retaining-transformations)
-* [Predominant Colours](#predominant-colours)
-* [Contributing](#contributing)
-* [Todo](#todo)
+- [SilverStripe Cloudinary](#silverstripe-cloudinary)
+  - [Table of Contents](#table-of-contents)
+  - [SilverStripe has a asset manager, why do I need this?](#silverstripe-has-a-asset-manager-why-do-i-need-this)
+  - [Provide Cloudinary config](#provide-cloudinary-config)
+  - [Create database fields](#create-database-fields)
+  - [Set form fields](#set-form-fields)
+    - [Additional methods](#additional-methods)
+  - [Rendering the assets](#rendering-the-assets)
+    - [Images](#images)
+      - [Supported transformations](#supported-transformations)
+    - [Videos](#videos)
+      - [Supported transformations](#supported-transformations-1)
+    - [Files](#files)
+      - [Supported transformations](#supported-transformations-2)
+  - [Supplementary methods](#supplementary-methods)
+  - [Global configuration](#global-configuration)
+  - [Multi resource fields](#multi-resource-fields)
+  - [Retaining transformations](#retaining-transformations)
+  - [Predominant Colours](#predominant-colours)
+  - [Contributing](#contributing)
+  - [Todo](#todo)
+  - [Migration](#migration)
+    - [Step 1:](#step-1)
+    - [Step 2:](#step-2)
+    - [Step 3:](#step-3)
+    - [Step 4:](#step-4)
 
 ### SilverStripe has a asset manager, why do I need this?
 
@@ -451,3 +464,27 @@ This version of the module is still in its infancy. We will flesh it out as our 
 
 [^1]: Username in this instance is interchangeable with email. Provide the email you used to sign up for Cloudinary.
 [^2]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.
+
+### Migration
+
+If you are migrating from the prior (non-widget) version of the code that made use of the Silverstripe filesystem and the `MadeHQ\Cloudinary\Model\ImageLink` or `MadeHQ\Cloudinary\Model\FileLink` classes for relationships then you can run the following 2 tasks to migrate the data to the new format. **Note**: you will need to make code changes in the PHP files
+
+#### Step 1:
+
+Run the `dev/tasks/MadeHQ-Cloudinary-Tasks-MigrationTaskStep1` task. This will give you a list of files/classes that are using `MadeHQ\Cloudinary\Model\FileLink` or a decendent in the `has_one` or `many_many` relationships
+
+#### Step 2:
+
+Update the code base to move the `has_one` and `many_many` fields into `db` with an appropriate new field type (see [Create database fields](#create-database-fields) above).
+
+Other code changes required would include changing calls to `::<ImageFieldName>()` to `::dbObject('<ImageFieldName>')` (this could possibly be done via the `::__call()` magic method but will leave that to individuals)
+
+#### Step 3:
+
+Run `dev/build?flush=all` to generate the new fields. Due to the legacy fields being relationships there is no worry about a conflict with field names.
+
+#### Step 4:
+
+Run the `dev/tasks/MadeHQ-Cloudinary-Tasks-MigrationTaskStep2` task. This will get the PublicID from the legacy relationship and request the file data directly from Cloudinary via the Admin API.
+
+**NOTE**: There is a limit of 2000 API requests per hour that can be made to cloudinary. There is currently no way to re-start the process if you hit this limit (possibly need to look into this). It seems that it is possible to raise the limit by [contacting Cloudinary](https://support.cloudinary.com/hc/en-us/articles/202520892-Are-Cloudinary-APIs-limited-)
