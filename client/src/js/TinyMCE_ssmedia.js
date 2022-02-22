@@ -2,16 +2,26 @@
 (() => {
     const stateSelector = 'img[data-shortcode="image"]';
     const ssmedia = {
+
+        /**
+         * @var editor
+         */
         editor: null,
+
+        /**
+         * Initialise the plugin
+         *
+         * @param {*} editor
+         */
         init(editor) {
             this.openCloudinaryBrowser = this.openCloudinaryBrowser.bind(this);
             this.insertHandler = this.insertHandler.bind(this);
 
             this.editor = editor;
 
-            const insertText = editor.translate("AssetAdmin.INSERT_FROM_FILES", "Insert from Files"),
-                editText = editor.translate("AssetAdmin.EDIT_IMAGE", "Edit image"),
-                fileText = editor.translate("AssetAdmin.FILE", "File");
+            const insertText = editor.translate('Insert from Files'),
+                editText = editor.translate('Edit image'),
+                fileText = editor.translate('File');
 
             editor.addButton('ssmedia', {
                 title: insertText,
@@ -33,24 +43,39 @@
             editor.addCommand('ssmedia', this.openCloudinaryBrowser);
         },
 
+        /**
+         * Opens Cloudinary Media Library modal and assigns the `insertHandler` callback to insert the image into editor
+         */
         openCloudinaryBrowser() {
-                const options = {
-                    ...CLOUDINARY_CONFIG,
-                    multiple: false,
-                };
+            // See https://cloudinary.com/documentation/media_library_widget#3_set_the_configuration_options
+            const options = {
+                ...CLOUDINARY_CONFIG,
+                multiple: false,
+            };
 
-                // Safari is the devil. Force users to login manually.
-                if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
-                    delete options.username;
-                    delete options.timestamp;
-                    delete options.signature;
-                }
+            const defaultTransformations = this.editor.getParam('default_transformations');
 
-                cloudinary.openMediaLibrary(options, {
-                    insertHandler: this.insertHandler,
-                });
+            if (defaultTransformations) {
+                options.default_transformations = [defaultTransformations];
+            }
+
+            // Safari is the devil. Force users to login manually.
+            if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
+                delete options.username;
+                delete options.timestamp;
+                delete options.signature;
+            }
+
+            cloudinary.openMediaLibrary(options, {
+                insertHandler: this.insertHandler,
+            });
         },
 
+        /**
+         * Inserts the data into the editor
+         *
+         * @param {*} response
+         */
         insertHandler(response) {
             const asset = response.assets[0];
             if (asset.resource_type !== 'image') {
