@@ -8,7 +8,13 @@ SilverStripe\Core\Injector\Injector:
   MadeHQ\Cloudinary\Tasks\MigrationTaskStep2:
     constructor:
       - '%$Cloudinary\Cloudinary'
+      - '%$MadeHQ\Cloudinary\MigrationDataCache'
+      # - '%$MadeHQ\Cloudinary\Controllers\API' // Injected within __constructor() as need to set user before it can be instantiated
 
+  MadeHQ\Cloudinary\MigrationDataCache:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "migration_data_cache"
 ---
 Name: silverstripecloudinaryfieldtypes
 After:
