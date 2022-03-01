@@ -4,4 +4,4 @@ updates:
     directory: "/"
     target-branch: "widget"
     schedule:
-      interval: "weekly"
+      interval: "daily"
