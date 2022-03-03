@@ -163,7 +163,6 @@ class API extends RequestHandler
             $return['credit'] = $this->extractCredit($data);
             $return['top_colours'] = $this->extractTopColours($data);
             $return['actual_type'] = 'image';
-            $return['gravity'] = 'auto';
             $return['foreground_colour'] = null;
             $return['background_colour'] = null;
             $return['transformations'] = null;
