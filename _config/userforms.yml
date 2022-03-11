@@ -1,0 +1,20 @@
+---
+Name: silverstripecloudinaryuserform
+After:
+ - '#silverstripecloudinarycore'
+Only:
+  moduleexists:
+    - 'silverstripe/userforms'
+---
+
+SilverStripe\Core\Injector\Injector:
+  # Overrides the Upload Folder modal when selecting File Upload
+  SilverStripe\UserForms\Control\UserDefinedFormAdmin:
+    class: MadeHQ\Cloudinary\UserForms\Controllers\FormAdmin
+
+  SilverStripe\UserForms\Model\Submission\SubmittedFileField:
+    class: MadeHQ\Cloudinary\UserForms\SubmittedFileField
+
+SilverStripe\UserForms\Model\EditableFormField\EditableFileField:
+  # This is overridden on the replacement field but want this one hidden
+  hidden: true

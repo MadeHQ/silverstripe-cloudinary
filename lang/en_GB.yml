@@ -1,0 +1,3 @@
+en_GB:
+  MadeHQ\Cloudinary\UserForms\EditableFileField:
+    UPLOAD_PREFIX_DESCRIPTION: 'Prefix ({prefix})'
