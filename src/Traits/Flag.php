@@ -13,6 +13,9 @@ trait Flag
      */
     public function Flag($flag, ...$options)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->addFlag(TransformationFlag::$flag(...$options));

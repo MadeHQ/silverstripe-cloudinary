@@ -14,6 +14,9 @@ trait Scale
      */
     public function Scale($width, $height, $aspectRatio = null)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->resize(Resize::scale($width, $height, $aspectRatio));

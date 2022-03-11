@@ -10,6 +10,9 @@ trait Quality
      */
     public function Quality($quality)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->quality($quality);

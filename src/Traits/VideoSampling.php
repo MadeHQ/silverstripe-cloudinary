@@ -10,6 +10,9 @@ trait VideoSampling
      */
     public function VideoSampling($videoSampling)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->videoSampling($videoSampling);

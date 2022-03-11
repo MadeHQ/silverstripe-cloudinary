@@ -12,6 +12,9 @@ trait VideoCodec
      */
     public function VideoCodec($videoCodec)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->transcode(Transcode::videoCodec($videoCodec));
