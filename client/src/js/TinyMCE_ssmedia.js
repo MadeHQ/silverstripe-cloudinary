@@ -1,4 +1,7 @@
 'use strict';
+
+/* global CLOUDINARY_CONFIG, cloudinary, tinymce */
+
 (() => {
     const stateSelector = 'img[data-shortcode="image"]';
     const ssmedia = {
