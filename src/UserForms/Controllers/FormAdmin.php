@@ -22,6 +22,12 @@ use SilverStripe\Versioned\Versioned;
 
 class FormAdmin extends UserDefinedFormAdmin
 {
+    /**
+     * list of methods that can be accessed via browser
+     *
+     * @config
+     * @var array
+     */
     private static $allowed_actions = [
         'confirmfolderformschema',
         'ConfirmFolderForm',
