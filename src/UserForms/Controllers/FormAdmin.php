@@ -2,7 +2,7 @@
 
 namespace MadeHQ\Cloudinary\UserForms\Controllers;
 
-use MadeHQ\Cloudinary\UserForms\EditableFileField as UserFormsEditableFileField;
+use MadeHQ\Cloudinary\UserForms\EditableFileField;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\HTTPResponse_Exception;
@@ -17,7 +17,6 @@ use SilverStripe\Security\Permission;
 use SilverStripe\Security\PermissionFailureException;
 use SilverStripe\UserForms\Control\UserDefinedFormAdmin;
 use SilverStripe\UserForms\Model\EditableFormField;
-use SilverStripe\UserForms\Model\EditableFormField\EditableFileField;
 use SilverStripe\Versioned\Versioned;
 
 class FormAdmin extends UserDefinedFormAdmin
@@ -114,7 +113,7 @@ class FormAdmin extends UserDefinedFormAdmin
                 'LabelB',
                 _t(__CLASS__.'.CONFIRM_FOLDER_LABEL_B', 'The folder selected will become the default for this form. This can be changed on an individual basis in the <i>File upload field.</i>')
             )->addExtraClass(' mb-3'),
-            UserFormsEditableFileField::getUploadFolderField()
+            EditableFileField::getUploadFolderField()
                 ->setSchemaData([
                     'attributes' => [
                         'placeholder' => static::getDefaultSubmissionFolder(),

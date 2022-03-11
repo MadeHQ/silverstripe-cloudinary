@@ -45,45 +45,4 @@ jQuery.entwine('ss', $ => {
             this.HolderInstance.remove();
         },
     });
-
-
-
-console.log(
-    $(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label:not([data-folderconfirmed='1'])").length,
-    $(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label:not([data-folderconfirmed='1'])")
-);
-    /**
-     * Monitor new fields to intercept when EditableFileField is selected
-     */
-    $(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label:not([data-folderconfirmed='1'])").entwine({
-        onchange() {
-console.log('change - 1', this);
-console.log('change - 2', this.get(0).value);
-            // ensure EditableFileField is selected
-            if (this.get(0).value !== 'MadeHQ\\Cloudinary\\UserForms\\EditableFileField') {
-console.log('change skip 1');
-                return;
-            }
-
-            // ensure there are no other EditableFileField confirmed
-            if ($(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label[data-folderconfirmed='1']").length) {
-console.log('change skip 2');
-                return;
-            }
-
-            // open folder confirmation dialog
-            let dialog = $('#confirm-folder__dialog-wrapper');
-
-            if (dialog.length) {
-                dialog.remove();
-            }
-
-            dialog = $('<div id="confirm-folder__dialog-wrapper" />');
-            const id = $(this).closest('tr').data('id');
-            dialog.data('id', id);
-            $('body').append(dialog);
-
-            dialog.open();
-        },
-    });
 });
