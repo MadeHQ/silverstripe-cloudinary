@@ -10,6 +10,9 @@ trait BitRate
      */
     public function BitRate($bitRate)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->bitRate($bitRate);

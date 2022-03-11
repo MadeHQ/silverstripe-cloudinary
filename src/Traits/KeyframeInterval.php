@@ -10,6 +10,9 @@ trait KeyframeInterval
      */
     public function KeyframeInterval($keyframeInterval)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->keyframeInterval($keyframeInterval);

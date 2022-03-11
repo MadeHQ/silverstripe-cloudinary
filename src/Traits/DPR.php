@@ -12,6 +12,9 @@ trait DPR
      */
     public function DPR($dpr)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->delivery(Delivery::dpr($dpr));

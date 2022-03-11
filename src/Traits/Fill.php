@@ -14,6 +14,9 @@ trait Fill
      */
     public function Fill($width, $height, $gravity = null)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         if (empty($gravity) === true) {
