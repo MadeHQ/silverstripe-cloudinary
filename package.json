@@ -63,7 +63,7 @@
         "postcss-cli": "^9.0.1",
         "postcss-pxtorem": "^6.0.0",
         "postcss-scss": "^4.0.1",
-        "stylelint": "^14.0.1",
+        "stylelint": "^14.6.1",
         "stylelint-config-standard": "^23.0.0",
         "uglifyjs-webpack-plugin": "^2.2.0",
         "watch": "^1.0.2",
