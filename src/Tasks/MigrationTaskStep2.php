@@ -76,7 +76,7 @@ SQL;
      *
      * e.g.
      * ```
-     * SELECT `FilePublicID`
+     * SELECT `FilePublicID`, `fl`.`Caption`, `fl`.`AltText`
      * FROM `ProductPage_Images` AS l
      * INNER JOIN `CloudinaryImageLink` AS fl ON `fl`.`ID` = `l`.`CloudinaryImageLinkID`
      * INNER JOIN `File` AS f ON `f`.`ID` = `fl`.`FileID`
@@ -88,7 +88,7 @@ SQL;
      * @var string
      */
     private static $many_many_sql_template = <<<SQL
-SELECT "FilePublicID"
+SELECT "FilePublicID", "fl"."Caption", "fl"."AltText"
 FROM "{RelationTableName}" AS l
 INNER JOIN "{LinkTable}" AS fl ON "fl"."ID" = "l"."{LinkTable}ID"
 INNER JOIN "{FileTable}{VersionSuffix}" AS f ON "f"."ID" = "fl"."{FileTable}ID"
@@ -173,9 +173,13 @@ SQL;
             ]
         ));
 
-        $newData = array_map(function ($publicId) {
-            return $this->getAsset($publicId);
-        }, $oldData->column('FilePublicID'));
+        $newData = [];
+        foreach($oldData as $item) {
+            $newItem = $this->getAsset($item['FilePublicID']);
+            $newItem->title = $item['Caption'];
+            $newItem->description = $item['AltText'];
+            array_push($newData, $newItem);
+        }
 
         $sql = sprintf(
             'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
@@ -217,9 +221,12 @@ SQL;
             return;
         }
         $newData = $this->getAsset($data['FilePublicID']);
+
         if (!$newData) {
             return;
         }
+        $newData->title = $data['Caption'];
+        $newData->description = $data['AltText'];
 
         $sql = sprintf(
             'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
@@ -264,7 +271,11 @@ SQL;
 
             if ($searchResultData['total_count']) {
                 $replacementPublicId = $searchResultData['resources'][0]['public_id'];
-                $resourceData = $this->getAsset($replacementPublicId);
+                if ($replacementPublicId !== $publicId) {
+                    $resourceData = $this->getAsset($replacementPublicId);
+                } else {
+                    $resourceData = false;
+                }
             } else {
                 var_dump(sprintf('Unable to find: %s', $publicId));
                 $resourceData = false;
