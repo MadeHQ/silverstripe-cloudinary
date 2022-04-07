@@ -113,11 +113,11 @@ SELECT
     "f"."FilePublicID",
     CASE
         WHEN "fl"."Caption" IS NOT NULL THEN "fl"."Caption"
-        ELSE "f.Caption"
+        ELSE "f"."Caption"
     END AS "Caption",
     CASE
         WHEN "fl"."AltText" IS NOT NULL THEN "fl"."AltText"
-        ELSE "f.AltText"
+        ELSE "f"."AltText"
     END AS "AltText",
     "fl"."Focus"
 FROM "{RelationTableName}" AS l
