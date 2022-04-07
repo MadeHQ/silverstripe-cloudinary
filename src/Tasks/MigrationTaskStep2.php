@@ -60,7 +60,18 @@ class MigrationTaskStep2 extends BuildTask
      * @var string
      */
     private static $has_one_sql_template = <<<SQL
-SELECT ft.*, lt.Focus, lt.Caption, lt.AltText FROM "{LinkTable}" As lt
+SELECT
+    "ft"."FilePublicID",
+    "lt"."Focus",
+    CASE
+        WHEN "lt"."Caption" IS NOT NULL THEN "lt"."Caption"
+        ELSE "ft"."Caption"
+    END AS "Caption",
+    CASE
+        WHEN "lt"."AltText" IS NOT NULL THEN "lt"."AltText"
+        ELSE "ft"."AltText"
+    END AS "AltText"
+FROM "{LinkTable}" As lt
 INNER JOIN "{FileTable}" As ft ON "ft"."ID" = "lt"."FileID"
 WHERE "lt"."ID" = (SELECT "{FieldName}ID" FROM "{TableName}" WHERE "ID" = '{ID}')
 SQL;
@@ -76,7 +87,17 @@ SQL;
      *
      * e.g.
      * ```
-     * SELECT `FilePublicID`, `fl`.`Caption`, `fl`.`AltText`
+     * SELECT
+     *     `f`.`FilePublicID`,
+     *     CASE
+     *         WHEN `fl`.`Caption` IS NOT NULL THEN `fl`.`Caption`
+     *         ELSE `f`.`Caption`
+     *     END AS `Caption`
+     *     CASE
+     *         WHEN `fl`.`AltText` IS NOT NULL THEN `fl`.`AltText`
+     *         ELSE `f`.`AltText`
+     *     END AS `AltText`
+     *     `fl`.`Focus`
      * FROM `ProductPage_Images` AS l
      * INNER JOIN `CloudinaryImageLink` AS fl ON `fl`.`ID` = `l`.`CloudinaryImageLinkID`
      * INNER JOIN `File` AS f ON `f`.`ID` = `fl`.`FileID`
@@ -88,7 +109,17 @@ SQL;
      * @var string
      */
     private static $many_many_sql_template = <<<SQL
-SELECT "FilePublicID", "fl"."Caption", "fl"."AltText"
+SELECT
+    "f"."FilePublicID",
+    CASE
+        WHEN "fl"."Caption" IS NOT NULL THEN "fl"."Caption"
+        ELSE "f.Caption"
+    END AS "Caption",
+    CASE
+        WHEN "fl"."AltText" IS NOT NULL THEN "fl"."AltText"
+        ELSE "f.AltText"
+    END AS "AltText",
+    "fl"."Focus"
 FROM "{RelationTableName}" AS l
 INNER JOIN "{LinkTable}" AS fl ON "fl"."ID" = "l"."{LinkTable}ID"
 INNER JOIN "{FileTable}{VersionSuffix}" AS f ON "f"."ID" = "fl"."{FileTable}ID"
@@ -178,6 +209,7 @@ SQL;
             $newItem = $this->getAsset($item['FilePublicID']);
             $newItem->title = $item['Caption'];
             $newItem->description = $item['AltText'];
+            $newItem->gravity = $item['Focus'];
             array_push($newData, $newItem);
         }
 
@@ -227,6 +259,7 @@ SQL;
         }
         $newData->title = $data['Caption'];
         $newData->description = $data['AltText'];
+        $newData->gravity = $data['Focus'];
 
         $sql = sprintf(
             'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
