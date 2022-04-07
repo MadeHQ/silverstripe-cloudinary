@@ -1,6 +1,6 @@
 /* global CLOUDINARY_CONFIG, cloudinary,  */
 import React, { Component } from 'react';
-import { get, first, isObject, isArray, differenceBy, concat, last } from 'lodash';
+import { get, first, isObject, isArray, differenceBy, concat } from 'lodash';
 import PropTypes from 'prop-types';
 import jQuery from 'jquery';
 
@@ -58,7 +58,7 @@ export default class Field extends Component {
     }
 
     showLibrary() {
-        const { isMultiple, maxFiles, resourceType } = this.props;
+        const { isMultiple, maxFiles } = this.props;
 
         const options = {
             ...CLOUDINARY_CONFIG,
@@ -83,9 +83,11 @@ export default class Field extends Component {
 
         let assets = get(response, 'assets', []);
 
-        assets = assets.filter(asset => {
-            return asset.resource_type === resourceType;
-        });
+        if (resourceType) {
+            assets = assets.filter(asset => {
+                return asset.resource_type === resourceType;
+            });
+        }
 
         if (assets.length === 0) {
             return alert(`You can only select ${resourceType} files for this field`);

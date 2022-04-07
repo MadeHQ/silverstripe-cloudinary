@@ -209,7 +209,7 @@ abstract class DBSingleResource extends DBBaseResource
      */
     public function getURL()
     {
-        return $this->forTemplate();
+        return (string) $this->forTemplate();
     }
 
     /**

@@ -5,9 +5,13 @@ use SilverStripe\AssetAdmin\Controller\AssetAdmin;
 use SilverStripe\Core\Config\Config;
 use Cloudinary\Configuration\Configuration;
 use Cloudinary\Utils;
+use MadeHQ\Cloudinary\UserForms\Controllers\FormAdmin;
+use SilverStripe\Core\Manifest\ModuleLoader;
+use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;
 
 // Remove the Asset Admin link
 CMSMenu::remove_menu_class(AssetAdmin::class);
+CMSMenu::remove_menu_class(FormAdmin::class);
 
 // Grab the settings from config
 $settings = Config::inst()->get('MadeHQ\\Cloudinary');
@@ -39,3 +43,22 @@ if ($valid === true) {
         ],
     ]);
 }
+
+/**
+ * Removes the built in `ssmedia` module and replaces it with the cloudinary one
+ */
+call_user_func(function () {
+    $module = ModuleLoader::inst()->getManifest()->getModule('mademedia/silverstripe-cloudinary');
+
+    // Re-enable media dialog
+    $config = TinyMCEConfig::get('cms');
+    $config->disablePlugins([
+        'ssmedia',  // Removes the existing module so as to replace it
+    ]);
+
+    // Replaces the `ssmedia` module
+    $config->enablePlugins([
+        'ssmedia' => $module
+            ->getResource('client/src/js/TinyMCE_ssmedia.js'),
+    ]);
+});

@@ -6,32 +6,33 @@ Cloudinary is a cloud-based media management platform that provides an easy solu
 
 ### Table of Contents
 
-- [SilverStripe Cloudinary](#silverstripe-cloudinary)
-  - [Table of Contents](#table-of-contents)
-  - [SilverStripe has a asset manager, why do I need this?](#silverstripe-has-a-asset-manager-why-do-i-need-this)
-  - [Provide Cloudinary config](#provide-cloudinary-config)
-  - [Create database fields](#create-database-fields)
-  - [Set form fields](#set-form-fields)
-    - [Additional methods](#additional-methods)
-  - [Rendering the assets](#rendering-the-assets)
-    - [Images](#images)
-      - [Supported transformations](#supported-transformations)
-    - [Videos](#videos)
-      - [Supported transformations](#supported-transformations-1)
-    - [Files](#files)
-      - [Supported transformations](#supported-transformations-2)
-  - [Supplementary methods](#supplementary-methods)
-  - [Global configuration](#global-configuration)
-  - [Multi resource fields](#multi-resource-fields)
-  - [Retaining transformations](#retaining-transformations)
-  - [Predominant Colours](#predominant-colours)
-  - [Contributing](#contributing)
-  - [Todo](#todo)
-  - [Migration](#migration)
-    - [Step 1:](#step-1)
-    - [Step 2:](#step-2)
-    - [Step 3:](#step-3)
-    - [Step 4:](#step-4)
+- [SilverStripe has a asset manager, why do I need this?](#silverstripe-has-a-asset-manager-why-do-i-need-this)
+- [Provide Cloudinary config](#provide-cloudinary-config)
+- [Create database fields](#create-database-fields)
+- [Set form fields](#set-form-fields)
+  - [Additional methods](#additional-methods)
+- [Inline editor](#inline-editor)
+  - [Additional Settings for inline editor](#additional-settings-for-inline-editor)
+    - [`default_transformations` option](#default_transformations-option)
+- [Rendering the assets](#rendering-the-assets)
+  - [Images](#images)
+    - [Supported transformations](#supported-transformations)
+  - [Videos](#videos)
+    - [Supported transformations](#supported-transformations-1)
+  - [Files](#files)
+    - [Supported transformations](#supported-transformations-2)
+- [Supplementary methods](#supplementary-methods)
+- [Global configuration](#global-configuration)
+- [Multi resource fields](#multi-resource-fields)
+- [Retaining transformations](#retaining-transformations)
+- [Predominant Colours](#predominant-colours)
+- [Contributing](#contributing)
+- [Todo](#todo)
+- [Migration](#migration)
+  - [Step 1:](#step-1)
+  - [Step 2:](#step-2)
+  - [Step 3:](#step-3)
+  - [Step 4:](#step-4)
 
 ### SilverStripe has a asset manager, why do I need this?
 
@@ -145,6 +146,26 @@ public function getCMSFields()
 | `BaseField::FIELD_GRAVITY`     | &check;      | &check;      |             |
 | `BaseField::FIELD_FG_COLOUR`   | &check;      |              |             |
 | `BaseField::FIELD_BG_COLOUR`   | &check;      |              |             |
+
+### Inline editor
+
+The default media (`ssmedia`) handler in the WYSIWYG is replaced to use cloudinary as opposed to the Silverstripe **Files** browser
+
+#### Additional Settings for inline editor
+
+See Cloudinary's [configuration options](https://cloudinary.com/documentation/media_library_widget#3_set_the_configuration_options) for reference to any of the below
+
+##### `default_transformations` option
+
+Set to an array of objects (automatically wrapped in the extra array in the JS).
+
+```php
+\SilverStripe\Forms\HTMLEditor\HTMLEditorConfig::get('cms')
+    ->setOptions([
+        // This means that inline images will be limited to 1500px width by default (uses `limit` crop to keep aspect ratio)
+        'default_transformations' => [['crop' => 'limit', 'width' => 1500]],
+    ]);
+```
 
 ### Rendering the assets
 
@@ -461,6 +482,7 @@ This version of the module is still in its infancy. We will flesh it out as our 
 - [ ] Reduce duplicate code in the React components
 - [ ] Provide more transformations
 - [x] Provide better support for colours
+- [ ] Add handling for Edit/Remove functionality in WYSIWYG
 
 [^1]: Username in this instance is interchangeable with email. Provide the email you used to sign up for Cloudinary.
 [^2]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.

@@ -6,7 +6,7 @@ import Field from './components/field';
 jQuery.noConflict();
 
 jQuery.entwine('ss', $ => {
-    $('[data-resource-type]').entwine({
+    $('textarea.cloudinary-input-field').entwine({
         HolderInstance: null,
 
         onmatch() {

@@ -134,6 +134,7 @@ abstract class BaseField extends TextareaField
         parent::setupDefaultClasses();
 
         $this->addExtraClass('stacked');
+        $this->addExtraClass('cloudinary-input-field');
     }
 
     /**
