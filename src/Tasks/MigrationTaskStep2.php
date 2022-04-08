@@ -141,10 +141,6 @@ SQL;
 
     public function run($request)
     {
-        if (!Director::is_cli()) {
-            echo '<pre>';
-        }
-
         $dataObjectClasses = ClassInfo::subclassesFor(DataObject::class, false);
         $schema = DataObject::getSchema();
 
@@ -156,9 +152,11 @@ SQL;
                 $stages = [
                     Versioned::DRAFT => '',
                 ];
+
                 if ($do->has_extension(Versioned::class)) {
                     $stages[Versioned::LIVE] = '_Live';
                 }
+
                 foreach($stages As $stage => $suffix) {
                     Versioned::set_stage($stage);
 
@@ -176,7 +174,7 @@ SQL;
             });
         }
 
-        var_dump('COMPLETE!!');
+        static::output('COMPLETE!!');
     }
 
     /**
@@ -205,6 +203,7 @@ SQL;
         ));
 
         $newData = [];
+
         foreach($oldData as $item) {
             $newItem = $this->getAsset($item['FilePublicID']);
             $newItem->title = $item['Caption'];
@@ -290,14 +289,14 @@ SQL;
                 'resource_type' => 'image'
             ]);
 
-            var_dump(sprintf('Requesting [%d]: %s', ++$this->requestCount, $publicId));
+            static::output(sprintf('Requesting [%d]: %s', ++$this->requestCount, $publicId));
             $response = $this->apiController->resource($request);
 
             $resourceData = json_decode($response->getBody());
         } catch (NotFound $e) {
-            var_dump(sprintf('Failed to find "%s"', $publicId));
+            static::output(sprintf('Failed to find "%s"', $publicId));
             $searchApi = $this->cloudinary->searchApi();
-            var_dump(sprintf('Searching [%d]: %s', ++$this->requestCount, $publicId));
+            static::output(sprintf('Searching [%d]: %s', ++$this->requestCount, $publicId));
             $searchResultData = (array)$searchApi
                 ->expression(sprintf('%s', $publicId))
                 ->execute();
@@ -310,12 +309,30 @@ SQL;
                     $resourceData = false;
                 }
             } else {
-                var_dump(sprintf('Unable to find: %s', $publicId));
+                static::output(sprintf('Unable to find: %s', $publicId));
                 $resourceData = false;
             }
         }
 
         $this->cache->set($cacheKey, $resourceData, 60 * 60 * 24);  // 1 Day Cache
         return $resourceData;
+    }
+
+    /**
+     * Echo's out the arguments (automatically wraps with `<pre>` if not CLI)
+     *
+     * @return void(0)
+     */
+    public static function output(...$args)
+    {
+        if (!Director::is_cli()) {
+            echo '<pre>';
+        }
+        foreach($args As $line) {
+            echo sprintf('%s%s', $line, PHP_EOL);
+        }
+        if (!Director::is_cli()) {
+            echo '</pre>';
+        }
     }
 }
