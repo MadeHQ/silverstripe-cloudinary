@@ -256,6 +256,7 @@ SQL;
         if (!$newData) {
             return;
         }
+
         $newData->title = $data['Caption'];
         $newData->description = $data['AltText'];
         $newData->gravity = $data['Focus'];
@@ -303,6 +304,7 @@ SQL;
 
             if ($searchResultData['total_count']) {
                 $replacementPublicId = $searchResultData['resources'][0]['public_id'];
+
                 if ($replacementPublicId !== $publicId) {
                     $resourceData = $this->getAsset($replacementPublicId);
                 } else {
@@ -328,9 +330,11 @@ SQL;
         if (!Director::is_cli()) {
             echo '<pre>';
         }
+
         foreach($args As $line) {
             echo sprintf('%s%s', $line, PHP_EOL);
         }
+
         if (!Director::is_cli()) {
             echo '</pre>';
         }

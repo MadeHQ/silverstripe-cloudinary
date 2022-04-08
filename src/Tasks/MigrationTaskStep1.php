@@ -76,9 +76,11 @@ class MigrationTaskStep1 extends BuildTask
 
         foreach($collatedData As $className => $data) {
             echo sprintf("Class %s\nFile: %s\n", $className, $data['root_file']);
+
             foreach($data['fields'] As $fieldName) {
                 echo sprintf(" - %s\n", $fieldName);
             }
+
             echo "\n";
         }
 
