@@ -145,7 +145,7 @@ abstract class DBSingleResource extends DBBaseResource
      */
     public function getTitle()
     {
-        return $this->getJSONValue('title') ?: $this->getName();
+        return $this->getJSONValue('title');
     }
 
     /**

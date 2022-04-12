@@ -8,10 +8,10 @@ export default class Resource extends Component {
     constructor(props) {
         super(props);
 
-        const { name, title, description, credit, gravity, foreground_colour, background_colour } = props;
+        const { title, description, credit, gravity, foreground_colour, background_colour } = props;
 
         this.state = {
-            name, title, description, credit, gravity, foreground_colour, background_colour
+            title, description, credit, gravity, foreground_colour, background_colour
         };
 
         this.updateTitle = this.updateTitle.bind(this);
@@ -114,7 +114,7 @@ export default class Resource extends Component {
     }
 
     titleFieldPlaceholder() {
-        return this.state.title || this.state.name;
+        return this.state.title;
     }
 
     descriptionFieldLabel() {
@@ -154,7 +154,7 @@ export default class Resource extends Component {
     }
 
     render() {
-        const { name, title, description, credit, gravity, foreground_colour, background_colour } = this.state;
+        const { title, description, credit, gravity, foreground_colour, background_colour } = this.state;
         const { actual_type, public_id, resource_type, top_colours, gravityOptions } = this.props;
 
         const thumbnail = this.thumbnailUrl();
@@ -187,7 +187,7 @@ export default class Resource extends Component {
                                     </label>
 
                                     <div className="cloudinary-field__input">
-                                        <textarea id={ `${public_id}_title` } className="textarea" rows="2" placeholder={ this.titleFieldPlaceholder() } value={ title || name } onChange={ this.updateTitle } />
+                                        <textarea id={ `${public_id}_title` } className="textarea" rows="2" placeholder={ this.titleFieldPlaceholder() } value={ title } onChange={ this.updateTitle } />
                                     </div>
                                 </div>
                             );
@@ -307,7 +307,6 @@ Resource.propTypes = {
     actual_type: PropTypes.string.isRequired,
     public_id: PropTypes.string.isRequired,
     resource_type: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
     title: PropTypes.string,
     description: PropTypes.string,
     credit: PropTypes.string,
