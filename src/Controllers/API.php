@@ -138,7 +138,7 @@ class API extends RequestHandler
             'asset_id' => $data['asset_id'],
             'public_id' => $data['public_id'],
             'name' => $this->extractName($data),
-            'title' => $this->extractTitle($data),
+            'title' => $this->extractTitle($data) ?: $this->extractName($data),
             'description' => $this->extractDescription($data),
             'format' => $this->determineFormat($data),
             'resource_type' => $resourceType,
