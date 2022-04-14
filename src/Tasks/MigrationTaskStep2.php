@@ -51,6 +51,25 @@ class MigrationTaskStep2 extends BuildTask
      * Should only return a single item
      *
      * Variables used are:
+     *  - `FileTable`: This is the base File (with suffix for versioning) that is linked to from the LinkTable
+     *  - `FieldName`: Name of the field from the `has_one` (`ID` is appended in the template as it's a relationship)
+     *  - `TableName`: Table used for this field
+     *  - `ID`: ID for the relationship
+     *
+     * @var string
+     */
+    private static $has_one_file_sql_template = <<<SQL
+SELECT
+    "ft"."FilePublicID"
+FROM "{FileTable}" As ft
+WHERE "ft"."ID" = (SELECT "{FieldName}ID" FROM "{TableName}" WHERE "ID" = '{ID}')
+SQL;
+
+    /**
+     * SQL to use that will retrieve an item from a FileLink on a `has_one` relationship
+     * Should only return a single item
+     *
+     * Variables used are:
      *  - `LinkTable`: This is the table used by the `FileLink` class (defaults to 'CloudinaryImageLink')
      *  - `FileTable`: This is the base File (with suffix for versioning) that is linked to from the LinkTable
      *  - `FieldName`: Name of the field from the `has_one` (`ID` is appended in the template as it's a relationship)
@@ -59,7 +78,7 @@ class MigrationTaskStep2 extends BuildTask
      *
      * @var string
      */
-    private static $has_one_sql_template = <<<SQL
+    private static $has_one_image_sql_template = <<<SQL
 SELECT
     "ft"."FilePublicID",
     "lt"."Focus",
@@ -108,7 +127,7 @@ SQL;
      *
      * @var string
      */
-    private static $many_many_sql_template = <<<SQL
+    private static $many_many_image_sql_template = <<<SQL
 SELECT
     "f"."FilePublicID",
     CASE
@@ -168,6 +187,9 @@ SQL;
                             case 'CloudinaryMultiImage':
                                 $this->handleMultiImageResource($do, $fieldName, $suffix);
                                 break;
+                            case 'CloudinaryFile':
+                                $this->handleCloudinaryFile($do, $fieldName, $suffix);
+                                break;
                         }
                     }
                 }
@@ -184,6 +206,50 @@ SQL;
      *
      * @return void(0)
      */
+    private function handleCloudinaryFile(DataObject $do, string $fieldName, string $tableSuffix)
+    {
+        $schema = DataObject::getSchema();
+
+        $tableName = $schema->tableForField($do->ClassName, $fieldName) . $tableSuffix;
+
+        $sql = strtr(
+            static::config()->get('has_one_file_sql_template'),
+            [
+                '{FileTable}' => $schema->tableName(File::class) . $tableSuffix,
+                '{FieldName}' => $fieldName,
+                '{TableName}' => $tableName,
+                '{ID}' => $do->ID,
+            ]
+        );
+
+        $data = DB::query($sql)->first();
+        if (!$data || !array_key_exists('FilePublicID', $data) || !$data['FilePublicID']) {
+            return;
+        }
+        $newData = $this->getAsset($data['FilePublicID']);
+
+        if (!$newData) {
+            return;
+        }
+
+        $sql = sprintf(
+            'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
+            $tableName,
+            $fieldName,
+            DB::get_conn()->escapeString(json_encode($newData)),
+            $do->ID
+        );
+
+        DB::query($sql);
+    }
+
+    /**
+     * @param DataObject $do
+     * @param string $fieldName
+     * @param string $tableSuffix
+     *
+     * @return void(0)
+     */
     private function handleMultiImageResource(DataObject $do, string $fieldName, string $tableSuffix)
     {
         $schema = DataObject::getSchema();
@@ -191,7 +257,7 @@ SQL;
         $relationshipTableName = sprintf('%s_%s', $tableName, $fieldName);
 
         $oldData = DB::query(strtr(
-            static::config()->get('many_many_sql_template'),
+            static::config()->get('many_many_image_sql_template'),
             [
                 '{RelationTableName}' => $relationshipTableName,
                 '{LinkTable}' => $schema->tableName(ImageLink::class),
@@ -237,7 +303,7 @@ SQL;
         $tableName = $schema->tableForField($do->ClassName, $fieldName) . $tableSuffix;
 
         $sql = strtr(
-            static::config()->get('has_one_sql_template'),
+            static::config()->get('has_one_image_sql_template'),
             [
                 '{LinkTable}' => $schema->tableName(ImageLink::class),
                 '{FileTable}' => $schema->tableName(File::class) . $tableSuffix,

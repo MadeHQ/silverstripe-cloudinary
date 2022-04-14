@@ -221,6 +221,6 @@ abstract class DBSingleResource extends DBBaseResource
 
         $this->extend('onBeforeRender', $asset);
 
-        return $asset->toUrl();
+        return ($asset) ? $asset->toUrl() : '';
     }
 }
