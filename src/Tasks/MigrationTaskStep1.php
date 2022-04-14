@@ -4,6 +4,7 @@ namespace MadeHQ\Cloudinary\Tasks;
 
 use MadeHQ\Cloudinary\Model\FileLink;
 use ReflectionClass;
+use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Dev\BuildTask;
@@ -25,6 +26,7 @@ class MigrationTaskStep1 extends BuildTask
     {
         $dataObjectClasses = ClassInfo::subclassesFor(DataObject::class, false);
         $fileLinkClassName = FileLink::class;
+        $fileClassName = File::class;
 
         /**
          * array(
@@ -34,7 +36,7 @@ class MigrationTaskStep1 extends BuildTask
          *   ]
          * )
          */
-        $collatedData = array_reduce($dataObjectClasses, function ($carry, $className) use ($fileLinkClassName) {
+        $collatedData = array_reduce($dataObjectClasses, function ($carry, $className) use ($fileLinkClassName, $fileClassName) {
             if (!array_key_exists($className, $carry)) {
                 $ref = new ReflectionClass($className);
                 $carry[$className] = [
@@ -48,6 +50,10 @@ class MigrationTaskStep1 extends BuildTask
                     is_subclass_of($relatedClass, $fileLinkClassName)
                     ||
                     $relatedClass === $fileLinkClassName
+                    ||
+                    is_subclass_of($relatedClass, $fileClassName)
+                    ||
+                    $relatedClass === $fileClassName
                 ) {
                     array_push($carry[$className]['fields'], $field);
                 }
@@ -58,6 +64,10 @@ class MigrationTaskStep1 extends BuildTask
                     is_subclass_of($relatedClass, $fileLinkClassName)
                     ||
                     $relatedClass === $fileLinkClassName
+                    ||
+                    is_subclass_of($relatedClass, $fileClassName)
+                    ||
+                    $relatedClass === $fileClassName
                 ) {
                     array_push($carry[$className]['fields'], $field);
                 }
