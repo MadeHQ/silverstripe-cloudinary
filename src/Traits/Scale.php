@@ -40,4 +40,28 @@ trait Scale
     {
         return $this->Scale(null, $height, $aspectRatio);
     }
+
+    /**
+     * Silverstripe compatibility function
+     *
+     * @param int|string $width
+     * @param int|float|string $aspectRatio
+     * @return static
+     */
+    public function ScaleWidth($width)
+    {
+        return $this->Scale($width, null);
+    }
+
+    /**
+     * Silverstripe compatibility function
+     *
+     * @param int|string $height
+     * @param int|float|string $aspectRatio
+     * @return static
+     */
+    public function ScaleHeight($height)
+    {
+        return $this->Scale(null, $height);
+    }
 }
