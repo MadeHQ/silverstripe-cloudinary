@@ -184,6 +184,6 @@ class DBImageResource extends DBSingleResource
 
         $this->extend('onBeforeRender', $asset);
 
-        return $asset->toUrl();
+        return ($asset) ? $asset->toUrl() : '';
     }
 }
