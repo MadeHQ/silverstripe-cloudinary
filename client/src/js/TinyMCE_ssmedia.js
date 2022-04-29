@@ -19,6 +19,7 @@
         init(editor) {
             this.openCloudinaryBrowser = this.openCloudinaryBrowser.bind(this);
             this.insertHandler = this.insertHandler.bind(this);
+            this.linkHandler = this.linkHandler.bind(this);
 
             this.editor = editor;
 
@@ -43,13 +44,26 @@
                 cmd: 'ssmedia'
             });
 
-            editor.addCommand('ssmedia', this.openCloudinaryBrowser);
+            editor.addCommand('ssmedia', () => {
+                this.openCloudinaryBrowser(this.insertHandler);
+            });
+
+            editor.addCommand('sslinkfile', () => {
+                this.openCloudinaryBrowser(this.linkHandler);
+            });
         },
 
         /**
-         * Opens Cloudinary Media Library modal and assigns the `insertHandler` callback to insert the image into editor
+         * @callback cloudinaryInsertHandler
+         * @param {*} response
          */
-        openCloudinaryBrowser() {
+
+        /**
+         * Opens Cloudinary Media Library modal and assigns the `insertHandler` callback to insert the image into editor
+         *
+         * @param {cloudinaryInsertHandler} insertHandler
+         */
+        openCloudinaryBrowser(insertHandler) {
             // See https://cloudinary.com/documentation/media_library_widget#3_set_the_configuration_options
             const options = {
                 ...CLOUDINARY_CONFIG,
@@ -70,7 +84,7 @@
             }
 
             cloudinary.openMediaLibrary(options, {
-                insertHandler: this.insertHandler,
+                insertHandler,
             });
         },
 
@@ -94,7 +108,41 @@
 
             const img = `<img src="${secureUrl}" />`;
             this.editor.execCommand('mceInsertContent', false, img);
-        }
+        },
+
+        /**
+         * Inserts the data into the editor as a link
+         *
+         * @param {*} response
+         */
+        linkHandler(response) {
+            const asset = response.assets[0];
+
+            let secureUrl;
+            if (asset.derived && asset.derived.length > 0) {
+                secureUrl = asset.derived[0].secure_url;
+            } else {
+                secureUrl = asset.secure_url;
+            }
+            let linkText = this.editor.selection.getContent({format: 'html'});
+            if (linkText.trim().length <= 0) {
+                linkText = prompt('Link text');
+            }
+
+            let defaultDescription;
+            if (
+                asset.context &&
+                asset.context.custom &&
+                asset.context.custom.alt
+            ) {
+                defaultDescription = asset.context.custom.alt;
+            }
+            const description = prompt('Description', defaultDescription);
+            const titleAttribute = description ? `title="${description}"` : '';
+
+            const link = `<a href="${secureUrl}" ${titleAttribute}>${linkText}</a>`;
+            this.editor.execCommand('mceInsertContent', false, link);
+        },
     };
     tinymce.PluginManager.add('ssmedia', function (editor) {
         ssmedia.init(editor);
