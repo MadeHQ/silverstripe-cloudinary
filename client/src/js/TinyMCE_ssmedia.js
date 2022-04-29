@@ -119,17 +119,21 @@
             const asset = response.assets[0];
 
             let secureUrl;
+
             if (asset.derived && asset.derived.length > 0) {
                 secureUrl = asset.derived[0].secure_url;
             } else {
                 secureUrl = asset.secure_url;
             }
+
             let linkText = this.editor.selection.getContent({format: 'html'});
+
             if (linkText.trim().length <= 0) {
                 linkText = prompt('Link text');
             }
 
             let defaultDescription;
+
             if (
                 asset.context &&
                 asset.context.custom &&
@@ -137,6 +141,7 @@
             ) {
                 defaultDescription = asset.context.custom.alt;
             }
+
             const description = prompt('Description', defaultDescription);
             const titleAttribute = description ? `title="${description}"` : '';
 
