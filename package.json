@@ -60,7 +60,7 @@
         "eslint-webpack-plugin": "^3.0.1",
         "path": "^0.12.7",
         "postcss": "^8.3.11",
-        "postcss-cli": "^9.0.1",
+        "postcss-cli": "^9.1.0",
         "postcss-pxtorem": "^6.0.0",
         "postcss-scss": "^4.0.1",
         "stylelint": "^14.0.1",
