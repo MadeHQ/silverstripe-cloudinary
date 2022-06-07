@@ -285,15 +285,15 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @return string
      */
-    public function getLink()
+    public function getLink($opts = [])
     {
-        return static::cloudinary()->uploadApi()->downloadZipUrl([
+        return static::cloudinary()->uploadApi()->downloadZipUrl(array_merge([
             'resource_type' => $this->getResourceType(),
             'flatten_folders' => true,
             'use_original_filename' => true,
             'allow_missing' => true,
             'public_ids' => $this->column('public_id'),
-        ]);
+        ], $opts));
     }
 
     /**
