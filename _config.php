@@ -8,6 +8,7 @@ use Cloudinary\Utils;
 use MadeHQ\Cloudinary\UserForms\Controllers\FormAdmin;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;
+use SilverStripe\View\Parsers\ShortcodeParser;
 
 // Remove the Asset Admin link
 CMSMenu::remove_menu_class(AssetAdmin::class);
@@ -62,3 +63,7 @@ call_user_func(function () {
             ->getResource('client/src/js/TinyMCE_ssmedia.js'),
     ]);
 });
+
+// Remove SS Asset Admin Shortcode parser
+ShortcodeParser::get('regenerator')
+    ->unregister('image');

@@ -166,8 +166,8 @@ class API extends RequestHandler
             $return['foreground_colour'] = null;
             $return['background_colour'] = null;
             $return['transformations'] = null;
-            $return['width'] = $data['width'];
-            $return['height'] = $data['height'];
+            $return['width'] = @$data['width'];
+            $return['height'] = @$data['height'];
         } else {
             $return['actual_type'] = 'raw';
         }

@@ -263,7 +263,7 @@ SQL;
                 '{LinkTable}' => $schema->tableName(ImageLink::class),
                 '{FileTable}' => $schema->tableName(File::class),
                 '{VersionSuffix}' => $tableSuffix,
-                '{RootRelationName}' => $do->ClassName,
+                '{RootRelationName}' => $tableName,
                 '{ID}' => $do->ID,
             ]
         ));
