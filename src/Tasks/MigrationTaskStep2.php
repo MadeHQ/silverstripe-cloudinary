@@ -18,6 +18,8 @@ use SilverStripe\ORM\DB;
 use SilverStripe\Security\DefaultAdminService;
 use SilverStripe\Security\Security;
 use SilverStripe\Versioned\Versioned;
+use SilverStripe\View\HTML;
+use SilverStripe\View\Parsers\ShortcodeParser;
 
 class MigrationTaskStep2 extends BuildTask
 {
@@ -190,6 +192,9 @@ SQL;
                             case 'CloudinaryFile':
                                 $this->handleCloudinaryFile($do, $fieldName, $suffix);
                                 break;
+                            case 'HTMLText':
+                                $this->handleShortcodes($do, $fieldName, $suffix);
+                                break;
                         }
                     }
                 }
@@ -197,6 +202,42 @@ SQL;
         }
 
         static::output('COMPLETE!!');
+    }
+
+    private function handleShortcodes(DataObject $do, string $fieldName, string $tableSuffix)
+    {
+        $tags = ShortcodeParser::get()->extractTags($do->$fieldName);
+
+        if (count($tags)) {
+            $newContent = array_reduce($tags, function ($content, $tag) {
+                switch($tag['open']) {
+                    case 'image':
+                        $content = str_replace(
+                            $tag['text'],
+                            HTML::createTag('img', $tag['attrs']),
+                            $content
+                        );
+                        break;
+                }
+                return $content;
+            }, $do->$fieldName);
+
+            $schema = DataObject::getSchema();
+
+            $tableName = $schema->tableForField($do->ClassName, $fieldName) . $tableSuffix;
+
+            $sql = sprintf(
+                'UPDATE "%s" SET "%s"=? WHERE "ID"=?',
+                $tableName,
+                $fieldName
+            );
+
+            DB::prepared_query($sql, [
+                $newContent,
+                $do->ID,
+            ]);
+        }
+
     }
 
     /**
@@ -232,8 +273,12 @@ SQL;
             return;
         }
 
+        if ($do->hasMethod('augmentMigrationData')) {
+            $do->augmentMigrationData($fieldName, $newData);
+        }
+
         $sql = sprintf(
-            'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
+            'INSERT INTO %1$s (ID, %2$s) VALUES (%4$d, \'%3$s\') ON DUPLICATE KEY UPDATE %2$s=\'%3$s\'',
             $tableName,
             $fieldName,
             DB::get_conn()->escapeString(json_encode($newData)),
@@ -278,8 +323,12 @@ SQL;
             array_push($newData, $newItem);
         }
 
+        if ($do->hasMethod('augmentMigrationData')) {
+            $do->augmentMigrationData($fieldName, $newData);
+        }
+
         $sql = sprintf(
-            'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
+            'INSERT INTO %1$s (ID, %2$s) VALUES (%4$d, \'%3$s\') ON DUPLICATE KEY UPDATE %2$s=\'%3$s\'',
             $tableName . $tableSuffix,
             $fieldName,
             DB::get_conn()->escapeString(json_encode($newData)),
@@ -327,8 +376,12 @@ SQL;
         $newData->description = $data['AltText'];
         $newData->gravity = $data['Focus'];
 
+        if ($do->hasMethod('augmentMigrationData')) {
+            $do->augmentMigrationData($fieldName, $newData);
+        }
+
         $sql = sprintf(
-            'UPDATE "%s" SET "%s" = \'%s\' WHERE "ID" = %d',
+            'INSERT INTO %1$s (ID, %2$s) VALUES (%4$d, \'%3$s\') ON DUPLICATE KEY UPDATE %2$s=\'%3$s\'',
             $tableName,
             $fieldName,
             DB::get_conn()->escapeString(json_encode($newData)),
