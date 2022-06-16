@@ -274,7 +274,7 @@ SQL;
         }
 
         if ($do->hasMethod('augmentMigrationData')) {
-            $do->augmentMigrationData($fieldName, $newData);
+            $do->augmentMigrationData($fieldName, $newData, $tableSuffix);
         }
 
         $sql = sprintf(
@@ -324,7 +324,7 @@ SQL;
         }
 
         if ($do->hasMethod('augmentMigrationData')) {
-            $do->augmentMigrationData($fieldName, $newData);
+            $do->augmentMigrationData($fieldName, $newData, $tableSuffix);
         }
 
         $sql = sprintf(
@@ -377,7 +377,7 @@ SQL;
         $newData->gravity = $data['Focus'];
 
         if ($do->hasMethod('augmentMigrationData')) {
-            $do->augmentMigrationData($fieldName, $newData);
+            $do->augmentMigrationData($fieldName, $newData, $tableSuffix);
         }
 
         $sql = sprintf(
