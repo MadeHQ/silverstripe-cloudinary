@@ -28,6 +28,7 @@ abstract class DBSingleResource extends DBBaseResource
         'Title' => 'Text',
         'Description' => 'Text',
         'Credit' => 'Text',
+        'Format' => 'Text',
         'FileFormat' => 'Text',
         'ResourceType' => 'Text',
         'ActualType' => 'Text',
@@ -176,6 +177,17 @@ abstract class DBSingleResource extends DBBaseResource
     public function getDescription()
     {
         return $this->getJSONValue('description');
+    }
+
+    /**
+     * @deprecated
+     *
+     * @return string
+     */
+    public function getFormat()
+    {
+        trigger_error('getFormat() is deprecated as of 5.0.1, use getFileFormat() instead', E_USER_DEPRECATED);
+        return $this->getFileFormat();
     }
 
     /**
