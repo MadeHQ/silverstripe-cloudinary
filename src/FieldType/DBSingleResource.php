@@ -7,6 +7,7 @@ use Cloudinary\Asset\File;
 use Cloudinary\Asset\Image;
 use Cloudinary\Asset\Media;
 use Cloudinary\Transformation\CommonTransformation;
+use Cloudinary\Transformation\Flag;
 
 abstract class DBSingleResource extends DBBaseResource
 {
@@ -28,10 +29,12 @@ abstract class DBSingleResource extends DBBaseResource
         'Description' => 'Text',
         'Credit' => 'Text',
         'Format' => 'Text',
+        'FileFormat' => 'Text',
         'ResourceType' => 'Text',
         'ActualType' => 'Text',
         'FileSize' => 'Int',
         'FriendlyFileSize' => 'Text',
+        'DownloadURL' => 'Text',
     ];
 
     /**
@@ -151,15 +154,46 @@ abstract class DBSingleResource extends DBBaseResource
     /**
      * @return string
      */
+    public function getDownloadURL()
+    {
+        $resourceType = $this->getResourceType();
+        $publicId = $this->getPublicID();
+        $version = $this->getVersion();
+
+        if ($resourceType === 'image') {
+            return (string) static::cloudinary()->image($publicId)->version($version)->addFlag(Flag::attachment())->toUrl();
+        }
+
+        if ($resourceType === 'video') {
+            return (string) static::cloudinary()->video($publicId)->version($version)->addFlag(Flag::attachment())->toUrl();
+        }
+
+        return (string) static::cloudinary()->raw($publicId)->version($version)->toUrl();
+    }
+
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return $this->getJSONValue('description');
     }
 
     /**
+     * @deprecated
+     *
      * @return string
      */
     public function getFormat()
+    {
+        trigger_error('getFormat() is deprecated as of 5.0.1, use getFileFormat() instead', E_USER_DEPRECATED);
+        return $this->getFileFormat();
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileFormat()
     {
         return $this->getJSONValue('format');
     }
