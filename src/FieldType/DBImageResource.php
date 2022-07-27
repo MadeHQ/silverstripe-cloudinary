@@ -15,6 +15,7 @@ use MadeHQ\Cloudinary\Traits\Format;
 use MadeHQ\Cloudinary\Traits\Limit;
 use MadeHQ\Cloudinary\Traits\LimitFill;
 use MadeHQ\Cloudinary\Traits\MinimumFit;
+use MadeHQ\Cloudinary\Traits\Pad;
 use MadeHQ\Cloudinary\Traits\Quality;
 use MadeHQ\Cloudinary\Traits\Scale;
 use MadeHQ\Cloudinary\Traits\Thumb;
@@ -34,6 +35,7 @@ class DBImageResource extends DBSingleResource
     use Format;
     use DPR;
     use Flag;
+    use Pad;
 
     /**
      * @config
