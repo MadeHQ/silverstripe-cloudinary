@@ -63,13 +63,31 @@
     }
 }
 
+.cloudinary-field-order {
+    font-size: 2em;
+    padding: 0 0.5em 0 0;
+}
+
+.cloudinary-field-order__move {
+    cursor: pointer;
+    display: block;
+
+    ins {
+        text-decoration: none;
+    }
+}
+.cloudinary-field-order__move--up.cloudinary-field-order__move--first,
+.cloudinary-field-order__move--down.cloudinary-field-order__move--last {
+    cursor: not-allowed;
+}
+
 .cloudinary-field__media {
     position: relative;
     align-self: flex-start;
     line-height: 0;
 
     &:hover .cloudinary-field__actions {
-        opacity: 100%;
+        opacity: 1;
     }
 }
 
@@ -96,7 +114,7 @@
     bottom: 0;
     left: 0;
     display: flex;
-    opacity: 0%;
+    opacity: 0;
     justify-content: space-evenly;
     align-items: center;
     transition: opacity 200ms ease-in-out;
