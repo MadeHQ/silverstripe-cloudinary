@@ -21,6 +21,8 @@ export default class Resource extends Component {
         this.updateFgColour = this.updateFgColour.bind(this);
         this.updateBgColour = this.updateBgColour.bind(this);
         this.removeResource = this.removeResource.bind(this);
+        this.moveResourceUp = this.moveResourceUp.bind(this);
+        this.moveResourceDown = this.moveResourceDown.bind(this);
         this.url = this.url.bind(this);
         this.thumbnailUrl = this.thumbnailUrl.bind(this);
         this.titleFieldLabel = this.titleFieldLabel.bind(this);
@@ -97,6 +99,20 @@ export default class Resource extends Component {
         );
     }
 
+    moveResourceUp() {
+        this.props.onMoveResource(
+            this.props.public_id,
+            -1
+        );
+    }
+
+    moveResourceDown() {
+        this.props.onMoveResource(
+            this.props.public_id,
+            1
+        );
+    }
+
     url() {
         const { public_id, resource_type } = this.props;
 
@@ -153,6 +169,52 @@ export default class Resource extends Component {
         return uniq(fields);
     }
 
+    renderOrder() {
+        const { firstItem, lastItem } = this.props;
+
+        if (firstItem && lastItem) {
+            // Only a single item so no need to re-order
+            return false;
+        }
+
+        const moveUpClassNames = [
+            'cloudinary-field-order__move',
+            'cloudinary-field-order__move--up',
+        ];
+        const moveDownClassNames = [
+            'cloudinary-field-order__move',
+            'cloudinary-field-order__move--down',
+        ];
+
+        if (firstItem) {
+            moveUpClassNames.push('cloudinary-field-order__move--first');
+        }
+        if (lastItem) {
+            moveDownClassNames.push('cloudinary-field-order__move--last');
+        }
+
+        return (
+            <div className="cloudinary-field-order">
+                <a
+                    className={moveUpClassNames.join(' ')}
+                    onClick={ this.moveResourceUp }
+                    disabled={ firstItem }
+                    title="Move Up"
+                >
+                    <ins className="font-icon-up-open">&nbsp;</ins>
+                </a>
+                <a
+                    className={moveDownClassNames.join(' ')}
+                    onClick={ this.moveResourceDown }
+                    disabled={ lastItem }
+                    title="Move Down"
+                >
+                    <ins className="font-icon-down-open">&nbsp;</ins>
+                </a>
+            </div>
+        );
+    }
+
     render() {
         const { title, description, credit, gravity, foreground_colour, background_colour } = this.state;
         const { actual_type, public_id, resource_type, top_colours, gravityOptions } = this.props;
@@ -161,6 +223,8 @@ export default class Resource extends Component {
 
         return (
             <div className={`cloudinary-field__item cloudinary-field__item--${actual_type}`}>
+                {this.renderOrder()}
+
                 <div className={`cloudinary-field__media cloudinary-field__media--${actual_type}`}>
                     <div className={`cloudinary-field__preview cloudinary-field__preview--${actual_type}`}>
                         { thumbnail && <img src={ thumbnail } /> }
@@ -318,6 +382,9 @@ Resource.propTypes = {
     gravityOptions: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     onRemoveResource: PropTypes.func.isRequired,
+    onMoveResource: PropTypes.func.isRequired,
+    firstItem: PropTypes.bool.isRequired,
+    lastItem: PropTypes.bool.isRequired,
 }
 
 Resource.defaultProps = {
