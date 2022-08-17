@@ -1,0 +1,12 @@
+---
+Name: silverstripecloudinarylinkable
+After:
+ - '#silverstripecloudinarycore'
+Only:
+  moduleexists:
+    - 'sheadawson/silverstripe-linkable'
+---
+
+Sheadawson\Linkable\Models\Link:
+  extensions:
+    - MadeHQ\Cloudinary\Linkable\Extensions\Link

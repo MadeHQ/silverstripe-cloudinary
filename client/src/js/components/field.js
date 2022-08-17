@@ -47,6 +47,7 @@ export default class Field extends Component {
         this.processRaw = this.processRaw.bind(this);
         this.onChange = this.onChange.bind(this);
         this.onRemoveResource = this.onRemoveResource.bind(this);
+        this.onMoveResource = this.onMoveResource.bind(this);
         this.updateProperty = this.updateProperty.bind(this);
         this.renderResources = this.renderResources.bind(this);
     }
@@ -237,6 +238,38 @@ export default class Field extends Component {
         this.onChange(resources);
     }
 
+    /**
+     *
+     * @param {string} publicId
+     * @param {integer} direction Positive or negative
+     */
+    onMoveResource(publicId, direction) {
+        const idx = this.state.resources.findIndex(r => r.public_id === publicId);
+        const newIdx = parseInt(direction, 10) + idx;
+
+        if (newIdx < 0 || newIdx > this.state.resources.length) {
+            // Trying to move out or bounds (don't do anything)
+            return;
+        }
+
+        const resource = this.state.resources[idx];
+
+        // New array (without the resource)
+        let resources = [].concat(
+            this.state.resources.slice(0, idx),
+            this.state.resources.slice(idx + 1)
+        );
+
+        // Re-add the resource at the correct location
+        resources.splice(newIdx, 0, resource);
+
+        this.setState({
+            resources: resources
+        });
+
+        this.onChange(resources);
+    }
+
     updateProperty(publicId, property, value) {
         const resources = this.state.resources.map(resource => {
             if (resource.public_id !== publicId) {
@@ -256,8 +289,10 @@ export default class Field extends Component {
     }
 
     renderResources() {
-        return this.state.resources.map(resource => {
+        return this.state.resources.map((resource, idx) => {
             const { actual_type } = resource;
+            const firstItem = idx === 0;
+            const lastItem = idx === this.state.resources.length - 1;
 
             if (actual_type === 'video') {
                 return <Video
@@ -267,6 +302,9 @@ export default class Field extends Component {
                     gravityOptions={ this.props.gravityOptions }
                     onChange={ this.updateProperty }
                     onRemoveResource={ this.onRemoveResource }
+                    onMoveResource={ this.onMoveResource }
+                    firstItem={ firstItem }
+                    lastItem={ lastItem }
                 />;
             }
 
@@ -277,6 +315,9 @@ export default class Field extends Component {
                     fields={ this.props.fields }
                     onChange={ this.updateProperty }
                     onRemoveResource={ this.onRemoveResource }
+                    onMoveResource={ this.onMoveResource }
+                    firstItem={ firstItem }
+                    lastItem={ lastItem }
                 />;
             }
 
@@ -288,6 +329,9 @@ export default class Field extends Component {
                     gravityOptions={ this.props.gravityOptions }
                     onChange={ this.updateProperty }
                     onRemoveResource={ this.onRemoveResource }
+                    onMoveResource={ this.onMoveResource }
+                    firstItem={ firstItem }
+                    lastItem={ lastItem }
                 />;
             }
 
@@ -297,6 +341,9 @@ export default class Field extends Component {
                 fields={ this.props.fields }
                 onChange={ this.updateProperty }
                 onRemoveResource={ this.onRemoveResource }
+                onMoveResource={ this.onMoveResource }
+                firstItem={ firstItem }
+                lastItem={ lastItem }
             />;
         });
     }
