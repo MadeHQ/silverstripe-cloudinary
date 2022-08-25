@@ -4,6 +4,7 @@ After:
   - '#assetscore'
   - '#assetadmingraphql-dependencies'
   - '#assetadminthumbnails'
+  - '#asset-admin-graphql-thumbnails'
   - '#assetsfieldtypes'
   - '#assetadmin'
   - '#assetadminfield'
