@@ -56,8 +56,8 @@ class DBImageResource extends DBSingleResource
     private static $casting = [
         'Credit' => 'Text',
         'CustomGravity' => 'Text',
-        'ForegroundColour' => 'Text',
-        'BackgroundColour' => 'Text',
+        'ForegroundColour' => Colour::class,
+        'BackgroundColour' => Colour::class,
         'Width' => 'Int',
         'Height' => 'Int',
         'IsPortrait' => 'Boolean',
@@ -86,7 +86,13 @@ class DBImageResource extends DBSingleResource
      */
     public function getForegroundColour()
     {
-        return $this->getJSONValue('foreground_colour');
+        $colour = $this->getJSONValue('foreground_colour');
+
+        if (!$colour) {
+            return null;
+        }
+
+        return Colour::create($colour);
     }
 
     /**
@@ -94,7 +100,13 @@ class DBImageResource extends DBSingleResource
      */
     public function getBackgroundColour()
     {
-        return $this->getJSONValue('background_colour');
+        $colour = $this->getJSONValue('background_colour');
+
+        if (!$colour) {
+            return null;
+        }
+
+        return Colour::create($colour);
     }
 
     /**

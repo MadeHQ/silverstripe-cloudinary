@@ -21,12 +21,28 @@ class Colour extends ViewableData
      * @var array $casting
      */
     private static $casting = [
+        'Colour' => 'Text',
+        'Predominance' => 'Float',
         'Hex' => Colour::class,
         'Hsl' => Colour::class,
         'Hsla' => Colour::class,
         'Hsv' => Colour::class,
         'Rgb' => Colour::class,
         'Rgba' => Colour::class,
+        'Saturate' => Colour::class,
+        'Desaturate' => Colour::class,
+        'Grayscale' => Colour::class,
+        'Brighten' => Colour::class,
+        'Lighten' => Colour::class,
+        'Darken' => Colour::class,
+        'IsLight' => 'Boolean',
+        'IsDark' => 'Boolean',
+        'Spin' => Colour::class,
+        'Tint' => Colour::class,
+        'Shade' => Colour::class,
+        'Fade' => Colour::class,
+        'FadeIn' => Colour::class,
+        'FadeOut' => Colour::class,
     ];
 
     public function __construct($colour, $predominance = 100)
@@ -50,7 +66,7 @@ class Colour extends ViewableData
      */
     public function getPredominance()
     {
-        return $this->predominance;
+        return (float) $this->predominance;
     }
 
     /**
