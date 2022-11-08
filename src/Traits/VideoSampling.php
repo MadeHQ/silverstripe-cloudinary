@@ -12,7 +12,9 @@ trait VideoSampling
     {
         $clone = $this->clone();
 
-        $clone->asset->videoSampling($videoSampling);
+        if ($clone->asset) {
+            $clone->asset->videoSampling($videoSampling);
+        }
 
         return $clone;
     }

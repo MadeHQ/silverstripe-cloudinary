@@ -26,7 +26,9 @@ trait LimitFill
             $gravity = $customGravity;
         }
 
-        $clone->asset->resize(Resize::limitFill($width, $height, $gravity));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::limitFill($width, $height, $gravity));
+        }
 
         return $clone;
     }

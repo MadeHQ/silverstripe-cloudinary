@@ -26,7 +26,9 @@ trait Fill
             $gravity = $customGravity;
         }
 
-        $clone->asset->resize(Resize::fill($width, $height, $gravity));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::fill($width, $height, $gravity));
+        }
 
         return $clone;
     }

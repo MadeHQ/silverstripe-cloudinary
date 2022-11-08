@@ -26,7 +26,9 @@ trait Thumb
             $gravity = $customGravity;
         }
 
-        $clone->asset->resize(Resize::thumbnail($width, $height, $gravity));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::thumbnail($width, $height, $gravity));
+        }
 
         return $clone;
     }

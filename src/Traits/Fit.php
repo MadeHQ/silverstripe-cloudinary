@@ -16,7 +16,9 @@ trait Fit
     {
         $clone = $this->clone();
 
-        $clone->asset->resize(Resize::fit($width, $height, $aspectRatio));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::fit($width, $height, $aspectRatio));
+        }
 
         return $clone;
     }

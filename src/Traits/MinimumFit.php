@@ -16,7 +16,9 @@ trait MinimumFit
     {
         $clone = $this->clone();
 
-        $clone->asset->resize(Resize::minimumFit($width, $height, $aspectRatio));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::minimumFit($width, $height, $aspectRatio));
+        }
 
         return $clone;
     }
