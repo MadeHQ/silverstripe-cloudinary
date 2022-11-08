@@ -12,7 +12,9 @@ trait BitRate
     {
         $clone = $this->clone();
 
-        $clone->asset->bitRate($bitRate);
+        if ($clone->asset) {
+            $clone->asset->bitRate($bitRate);
+        }
 
         return $clone;
     }

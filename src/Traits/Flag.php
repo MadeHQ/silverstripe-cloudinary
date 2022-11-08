@@ -15,7 +15,9 @@ trait Flag
     {
         $clone = $this->clone();
 
-        $clone->asset->addFlag(TransformationFlag::$flag(...$options));
+        if ($clone->asset) {
+            $clone->asset->addFlag(TransformationFlag::$flag(...$options));
+        }
 
         return $clone;
     }

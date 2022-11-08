@@ -26,7 +26,9 @@ trait Crop
             $gravity = $customGravity;
         }
 
-        $clone->asset->resize(Resize::crop($width, $height, $gravity));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::crop($width, $height, $gravity));
+        }
 
         return $clone;
     }

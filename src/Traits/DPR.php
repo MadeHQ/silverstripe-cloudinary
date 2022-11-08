@@ -14,7 +14,9 @@ trait DPR
     {
         $clone = $this->clone();
 
-        $clone->asset->delivery(Delivery::dpr($dpr));
+        if ($clone->asset) {
+            $clone->asset->delivery(Delivery::dpr($dpr));
+        }
 
         return $clone;
     }

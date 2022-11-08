@@ -14,7 +14,9 @@ trait VideoCodec
     {
         $clone = $this->clone();
 
-        $clone->asset->transcode(Transcode::videoCodec($videoCodec));
+        if ($clone->asset) {
+            $clone->asset->transcode(Transcode::videoCodec($videoCodec));
+        }
 
         return $clone;
     }

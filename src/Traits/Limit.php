@@ -16,7 +16,9 @@ trait Limit
     {
         $clone = $this->clone();
 
-        $clone->asset->resize(Resize::limitFit($width, $height, $aspectRatio));
+        if ($clone->asset) {
+            $clone->asset->resize(Resize::limitFit($width, $height, $aspectRatio));
+        }
 
         return $clone;
     }

@@ -14,7 +14,9 @@ trait AudioFrequency
     {
         $clone = $this->clone();
 
-        $clone->asset->transcode(Transcode::audioFrequency($audioFrequency));
+        if ($clone->asset) {
+            $clone->asset->transcode(Transcode::audioFrequency($audioFrequency));
+        }
 
         return $clone;
     }

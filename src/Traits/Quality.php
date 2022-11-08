@@ -12,7 +12,10 @@ trait Quality
     {
         $clone = $this->clone();
 
-        $clone->asset->quality($quality);
+        if ($clone->asset) {
+            $clone->asset->quality($quality);
+        }
+
         $clone->qualitySet = true;
 
         return $clone;

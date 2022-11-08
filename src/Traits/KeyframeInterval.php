@@ -12,7 +12,9 @@ trait KeyframeInterval
     {
         $clone = $this->clone();
 
-        $clone->asset->keyframeInterval($keyframeInterval);
+        if ($clone->asset) {
+            $clone->asset->keyframeInterval($keyframeInterval);
+        }
 
         return $clone;
     }

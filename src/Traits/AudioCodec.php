@@ -14,7 +14,9 @@ trait AudioCodec
     {
         $clone = $this->clone();
 
-        $clone->asset->transcode(Transcode::audioCodec($audioCodec));
+        if ($clone->asset) {
+            $clone->asset->transcode(Transcode::audioCodec($audioCodec));
+        }
 
         return $clone;
     }

@@ -15,7 +15,10 @@ trait Format
     {
         $clone = $this->clone();
 
-        $clone->asset->delivery(Delivery::format(TransformationFormat::$format()));
+        if ($clone->asset) {
+            $clone->asset->delivery(Delivery::format(TransformationFormat::$format()));
+        }
+
         $clone->formatSet = true;
 
         return $clone;
