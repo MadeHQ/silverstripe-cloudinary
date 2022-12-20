@@ -79,7 +79,7 @@ class Helper
             'asset_id' => $data['asset_id'],
             'public_id' => $data['public_id'],
             'name' => static::extract_name($data),
-            'title' => static::extract_title($data) ?: static::extract_name($data),
+            'title' => static::extract_title($data),
             'description' => static::extract_description($data),
             'format' => static::determine_format($data),
             'resource_type' => $resourceType,
@@ -104,6 +104,7 @@ class Helper
             $return['credit'] = static::extract_credit($data);
             $return['top_colours'] = static::extract_top_colours($data);
             $return['actual_type'] = 'image';
+            $return['gravity'] = null;
             $return['foreground_colour'] = null;
             $return['background_colour'] = null;
             $return['transformations'] = null;
