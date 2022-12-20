@@ -93,7 +93,7 @@ class Helper
 
             $return['duration'] = $data['duration'];
             $return['actual_type'] = $isAudio ? 'audio' : 'video';
-            $return['gravity'] = $isAudio ? null : 'auto';
+            $return['gravity'] = '';
             $return['transformations'] = null;
 
             if ($isAudio === false) {
@@ -104,7 +104,7 @@ class Helper
             $return['credit'] = static::extract_credit($data);
             $return['top_colours'] = static::extract_top_colours($data);
             $return['actual_type'] = 'image';
-            $return['gravity'] = null;
+            $return['gravity'] = '';
             $return['foreground_colour'] = null;
             $return['background_colour'] = null;
             $return['transformations'] = null;
