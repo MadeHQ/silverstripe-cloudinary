@@ -207,6 +207,44 @@ class Helper
      */
     public static function extract_credit($data)
     {
+        if ($credit = static::extract_custom_credit($data)) {
+            return $credit;
+        }
+
+        if ($credit = static::extract_metadata_credit($data)) {
+            return $credit;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    protected static function extract_custom_credit($data)
+    {
+        if (!array_key_exists('context', $data) || !is_array($data['context'])) {
+            return null;
+        }
+
+        if (!array_key_exists('custom', $data['context']) || !is_array($data['context']['custom'])) {
+            return null;
+        }
+
+        if (array_key_exists('alt', $data['context']['custom'])) {
+            return $data['context']['custom']['credit'];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    protected static function extract_metadata_credit($data)
+    {
         if (!array_key_exists('image_metadata', $data)) {
             return null;
         }
