@@ -165,16 +165,12 @@ class Helper
      */
     public static function extract_title($data)
     {
-        if (!array_key_exists('context', $data) || !is_array($data['context'])) {
+        if (!array_key_exists('metadata', $data) || !is_array($data['metadata'])) {
             return null;
         }
 
-        if (!array_key_exists('custom', $data['context']) || !is_array($data['context']['custom'])) {
-            return null;
-        }
-
-        if (array_key_exists('caption', $data['context']['custom'])) {
-            return $data['context']['custom']['caption'];
+        if (array_key_exists('caption', $data['metadata'])) {
+            return $data['metadata']['caption'];
         }
 
         return null;
@@ -186,16 +182,12 @@ class Helper
      */
     public static function extract_description($data)
     {
-        if (!array_key_exists('context', $data) || !is_array($data['context'])) {
+        if (!array_key_exists('metadata', $data) || !is_array($data['metadata'])) {
             return null;
         }
 
-        if (!array_key_exists('custom', $data['context']) || !is_array($data['context']['custom'])) {
-            return null;
-        }
-
-        if (array_key_exists('alt', $data['context']['custom'])) {
-            return $data['context']['custom']['alt'];
+        if (array_key_exists('alt', $data['metadata'])) {
+            return $data['metadata']['alt'];
         }
 
         return null;
@@ -224,16 +216,12 @@ class Helper
      */
     protected static function extract_custom_credit($data)
     {
-        if (!array_key_exists('context', $data) || !is_array($data['context'])) {
+        if (!array_key_exists('metadata', $data) || !is_array($data['metadata'])) {
             return null;
         }
 
-        if (!array_key_exists('custom', $data['context']) || !is_array($data['context']['custom'])) {
-            return null;
-        }
-
-        if (array_key_exists('alt', $data['context']['custom'])) {
-            return $data['context']['custom']['credit'];
+        if (array_key_exists('credit', $data['metadata'])) {
+            return $data['metadata']['credit'];
         }
 
         return null;
