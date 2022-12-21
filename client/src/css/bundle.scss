@@ -1,15 +1,15 @@
-// .cloudinary-field {
-
-// }
+.cloudinary-input-field {
+    position: relative;
+}
 
 .cloudinary-field__sr-only {
-    clip: rect(0 0 0 0) !important;
-    clip-path: inset(50%) !important;
-    height: 1px !important;
-    overflow: hidden !important;
-    position: absolute !important;
-    white-space: nowrap !important;
-    width: 1px !important;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
 }
 
 .cloudinary-field__inner {
