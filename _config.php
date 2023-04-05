@@ -17,7 +17,7 @@ CMSMenu::remove_menu_class(FormAdmin::class);
 $settings = Config::inst()->get('MadeHQ\\Cloudinary');
 
 // We absolutely need these items
-$options = ['cloud_name', 'api_key', 'api_secret', 'username'];
+$options = ['cloud_name', 'api_key', 'api_secret'];
 
 $valid = true;
 
