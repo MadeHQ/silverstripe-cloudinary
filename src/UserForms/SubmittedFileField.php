@@ -18,7 +18,7 @@ if (class_exists(SubmissionSubmittedFileField::class)) {
         /**
          * @inheritdoc
          */
-        public function getLink()
+        public function getLink($grant = true)
         {
             $config = [
                 'resource_type' => 'raw',
