@@ -53,9 +53,17 @@ export default class Field extends Component {
     }
 
     componentDidMount() {
-        this.setState({
-            loading: false,
-        });
+        const interval = setInterval(() => {
+            if ('CLOUDINARY_CONFIG' in windiw === false) {
+                return;
+            }
+
+            clearInterval(interval);
+
+            this.setState({
+                loading: false,
+            });
+        }, 100);
     }
 
     showLibrary() {

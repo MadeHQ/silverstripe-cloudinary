@@ -33,7 +33,7 @@ class LeftAndMain extends LeftAndMainExtension
             'signature' => $signature,
         ];
 
-        $script = sprintf('const CLOUDINARY_CONFIG = %s;', json_encode($options));
+        $script = sprintf('window.CLOUDINARY_CONFIG = %s;', json_encode($options));
 
         Requirements::customScript($script, 'MadeHQ\\Cloudinary');
     }
