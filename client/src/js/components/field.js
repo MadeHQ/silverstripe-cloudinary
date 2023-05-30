@@ -373,7 +373,7 @@ export default class Field extends Component {
                     </div>
                 ) }
 
-                { showButton === true && (
+                { this.state.loading === false && showButton === true && (
                     <div className="cloudinary-field__insert">
                         <button type="button" className="btn btn-primary cloudinary-field__button" onClick={this.showLibrary}>
                             <span className="btn__title">{ this.props.buttonLabel }</span>
@@ -381,9 +381,11 @@ export default class Field extends Component {
                     </div>
                 ) }
 
-                <div className="cloudinary-field__items">
-                    { this.renderResources() }
-                </div>
+                { this.state.loading === false && (
+                    <div className="cloudinary-field__items">
+                        { this.renderResources() }
+                    </div>
+                )}
             </div>
         );
     }
