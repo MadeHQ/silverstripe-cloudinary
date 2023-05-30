@@ -54,7 +54,7 @@ export default class Field extends Component {
 
     componentDidMount() {
         const interval = setInterval(() => {
-            if ('CLOUDINARY_CONFIG' in windiw === false) {
+            if ('CLOUDINARY_CONFIG' in window === false) {
                 return;
             }
 

@@ -245,7 +245,7 @@ export default class Resource extends Component {
                     {this.fields().map(field => {
                         if (field === 'title') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div className="cloudinary-field__field" key={ field }>
                                     <label htmlFor={ `${public_id}_title` } className="cloudinary-field__label">
                                         { this.titleFieldLabel() }
                                     </label>
@@ -259,7 +259,7 @@ export default class Resource extends Component {
 
                         if (field === 'description') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div className="cloudinary-field__field" key={ field }>
                                     <label htmlFor={ `${public_id}_description` } className="cloudinary-field__label">
                                         { this.descriptionFieldLabel() }
                                     </label>
@@ -273,7 +273,7 @@ export default class Resource extends Component {
 
                         if (field === 'credit') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div className="cloudinary-field__field" key={ field }>
                                     <label htmlFor={ `${public_id}_credit` } className="cloudinary-field__label">
                                         { this.creditFieldLabel() }
                                     </label>
@@ -287,7 +287,7 @@ export default class Resource extends Component {
 
                         if (field === 'gravity') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div className="cloudinary-field__field" key={ field }>
                                     <label htmlFor={ `${public_id}_gravity` } className="cloudinary-field__label">
                                         { this.gravityFieldLabel() }
                                     </label>
@@ -305,7 +305,7 @@ export default class Resource extends Component {
 
                         if (field === 'fg-colour' && resource_type === 'image' && top_colours && top_colours.length) {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div className="cloudinary-field__field" key={ field }>
                                     <label className="cloudinary-field__label">
                                         { this.fgColourFieldLabel() }
                                     </label>
@@ -333,7 +333,7 @@ export default class Resource extends Component {
 
                         if (field === 'bg-colour' && resource_type === 'image' && top_colours && top_colours.length) {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div className="cloudinary-field__field" key={ field }>
                                     <label className="cloudinary-field__label">
                                         { this.bgColourFieldLabel() }
                                     </label>
