@@ -2,7 +2,7 @@
 
 use \Cloudinary\Api;
 
-class CloudinaryUtils extends Object
+class CloudinaryUtils extends SS_Object
 {
 
 	private static $api = null;
