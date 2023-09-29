@@ -4,6 +4,12 @@ Bring the power of [Cloudinary](https://cloudinary.com/) to SilverStripe!
 
 Cloudinary is a cloud-based media management platform that provides an easy solution for developers to store, manage, and serve highly optimised on-the-fly digital assets.
 
+### A note on branches, releases, and PHP versions
+
+If you're using anyting under PHP 8, please use the `legacy` branch and `6.x.x` releases.
+
+The `main` branch and `^7.x.x` should be used for any projects running on PHP 8.1 and over.
+
 ### Table of Contents
 
 - [SilverStripe has a asset manager, why do I need this?](#silverstripe-has-a-asset-manager-why-do-i-need-this)
