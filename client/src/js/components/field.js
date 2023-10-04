@@ -65,7 +65,6 @@ export default class Field extends Component {
             ...CLOUDINARY_CONFIG,
             multiple: !!isMultiple,
             max_files: maxFiles - this.state.resources.length,
-            remove_header: true,
         };
 
         cloudinary.openMediaLibrary(options, {

@@ -68,7 +68,6 @@
             const options = {
                 ...CLOUDINARY_CONFIG,
                 multiple: false,
-                remove_header: true,
             };
 
             const defaultTransformations = this.editor.getParam('default_transformations');

@@ -6605,8 +6605,7 @@
                 value: function() {
                     var e = this.props, t = e.isMultiple, r = e.maxFiles, n = _objectSpread(_objectSpread({}, CLOUDINARY_CONFIG), {}, {
                         multiple: !!t,
-                        max_files: r - this.state.resources.length,
-                        remove_header: !0
+                        max_files: r - this.state.resources.length
                     });
                     cloudinary.openMediaLibrary(n, {
                         insertHandler: this.insertHandler
