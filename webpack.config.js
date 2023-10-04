@@ -45,7 +45,6 @@ const config = {
                         options: {
                             plugins: [
                                 'lodash',
-                            //     "@babel/plugin-proposal-class-properties",
                             ],
                             presets: [
                                 '@babel/preset-env',
