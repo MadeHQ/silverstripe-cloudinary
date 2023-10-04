@@ -1,2 +1,34 @@
-/*! silverstripe-cloudinary - v2.0.0 */(()=>{"use strict";var r={n:e=>{var o=e&&e.__esModule?()=>e.default:()=>e;return r.d(o,{a:o}),o},d:(e,o)=>{for(var d in o)r.o(o,d)&&!r.o(e,d)&&Object.defineProperty(e,d,{enumerable:!0,get:o[d]})},o:(e,o)=>Object.prototype.hasOwnProperty.call(e,o)},e=jQuery,e=r.n(e);e().noConflict(),e().entwine("ss",function(d){d(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label:not([data-folderconfirmed='1'])").entwine({onchange:function(){var e,o;"MadeHQ\\Cloudinary\\UserForms\\EditableFileField"!==this.get(0).value||d(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label[data-folderconfirmed='1']").length||((e=d("#confirm-folder__dialog-wrapper")).length&&e.remove(),e=d('<div id="confirm-folder__dialog-wrapper" />'),o=d(this).closest("tr").data("id"),e.data("id",o),d("body").append(e),e.open())}})})})();
+/*! For license information please see userform.js.LICENSE.txt */
+(() => {
+    "use strict";
+    var e = {
+        n: o => {
+            var r = o && o.__esModule ? () => o.default : () => o;
+            return e.d(r, {
+                a: r
+            }), r;
+        },
+        d: (o, r) => {
+            for (var d in r) e.o(r, d) && !e.o(o, d) && Object.defineProperty(o, d, {
+                enumerable: !0,
+                get: r[d]
+            });
+        },
+        o: (e, o) => Object.prototype.hasOwnProperty.call(e, o)
+    };
+    const o = jQuery;
+    var r = e.n(o);
+    r().noConflict(), r().entwine("ss", (function(e) {
+        e(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label:not([data-folderconfirmed='1'])").entwine({
+            onchange: function() {
+                if ("MadeHQ\\Cloudinary\\UserForms\\EditableFileField" === this.get(0).value && !e(".uf-field-editor .ss-gridfield-items .dropdown.editable-column-field.form-group--no-label[data-folderconfirmed='1']").length) {
+                    var o = e("#confirm-folder__dialog-wrapper");
+                    o.length && o.remove(), o = e('<div id="confirm-folder__dialog-wrapper" />');
+                    var r = e(this).closest("tr").data("id");
+                    o.data("id", r), e("body").append(o), o.open();
+                }
+            }
+        });
+    }));
+})();
 //# sourceMappingURL=userform.js.map

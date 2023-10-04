@@ -2,7 +2,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 const pkg = require('./package.json');
 
@@ -43,13 +43,13 @@ const config = {
                     {
                         loader: 'babel-loader',
                         options: {
-                            "plugins": [
-                                "lodash",
+                            plugins: [
+                                'lodash',
                             //     "@babel/plugin-proposal-class-properties",
                             ],
-                            "presets": [
-                                "@babel/preset-env",
-                                "@babel/preset-react",
+                            presets: [
+                                '@babel/preset-env',
+                                '@babel/preset-react',
                             ],
                         },
                     }
@@ -61,15 +61,12 @@ const config = {
         minimize: false,
     },
     devtool: isProd ? 'source-map' : 'eval-source-map',
-    plugins: (function() {
-        var plugins = [
-    //         // new webpack.ProvidePlugin({
-    //         //     jQuery: 'jquery',
-    //         //     $: 'jquery',
-    //         // }),
+    plugins: (function () {
+        let plugins = [
             new ESLintPlugin({
                 files: `${paths.js}/**/*.js`,
             }),
+
             new webpack.DefinePlugin({
                 __DEV__: JSON.stringify(JSON.parse(!isProd || 'false')),
                 'process.env': {
@@ -94,11 +91,20 @@ if (isProd) {
     config.optimization = {
         minimize: true,
         minimizer: [
-            new UglifyJsPlugin({
-                sourceMap: true,
+            new TerserPlugin({
+                terserOptions: {
+                    output: {
+                        beautify: true,
+                        comments: false,
+                    },
+                    mangle: {
+                        keep_fnames: true,
+                    },
+                    sourceMap: true,
+                },
             }),
         ],
-    };
+    }
 }
 
 module.exports = config;

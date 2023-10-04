@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 import React from 'react';
-import { unmountComponentAtNode, render } from 'react-dom';
+import { unmountComponentAtNode, render } from 'react-dom'; // eslint-disable-line react/no-deprecated
 import Field from './components/field';
 
 jQuery.noConflict();
