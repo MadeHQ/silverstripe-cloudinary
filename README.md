@@ -54,7 +54,7 @@ Actually, that's a lie. You don't even have to worry about that, because this mo
 
 ### Provide Cloudinary config
 
-You'll need to provide the Cloud Name, API Key, API Secret, and Username[^1]. These values are the core requirements that enables the module to talk to Cloudinary.
+You'll need to provide the Cloud Name, API Key, and API Secret. These values are the core requirements that enables the module to talk to Cloudinary.
 
 Put these values in any YAML file you may be using to configure other parts of SilverStripe.
 
@@ -65,7 +65,6 @@ MadeHQ\Cloudinary:
     cloud_name: 'CLOUDINARY_CLOUD_NAME'
     api_key: 'CLOUDINARY_API_KEY'
     api_secret: 'CLOUDINARY_API_SECRET'
-    username: 'CLOUDINARY_USERNAME'
 ```
 
 ### Create database fields
@@ -73,10 +72,10 @@ MadeHQ\Cloudinary:
 The provides support for six database fields:
 
 * `CloudinaryImage` – store an image
-* `CloudinaryMedia` – store a video or audio[^2]
+* `CloudinaryMedia` – store a video or audio[^1]
 * `CloudinaryFile` – store a raw file such as documents
 * `CloudinaryMultiImage` – store multiple images
-* `CloudinaryMultiMedia` – store multiple videos or audio[^2]
+* `CloudinaryMultiMedia` – store multiple videos or audio[^1]
 * `CloudinaryMultiFile` – store multiple files
 
 Use these as you would use any other database fields – add an entry in the `$db` static:
@@ -484,8 +483,7 @@ This version of the module is still in its infancy. We will flesh it out as our 
 - [x] Provide better support for colours
 - [ ] Add handling for Edit/Remove functionality in WYSIWYG
 
-[^1]: Username in this instance is interchangeable with email. Provide the email you used to sign up for Cloudinary.
-[^2]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.
+[^1]: Due to limitation of Cloudinary, audio and videos both have the resource type of `video`. It's a minor inconvinience but the module exposes the `getActualType` method which will help differenciate the two when rendering.
 
 ### Migration
 

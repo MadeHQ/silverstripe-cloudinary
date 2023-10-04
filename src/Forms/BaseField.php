@@ -121,7 +121,7 @@ abstract class BaseField extends TextareaField
         $attributes['data-button-label'] = $this->getButtonLabel();
         $attributes['data-max-files'] = $this->getMaxFiles();
         $attributes['data-fields'] = implode(',', $this->getFields());
-        $attributes['data-gravity-options'] = $this->getGravityOptions();
+        $attributes['data-gravity-options'] = json_encode($this->getGravityOptions());
 
         return $attributes;
     }
@@ -282,7 +282,7 @@ abstract class BaseField extends TextareaField
         }
 
         // First option should always be empty
-        $options = [ '' => '' ] + $options;
+        $options = [ '' => 'Inherit from template' ] + $options;
 
         return $options;
     }

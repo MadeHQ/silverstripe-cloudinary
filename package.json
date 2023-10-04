@@ -6,7 +6,8 @@
         "webpack": "./node_modules/webpack/webpack.js"
     },
     "engines": {
-        "node": "^12.22.7"
+        "node": "16.13.0",
+        "npm": "8.19.1"
     },
     "config": {
         "paths": {
@@ -18,15 +19,15 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "npm run lint && npm run build-js && npm run build-css",
-        "build-js": "NODE_ENV=production webpack --progress",
+        "build-js": "NODE_ENV=production webpack --config webpack.config.js --progress",
         "build-css": "npm run build-css-sass && npm run build-css-postcss",
-        "build-css-sass": "dart-sass $npm_package_config_paths_css/bundle.scss $npm_package_config_paths_dist/bundle.css",
+        "build-css-sass": "sass $npm_package_config_paths_css/bundle.scss $npm_package_config_paths_dist/bundle.css --source-map",
         "build-css-postcss": "postcss --use autoprefixer --use postcss-pxtorem --use cssnano --replace $npm_package_config_paths_dist/bundle.css --map",
         "lint": "npm run lint-js && npm run lint-css",
         "lint-js": "eslint webpack.config.js $npm_package_config_paths_js",
         "lint-css": "stylelint $npm_package_config_paths_css/{**/*,*}.scss --custom-syntax postcss-scss",
         "watch": "concurrently --kill-others 'npm run watch-js' 'npm run watch-css'",
-        "watch-js": "webpack --watch",
+        "watch-js": "NODE_ENV=development webpack --watch",
         "watch-css": "watch 'npm run lint-css && npm run build-css' $npm_package_config_paths_css"
     },
     "repository": {
@@ -46,33 +47,33 @@
     },
     "homepage": "https://github.com/MadeHQ/silverstripe-cloudinary#readme",
     "devDependencies": {
-        "@babel/core": "^7.17.10",
-        "@babel/eslint-parser": "^7.15.8",
-        "@babel/preset-env": "^7.17.10",
-        "@babel/preset-react": "^7.14.5",
-        "autoprefixer": "^10.3.7",
-        "babel-loader": "^8.2.3",
+        "@babel/core": "^7.23.0",
+        "@babel/eslint-parser": "^7.22.15",
+        "@babel/preset-env": "^7.22.20",
+        "@babel/preset-react": "^7.22.15",
+        "autoprefixer": "^10.4.16",
+        "babel-loader": "^9.1.3",
         "babel-plugin-lodash": "^3.3.4",
-        "concurrently": "^6.3.0",
-        "cssnano": "^5.1.7",
-        "eslint": "^8.1.0",
-        "eslint-plugin-react": "^7.29.4",
-        "eslint-webpack-plugin": "^3.0.1",
+        "concurrently": "^8.2.1",
+        "cssnano": "^6.0.1",
+        "eslint": "^8.50.0",
+        "eslint-plugin-react": "^7.33.2",
+        "eslint-webpack-plugin": "^4.0.1",
         "path": "^0.12.7",
-        "postcss": "^8.3.11",
-        "postcss-cli": "^9.1.0",
+        "postcss": "^8.4.31",
+        "postcss-cli": "^10.1.0",
         "postcss-pxtorem": "^6.0.0",
-        "postcss-scss": "^4.0.4",
-        "stylelint": "^14.8.2",
-        "stylelint-config-standard": "^25.0.0",
-        "uglifyjs-webpack-plugin": "^2.2.0",
+        "postcss-scss": "^4.0.9",
+        "sass": "^1.68.0",
+        "stylelint": "^15.10.3",
+        "stylelint-config-standard": "^34.0.0",
+        "terser-webpack-plugin": "^5.3.9",
         "watch": "^1.0.2",
-        "webpack": "^5.72.1",
-        "webpack-cli": "^4.9.2"
+        "webpack": "^5.88.2",
+        "webpack-cli": "^5.1.4"
     },
     "dependencies": {
-        "cloudinary-core": "^2.12.0",
-        "dart-sass": "^1.25.0",
+        "cloudinary-core": "^2.13.0",
         "lodash": "^4.17.21"
     }
 }
