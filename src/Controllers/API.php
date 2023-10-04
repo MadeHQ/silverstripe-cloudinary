@@ -2,6 +2,9 @@
 
 namespace MadeHQ\Cloudinary\Controllers;
 
+use DateInterval;
+use DateTime;
+use DateTimeZone;
 use SilverStripe\Control\RequestHandler;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -27,20 +30,6 @@ class API extends RequestHandler
     ];
 
     /**
-     * @throws HTTPResponse_Exception
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $user = Security::getCurrentUser();
-
-        if ($user === null) {
-            throw $this->httpError(401, 'Must be logged in');
-        }
-    }
-
-    /**
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
@@ -53,7 +42,7 @@ class API extends RequestHandler
             return $this->httpError(400);
         }
 
-        return Helper::json(
+        return static::json(
             $this->getResourceData($publicId, $resourceType)
         );
     }
@@ -128,7 +117,7 @@ class API extends RequestHandler
 
         Versioned::set_stage($currentStage);
 
-        return Helper::json(true, 200, 1);
+        return static::json(true, 200, 1);
     }
 
     /**
@@ -145,5 +134,35 @@ class API extends RequestHandler
         $this->extend('updateResourceData', $return, $resource);
 
         return $return;
+    }
+
+    /**
+     * @param array $data
+     * @param int $status
+     * @param int $ttl
+     * @param HTTPRequest $request
+     * @return HTTPResponse
+     */
+    public static function json($data, $status = 200, $ttl = 300)
+    {
+        $response = new HTTPResponse();
+
+        $response->setBody(json_encode($data));
+
+        $response->setStatusCode($status);
+
+        $expire = new DateTime();
+        $expire->add(new DateInterval('PT' . $ttl . 'S'));
+        $expire->setTimezone(new DateTimeZone('UTC'));
+
+        $response->addHeader('Content-Type', 'application/json; charset=utf-8')
+            ->addHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')
+            ->addHeader('Access-Control-Allow-Credentials', 'true')
+            ->addHeader('Access-Control-Allow-Origin', '*')
+            ->addHeader('Cache-Control', 'public, must-revalidate, stale-while-revalidate=86400, no-transform')
+            ->addHeader('Expires', $expire->format('D, d M Y H:i:00 \G\M\T'))
+            ->addHeader('Vary', 'Origin');
+
+        return $response;
     }
 }

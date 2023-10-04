@@ -2,12 +2,8 @@
 
 namespace MadeHQ\Cloudinary\Utils;
 
-use DateInterval;
-use DateTime;
-use DateTimeZone;
 use Cloudinary\Cloudinary;
 use Cloudinary\Configuration\Configuration;
-use SilverStripe\Control\HTTPResponse;
 
 class Helper
 {
@@ -276,34 +272,5 @@ class Helper
         }
 
         return null;
-    }
-
-    /**
-     * @param array $data
-     * @param int $status
-     * @param int $ttl
-     * @return HTTPResponse
-     */
-    public static function json($data, $status = 200, $ttl = 300)
-    {
-        $response = new HTTPResponse();
-
-        $response->setBody(json_encode($data));
-
-        $response->setStatusCode($status);
-
-        $expire = new DateTime();
-        $expire->add(new DateInterval('PT' . $ttl . 'S'));
-        $expire->setTimezone(new DateTimeZone('UTC'));
-
-        $response->addHeader('Content-Type', 'application/json; charset=utf-8')
-            ->addHeader('Access-Control-Allow-Methods', 'GET')
-            ->addHeader('Access-Control-Allow-Credentials', 'true')
-            ->addHeader('Access-Control-Allow-Origin', '*')
-            ->addHeader('Cache-Control', 'public, must-revalidate, stale-while-revalidate=86400, no-transform')
-            ->addHeader('Expires', $expire->format('D, d M Y H:i:00 \G\M\T'))
-            ->addHeader('Vary', 'Origin');
-
-        return $response;
     }
 }
