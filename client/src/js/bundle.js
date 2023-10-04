@@ -1,6 +1,6 @@
 import jQuery from 'jquery';
 import React from 'react';
-import { unmountComponentAtNode, render } from 'react-dom';
+import { unmountComponentAtNode, render } from 'react-dom'; // eslint-disable-line react/no-deprecated
 import Field from './components/field';
 
 jQuery.noConflict();
@@ -12,7 +12,7 @@ jQuery.entwine('ss', $ => {
         onmatch() {
             this._super();
 
-            this.addClass('sr-only');
+            this.addClass('cloudinary-field__sr-only');
 
             this.HolderInstance = $('<div class="cloudinary-field"></div>');
 
@@ -32,7 +32,7 @@ jQuery.entwine('ss', $ => {
         onunmatch() {
             this._super();
 
-            this.removeClass('sr-only');
+            this.removeClass('cloudinary-field__sr-only');
 
             if (!(this.HolderInstance instanceof jQuery)) {
                 return;

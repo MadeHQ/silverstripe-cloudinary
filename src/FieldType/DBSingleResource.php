@@ -8,6 +8,7 @@ use Cloudinary\Asset\Image;
 use Cloudinary\Asset\Media;
 use Cloudinary\Transformation\CommonTransformation;
 use Cloudinary\Transformation\Flag;
+use MadeHQ\Cloudinary\Utils\Helper;
 
 abstract class DBSingleResource extends DBBaseResource
 {
@@ -95,11 +96,11 @@ abstract class DBSingleResource extends DBBaseResource
         $version = $this->getVersion();
 
         if ($resourceType === 'image') {
-            $this->asset = static::cloudinary()->image($publicId)->version($version);
+            $this->asset = Helper::cloudinary()->image($publicId)->version($version);
         } else if ($resourceType === 'video') {
-            $this->asset = static::cloudinary()->video($publicId)->version($version);
+            $this->asset = Helper::cloudinary()->video($publicId)->version($version);
         } else {
-            $this->asset = static::cloudinary()->raw($publicId)->version($version);
+            $this->asset = Helper::cloudinary()->raw($publicId)->version($version);
         }
 
         $retainTransformations = static::config()->get('retain_transformations');
@@ -161,14 +162,14 @@ abstract class DBSingleResource extends DBBaseResource
         $version = $this->getVersion();
 
         if ($resourceType === 'image') {
-            return (string) static::cloudinary()->image($publicId)->version($version)->addFlag(Flag::attachment())->toUrl();
+            return (string) Helper::cloudinary()->image($publicId)->version($version)->addFlag(Flag::attachment())->toUrl();
         }
 
         if ($resourceType === 'video') {
-            return (string) static::cloudinary()->video($publicId)->version($version)->addFlag(Flag::attachment())->toUrl();
+            return (string) Helper::cloudinary()->video($publicId)->version($version)->addFlag(Flag::attachment())->toUrl();
         }
 
-        return (string) static::cloudinary()->raw($publicId)->version($version)->toUrl();
+        return (string) Helper::cloudinary()->raw($publicId)->version($version)->toUrl();
     }
 
     /**

@@ -33,7 +33,7 @@ class ImageField extends BaseField
      * @var array $fallback_fields
      */
     private static $fallback_fields = [
-        'title', 'description', 'credit',
+        'title', 'description', 'credit', 'gravity',
     ];
 
     /**

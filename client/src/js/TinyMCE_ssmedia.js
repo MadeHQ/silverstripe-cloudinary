@@ -68,19 +68,13 @@
             const options = {
                 ...CLOUDINARY_CONFIG,
                 multiple: false,
+                remove_header: true,
             };
 
             const defaultTransformations = this.editor.getParam('default_transformations');
 
             if (defaultTransformations) {
                 options.default_transformations = [defaultTransformations];
-            }
-
-            // Safari is the devil. Force users to login manually.
-            if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
-                delete options.username;
-                delete options.timestamp;
-                delete options.signature;
             }
 
             cloudinary.openMediaLibrary(options, {

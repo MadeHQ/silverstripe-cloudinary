@@ -5,11 +5,9 @@ namespace MadeHQ\Cloudinary\FieldType;
 use stdClass;
 use Exception;
 use SilverStripe\ORM\FieldType\DBText;
-use Cloudinary\Cloudinary;
 use Cloudinary\Asset\Image;
 use Cloudinary\Asset\Video;
 use Cloudinary\Asset\File;
-use Cloudinary\Configuration\Configuration;
 
 abstract class DBBaseResource extends DBText
 {
@@ -61,11 +59,6 @@ abstract class DBBaseResource extends DBText
     ];
 
     /**
-     * @var Cloudinary $cloudinary_instance
-     */
-    protected static $cloudinary_instance = null;
-
-    /**
      * @var array $json
      */
     protected $json = null;
@@ -74,22 +67,6 @@ abstract class DBBaseResource extends DBText
      * @var Image|Video|File $asset
      */
     protected $asset = null;
-
-    /**
-     * @return Cloudinary
-     */
-    protected static function cloudinary()
-    {
-        if (static::$cloudinary_instance) {
-            return static::$cloudinary_instance;
-        }
-
-        static::$cloudinary_instance = new Cloudinary(
-            Configuration::instance()
-        );
-
-        return static::$cloudinary_instance;
-    }
 
     /**
      * @return stdClass
