@@ -64,7 +64,7 @@
         "postcss-cli": "^10.1.0",
         "postcss-pxtorem": "^6.0.0",
         "postcss-scss": "^4.0.9",
-        "sass": "^1.68.0",
+        "sass": "^1.69.5",
         "stylelint": "^15.10.3",
         "stylelint-config-standard": "^34.0.0",
         "terser-webpack-plugin": "^5.3.9",
