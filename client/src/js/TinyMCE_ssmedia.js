@@ -27,18 +27,18 @@
                 editText = editor.translate('Edit image'),
                 fileText = editor.translate('File');
 
-            editor.addButton('ssmedia', {
+            editor.ui.registry.addButton('ssmedia', {
                 title: insertText,
                 icon: 'image',
                 cmd: 'ssmedia',
                 stateSelector: stateSelector
             });
-            editor.addMenuItem('ssmedia', {
+            editor.ui.registry.addMenuItem('ssmedia', {
                 text: fileText,
                 icon: 'image',
                 cmd: 'ssmedia'
             });
-            editor.addButton('ssmediaedit', {
+            editor.ui.registry.addButton('ssmediaedit', {
                 title: editText,
                 icon: 'editimage',
                 cmd: 'ssmedia'
