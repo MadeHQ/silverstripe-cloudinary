@@ -247,7 +247,9 @@ class CloudinaryAdmin extends LeftAndMain implements PermissionProvider {
     {
         $cacheLength = Config::inst()->get(get_class($this), 'file_data_cache_length');
         if ($cacheLength) {
-            $response->addHeader('Cache-Control', sprintf('max-age=%s, public', $cacheLength));
+            $cacheControl = HTTPCacheControl::singleton();
+            $cacheControl->publicCache();
+            $cacheControl->setMaxAge($cacheLength);
         }
     }
 
