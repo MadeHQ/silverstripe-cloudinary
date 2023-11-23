@@ -14,7 +14,7 @@
     "require": {
         "silverstripe/framework": ">=3.1",
         "composer/installers": "*",
-        "cloudinary/cloudinary_php": "1.4.0"
+        "cloudinary/cloudinary_php": "1.20.2"
     },
     "extra": {
         "installer-name": "cloudinary"
