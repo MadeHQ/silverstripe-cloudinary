@@ -5,6 +5,12 @@
     "keywords": ["silverstripe", "cloudinary"],
     "license": "BSD-3-Clause",
     "version": "3.0.0",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:MadeHQ/cloudinary_php.git"
+        }
+    ],
     "support": {
         "email": "developers@mademedia.co.uk",
         "issues": "https://github.com/MadeHQ/silverstripe-cloudinary/issues",
@@ -14,7 +20,7 @@
     "require": {
         "silverstripe/framework": ">=3.1",
         "composer/installers": "*",
-        "cloudinary/cloudinary_php": "1.20.2"
+        "cloudinary/cloudinary_php": "dpc/1.20.2"
     },
     "extra": {
         "installer-name": "cloudinary"
