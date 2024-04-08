@@ -198,6 +198,6 @@ class DBImageResource extends DBSingleResource
 
         $this->extend('onBeforeRender', $asset);
 
-        return ($asset) ? $asset->toUrl() : '';
+        return str_replace(',', '%2C', ($asset) ? $asset->toUrl() : '');
     }
 }
