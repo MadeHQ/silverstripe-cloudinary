@@ -5988,7 +5988,7 @@
                         title: "Remove",
                         onClick: this.removeResource
                     }, n().createElement("span", {
-                        className: "cloudinary-field__sr"
+                        className: "cloudinary-field__sr-only"
                     }, "Remove")), n().createElement("a", {
                         className: "cloudinary-field__action cloudinary-field__action--link",
                         title: "View original",
@@ -5996,7 +5996,7 @@
                         target: "_blank",
                         rel: "noopener noreferrer"
                     }, n().createElement("span", {
-                        className: "cloudinary-field__sr"
+                        className: "cloudinary-field__sr-only"
                     }, "View original")))), n().createElement("div", {
                         className: "cloudinary-field__meta"
                     }, this.fields().map((function(e, s) {
