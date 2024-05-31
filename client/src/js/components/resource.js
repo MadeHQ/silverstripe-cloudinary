@@ -178,9 +178,9 @@ export default class Resource extends Component {
         }
 
         return (
-            <div className="chorus-field-order">
+            <div className="cloudinary-field-order">
                 <button
-                    className={ classnames('btn', 'btn-sm', 'btn-block', 'chorus-field-order__move', 'chorus-field-order__move--up', firstItem && 'chorus-field-order__move--first') }
+                    className={ classnames('btn', 'btn-sm', 'btn-block', 'cloudinary-field-order__move', 'cloudinary-field-order__move--up', firstItem && 'cloudinary-field-order__move--first') }
                     type="button"
                     onClick={ this.moveResourceUp }
                     disabled={ firstItem }
@@ -190,7 +190,7 @@ export default class Resource extends Component {
                 </button>
 
                 <button
-                    className={ classnames('btn', 'btn-sm', 'btn-block', 'chorus-field-order__move', 'chorus-field-order__move--down', lastItem && 'chorus-field-order__move--last') }
+                    className={ classnames('btn', 'btn-sm', 'btn-block', 'cloudinary-field-order__move', 'cloudinary-field-order__move--down', lastItem && 'cloudinary-field-order__move--last') }
                     type="button"
                     onClick={ this.moveResourceDown }
                     disabled={ lastItem }

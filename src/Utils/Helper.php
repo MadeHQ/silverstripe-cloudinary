@@ -163,14 +163,14 @@ class Helper
     public static function extract_title($data)
     {
         if (!array_key_exists('metadata', $data) || !is_array($data['metadata'])) {
-            return null;
+            return '';
         }
 
-        if (array_key_exists('caption', $data['metadata'])) {
+        if (array_key_exists('title', $data['metadata'])) {
             return $data['metadata']['caption'];
         }
 
-        return null;
+        return '';
     }
 
     /**
@@ -179,15 +179,19 @@ class Helper
      */
     public static function extract_description($data)
     {
-        if (!array_key_exists('metadata', $data) || !is_array($data['metadata'])) {
-            return null;
+        if (array_key_exists('metadata', $data) && array_key_exists('description', $data['metadata'])) {
+            if ($description = $data['metadata']['description']) {
+                return $description;
+            }
         }
 
-        if (array_key_exists('alt', $data['metadata'])) {
-            return $data['metadata']['alt'];
+        if (array_key_exists('context', $data) && array_key_exists('custom', $data['context']) && array_key_exists('caption', $data['context']['custom'])) {
+            if ($description = $data['context']['custom']['caption']) {
+                return $description;
+            }
         }
 
-        return null;
+        return '';
     }
 
     /**
@@ -196,67 +200,39 @@ class Helper
      */
     public static function extract_credit($data)
     {
-        if ($credit = static::extract_custom_credit($data)) {
-            return $credit;
+        if (array_key_exists('metadata', $data)) {
+            if (array_key_exists('credit', $data['metadata'])) {
+                if ($credit = $data['metadata']['credit']) {
+                    return $credit;
+                }
+            }
+
+            if (array_key_exists('copyright', $data['metadata'])) {
+                if ($copyright = $data['metadata']['copyright']) {
+                    return $copyright;
+                }
+            }
         }
 
-        if ($credit = static::extract_metadata_credit($data)) {
-            return $credit;
+        if (array_key_exists('image_metadata', $data)) {
+            $fields = [
+                'Copyright',
+                'By-line',
+                'Artist',
+                'Creator',
+                'XPAuthor',
+            ];
+
+            foreach ($fields as $field) {
+                if (array_key_exists($field, $data['image_metadata'])) {
+                    if ($value = $data['image_metadata'][$field]) {
+                        return $value;
+                    }
+                }
+            }
         }
 
-        return null;
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected static function extract_custom_credit($data)
-    {
-        if (!array_key_exists('metadata', $data) || !is_array($data['metadata'])) {
-            return null;
-        }
-
-        if (array_key_exists('credit', $data['metadata'])) {
-            return $data['metadata']['credit'];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected static function extract_metadata_credit($data)
-    {
-        if (!array_key_exists('image_metadata', $data)) {
-            return null;
-        }
-
-        $metadata = $data['image_metadata'];
-
-        if (array_key_exists('Copyright', $metadata)) {
-            return $metadata['Copyright'];
-        }
-
-        if (array_key_exists('By-line', $metadata)) {
-            return $metadata['By-line'];
-        }
-
-        if (array_key_exists('Artist', $metadata)) {
-            return $metadata['Artist'];
-        }
-
-        if (array_key_exists('Creator', $metadata)) {
-            return $metadata['Creator'];
-        }
-
-        if (array_key_exists('XPAuthor', $metadata)) {
-            return $metadata['XPAuthor'];
-        }
-
-        return null;
+        return '';
     }
 
     /**
@@ -265,12 +241,11 @@ class Helper
      */
     public static function determine_format($data)
     {
-        $url = $data['secure_url'];
-
-        if ($extension = pathinfo($url, PATHINFO_EXTENSION)) {
+        if ($extension = pathinfo($data['secure_url'], PATHINFO_EXTENSION)) {
             return $extension;
         }
 
+        // @todo maybe add a fallback in case that fails?
         return null;
     }
 }

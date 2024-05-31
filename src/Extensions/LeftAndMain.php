@@ -4,7 +4,6 @@ namespace MadeHQ\Cloudinary\Extensions;
 
 use SilverStripe\Admin\LeftAndMainExtension;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\ORM\FieldType\DBDatetime;
 use SilverStripe\View\Requirements;
 
 class LeftAndMain extends LeftAndMainExtension

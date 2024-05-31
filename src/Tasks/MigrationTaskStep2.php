@@ -3,14 +3,11 @@
 namespace MadeHQ\Cloudinary\Tasks;
 
 use Cloudinary\Api\Exception\NotFound;
-use Cloudinary\Cloudinary;
-use MadeHQ\Cloudinary\Controllers\API;
 use MadeHQ\Cloudinary\Model\ImageLink;
 use MadeHQ\Cloudinary\Utils\Helper;
 use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
@@ -140,9 +137,9 @@ SQL;
 
     private $requestCount = 0;
 
-    public function __construct(CacheInterface $cache)
+    public function __construct()
     {
-        $this->cache = $cache;
+        $this->cache = Injector::inst()->get(CacheInterface::class . '.cloudinary');
 
         Security::setCurrentUser(DefaultAdminService::singleton()->findOrCreateDefaultAdmin());
     }

@@ -13,7 +13,6 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectSchema;
-use SilverStripe\Security\Security;
 use SilverStripe\Versioned\Versioned;
 use MadeHQ\Cloudinary\FieldType\DBBaseResource;
 use MadeHQ\Cloudinary\Utils\Helper;

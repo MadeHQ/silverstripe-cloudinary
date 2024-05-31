@@ -8,6 +8,7 @@ use Cloudinary\Transformation\Format as TransformationFormat;
 use MadeHQ\Cloudinary\Forms\ImageField;
 use MadeHQ\Cloudinary\Traits\Crop;
 use MadeHQ\Cloudinary\Traits\DPR;
+use MadeHQ\Cloudinary\Traits\Effect;
 use MadeHQ\Cloudinary\Traits\Fill;
 use MadeHQ\Cloudinary\Traits\Fit;
 use MadeHQ\Cloudinary\Traits\Flag;
@@ -36,6 +37,7 @@ class DBImageResource extends DBSingleResource
     use DPR;
     use Flag;
     use Pad;
+    use Effect;
 
     /**
      * @config
@@ -198,6 +200,6 @@ class DBImageResource extends DBSingleResource
 
         $this->extend('onBeforeRender', $asset);
 
-        return ($asset) ? $asset->toUrl() : '';
+        return str_replace(',', '%2C', ($asset) ? $asset->toUrl() : '');
     }
 }

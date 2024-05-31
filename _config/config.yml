@@ -5,14 +5,12 @@ After:
 ---
 
 SilverStripe\Core\Injector\Injector:
-  MadeHQ\Cloudinary\Tasks\MigrationTaskStep2:
-    constructor:
-      - '%$MadeHQ\Cloudinary\MigrationDataCache'
-
-  MadeHQ\Cloudinary\MigrationDataCache:
+  Psr\SimpleCache\CacheInterface.cloudinary:
     factory: SilverStripe\Core\Cache\CacheFactory
     constructor:
-      namespace: "migration_data_cache"
+      namespace: 'cloudinary'
+      defaultLifetime: 86400
+
 ---
 Name: silverstripecloudinaryfieldtypes
 After:

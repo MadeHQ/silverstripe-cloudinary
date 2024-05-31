@@ -2,9 +2,8 @@
 
 namespace MadeHQ\Cloudinary\UserForms;
 
-use Cloudinary\Cloudinary;
-use Cloudinary\Configuration\Configuration;
 use MadeHQ\Cloudinary\UserForms\Controllers\FormAdmin;
+use MadeHQ\Cloudinary\Utils\Helper;
 use SilverStripe\Forms\TextField;
 use SilverStripe\UserForms\Model\EditableFormField\EditableFileField as EditableFormFieldEditableFileField;
 
@@ -83,7 +82,6 @@ if (class_exists(EditableFormFieldEditableFileField::class)) {
                     $data[$this->Name]['name']
                 );
 
-                $api = (new Cloudinary(Configuration::instance()))->uploadApi();
                 $config = [
                     'folder' => $uploadDir,
                     'public_id' => $fileName,
@@ -91,7 +89,7 @@ if (class_exists(EditableFormFieldEditableFileField::class)) {
                     'type' => 'private',
                 ];
 
-                $newData = $api->upload(
+                $newData = Helper::cloudinary()->uploadApi()->upload(
                     $data[$this->Name]['tmp_name'],
                     $config
                 );
