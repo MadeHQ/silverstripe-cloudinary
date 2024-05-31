@@ -15,6 +15,7 @@ const config = {
     context: path.resolve(__dirname, paths.js),
     entry: {
         bundle: './bundle.js',
+        tinymce_ssmedia: './tinymce_ssmedia.js',
         userform: './userform.js',
     },
     mode: env,
@@ -62,10 +63,6 @@ const config = {
     devtool: isProd ? 'source-map' : 'eval-source-map',
     plugins: (function () {
         let plugins = [
-    //         // new webpack.ProvidePlugin({
-    //         //     jQuery: 'jquery',
-    //         //     $: 'jquery',
-    //         // }),
             new ESLintPlugin({
                 files: `${paths.js}/**/*.js`,
             }),

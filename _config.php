@@ -51,13 +51,13 @@ call_user_func(function () {
 
     // Re-enable media dialog
     $config = TinyMCEConfig::get('cms');
+
     $config->disablePlugins([
         'ssmedia',  // Removes the existing module so as to replace it
     ]);
 
     // Replaces the `ssmedia` module
     $config->enablePlugins([
-        'ssmedia' => $module
-            ->getResource('client/src/js/TinyMCE_ssmedia.js'),
+        'ssmedia' => $module->getResource('client/dist/tinymce_ssmedia.js'),
     ]);
 });
