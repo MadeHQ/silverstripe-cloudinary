@@ -10,7 +10,6 @@ use Exception;
 use MadeHQ\Cloudinary\Utils\Helper;
 use SilverStripe\ORM\Limitable;
 use SilverStripe\ORM\Map;
-use Traversable;
 
 abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Countable, IteratorAggregate, Limitable
 {
@@ -62,7 +61,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @return ArrayIterator
      */
-    public function getIterator(): Traversable
+    public function getIterator()
     {
         return new ArrayIterator($this->items);
     }
@@ -71,7 +70,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @return boolean
      */
-    public function offsetExists($offset): bool
+    public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->items);
     }
@@ -80,7 +79,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @return DBSingleResource|null
      */
-    public function offsetGet($offset): mixed
+    public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
             return $this->items[$offset];
@@ -93,7 +92,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @param DBSingleResource $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet($offset, $value)
     {
         if ($offset == null) {
             $this->items[] = $value;
@@ -105,7 +104,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @param int $offset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset($offset)
     {
         unset($this->items[$offset]);
     }
@@ -113,7 +112,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @return int
      */
-    public function count(): int
+    public function count()
     {
         return count($this->items);
     }
