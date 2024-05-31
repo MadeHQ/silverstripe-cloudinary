@@ -253,7 +253,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @return $this
      */
-    public function limit($limit, $offset = 0)
+    public function limit(?int $length, int $offset = 0): Limitable
     {
         $list = clone $this;
 
