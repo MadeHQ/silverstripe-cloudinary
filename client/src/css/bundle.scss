@@ -1,6 +1,6 @@
-// .cloudinary-field {
-
-// }
+.cloudinary-input-field {
+    position: relative;
+}
 
 .cloudinary-field__sr-only {
     clip: rect(0 0 0 0);
@@ -69,16 +69,13 @@
 }
 
 .cloudinary-field-order__move {
-    cursor: pointer;
-    display: block;
+    padding: 0;
+    width: auto;
+    height: auto;
 
     ins {
         text-decoration: none;
     }
-}
-.cloudinary-field-order__move--up.cloudinary-field-order__move--first,
-.cloudinary-field-order__move--down.cloudinary-field-order__move--last {
-    cursor: not-allowed;
 }
 
 .cloudinary-field__media {

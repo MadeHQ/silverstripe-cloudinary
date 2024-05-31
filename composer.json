@@ -24,10 +24,10 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^7.0",
         "cloudinary/cloudinary_php": "^2.4",
-        "ozdemirburak/iris": "^2.4",
-        "silverstripe/framework": "^4.6"
+        "ozdemirburak/iris": "^2.0",
+        "silverstripe/framework": "^4.5"
     },
     "autoload": {
         "psr-4": {

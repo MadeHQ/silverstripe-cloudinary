@@ -4,7 +4,6 @@ use SilverStripe\Admin\CMSMenu;
 use SilverStripe\AssetAdmin\Controller\AssetAdmin;
 use SilverStripe\Core\Config\Config;
 use Cloudinary\Configuration\Configuration;
-use Cloudinary\Utils;
 use MadeHQ\Cloudinary\UserForms\Controllers\FormAdmin;
 use SilverStripe\Core\Manifest\ModuleLoader;
 use SilverStripe\Forms\HTMLEditor\TinyMCEConfig;

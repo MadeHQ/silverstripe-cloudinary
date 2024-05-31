@@ -2,8 +2,8 @@
 
 namespace MadeHQ\Cloudinary\Controllers;
 
-use DateTime;
 use DateInterval;
+use DateTime;
 use DateTimeZone;
 use MadeHQ\Cloudinary\Utils\Helper;
 use SilverStripe\Control\RequestHandler;
@@ -16,8 +16,8 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataObjectSchema;
 use SilverStripe\Security\Security;
 use SilverStripe\Versioned\Versioned;
-use Cloudinary\Api\Admin\AdminApi;
 use MadeHQ\Cloudinary\FieldType\DBBaseResource;
+use MadeHQ\Cloudinary\Utils\Helper;
 
 class API extends RequestHandler
 {
@@ -141,6 +141,7 @@ class API extends RequestHandler
      * @param array $data
      * @param int $status
      * @param int $ttl
+     * @param HTTPRequest $request
      * @return HTTPResponse
      */
     public static function json($data, $status = 200, $ttl = 300)

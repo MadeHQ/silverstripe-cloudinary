@@ -219,11 +219,11 @@ export default class Resource extends Component {
 
                     <div className="cloudinary-field__actions">
                         <button type="button" className="cloudinary-field__action cloudinary-field__action--remove" title="Remove" onClick={ this.removeResource }>
-                            <span className="cloudinary-field__sr">Remove</span>
+                            <span className="cloudinary-field__sr-only">Remove</span>
                         </button>
 
                         <a className="cloudinary-field__action cloudinary-field__action--link" title="View original" href={ this.url() } target="_blank" rel="noopener noreferrer">
-                            <span className="cloudinary-field__sr">View original</span>
+                            <span className="cloudinary-field__sr-only">View original</span>
                         </a>
                     </div>
                 </div>

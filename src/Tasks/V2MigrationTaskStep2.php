@@ -339,7 +339,7 @@ SQL;
             $resourceData = Helper::get_processed_resource($publicId, 'image');
         } catch (NotFound $e) {
             static::output(sprintf('Failed to find "%s"', $publicId));
-            $searchApi = Helper::cloudinary->searchApi();
+            $searchApi = Helper::cloudinary()->searchApi();
             static::output(sprintf('Searching [%d]: %s', ++$this->requestCount, $publicId));
             $searchResultData = (array)$searchApi
                 ->expression(sprintf('%s', $publicId))
