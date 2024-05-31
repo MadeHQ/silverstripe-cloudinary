@@ -219,9 +219,7 @@ class Colour extends ViewableData
      */
     public function Fade($percent)
     {
-        return $this;
-        // @todo Add once support has been re-added
-        // return static::create((string) $this->colour->fade($percent));
+        return static::create((string) $this->colour->fade($percent));
     }
 
     /**
@@ -230,9 +228,7 @@ class Colour extends ViewableData
      */
     public function FadeIn($percent)
     {
-        return $this;
-        // @todo Add once support has been re-added
-        // return static::create((string) $this->colour->fadeIn($percent));
+        return static::create((string) $this->colour->fadeIn($percent));
     }
 
     /**
@@ -241,9 +237,7 @@ class Colour extends ViewableData
      */
     public function FadeOut($percent)
     {
-        return $this;
-        // @todo Add once support has been re-added
-        // return static::create((string) $this->colour->fadeOut($percent));
+        return static::create((string) $this->colour->fadeOut($percent));
     }
 
     /**
