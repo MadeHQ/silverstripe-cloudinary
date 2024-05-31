@@ -85,17 +85,17 @@ class MigrationTaskVersion1 extends BuildTask
                 array_push($tables, $baseTable . '_Live');
             }
 
-            // foreach ($singleton->hasOne() as $field=>$relatedClass) {
-            //     foreach (static::$cloudinaryClasses as $cloudinaryClass) {
-            //         if ($this->getIsClassOrSubclassOf($relatedClass, $cloudinaryClass)) {
-            //             array_push($fields, [
-            //                 'type' => $cloudinaryClass,
-            //                 'source' => $field . 'ID',
-            //                 'target' => $field,
-            //             ]);
-            //         }
-            //     }
-            // }
+            foreach ($singleton->hasOne() as $field=>$relatedClass) {
+                foreach (static::$cloudinaryClasses as $cloudinaryClass) {
+                    if ($this->getIsClassOrSubclassOf($relatedClass, $cloudinaryClass)) {
+                        array_push($fields, [
+                            'type' => $cloudinaryClass,
+                            'source' => $field . 'ID',
+                            'target' => $field,
+                        ]);
+                    }
+                }
+            }
 
             foreach ($singleton->hasMany() as $field=>$relatedClass) {
                 foreach (static::$cloudinaryClasses as $cloudinaryClass) {
