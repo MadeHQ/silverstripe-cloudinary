@@ -6,6 +6,7 @@ use Cloudinary\Api\Exception\NotFound;
 use Cloudinary\Cloudinary;
 use MadeHQ\Cloudinary\Controllers\API;
 use MadeHQ\Cloudinary\Model\ImageLink;
+use MadeHQ\Cloudinary\Utils\Helper;
 use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
@@ -30,16 +31,6 @@ class MigrationTaskStep2 extends BuildTask
      * @inheritdoc
      */
     protected $description = 'This step will get all the data from the old related FileLinks and set in the new fields';
-
-    /**
-     * @var Cloudinary
-     */
-    private $cloudinary;
-
-    /**
-     * @var API
-     */
-    private $apiController;
 
     /**
      * @var CacheInterface
@@ -149,13 +140,11 @@ SQL;
 
     private $requestCount = 0;
 
-    public function __construct(Cloudinary $cloudinary, CacheInterface $cache)
+    public function __construct()
     {
-        $this->cloudinary = $cloudinary;
-        $this->cache = $cache;
+        $this->cache = Injector::inst()->get(CacheInterface::class . '.cloudinary');
 
         Security::setCurrentUser(DefaultAdminService::singleton()->findOrCreateDefaultAdmin());
-        $this->apiController = Injector::inst()->get('MadeHQ\Cloudinary\Controllers\API');
     }
 
     public function run($request)
@@ -351,18 +340,12 @@ SQL;
         }
 
         try {
-            $request = new HTTPRequest('GET', '/', [
-                'public_id' => $publicId,
-                'resource_type' => 'image'
-            ]);
-
             static::output(sprintf('Requesting [%d]: %s', ++$this->requestCount, $publicId));
-            $response = $this->apiController->resource($request);
 
-            $resourceData = json_decode($response->getBody());
+            $resourceData = Helper::get_processed_resource($publicId, 'image');
         } catch (NotFound $e) {
             static::output(sprintf('Failed to find "%s"', $publicId));
-            $searchApi = $this->cloudinary->searchApi();
+            $searchApi = Helper::cloudinary()->searchApi();
             static::output(sprintf('Searching [%d]: %s', ++$this->requestCount, $publicId));
             $searchResultData = (array)$searchApi
                 ->expression(sprintf('%s', $publicId))

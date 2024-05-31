@@ -3,6 +3,8 @@
 namespace MadeHQ\Cloudinary\FieldType;
 
 use SilverStripe\ORM\FieldType\DBTime;
+use Cloudinary\Transformation\Delivery;
+use Cloudinary\Transformation\Format as TransformationFormat;
 use MadeHQ\Cloudinary\Forms\MediaField;
 use MadeHQ\Cloudinary\Traits\AudioCodec;
 use MadeHQ\Cloudinary\Traits\AudioFrequency;
@@ -33,6 +35,18 @@ class DBMediaResource extends DBSingleResource
     use VideoSampling;
     use AudioCodec;
     use AudioFrequency;
+
+    /**
+     * @config
+     * @var string $default_format
+     */
+    private static $default_format = 'auto';
+
+    /**
+     * @config
+     * @var string $default_quality
+     */
+    private static $default_quality = 'auto';
 
     /**
      * @config
@@ -146,5 +160,27 @@ class DBMediaResource extends DBSingleResource
     public function scaffoldFormField($title = null, $params = null)
     {
         return MediaField::create($this->name, $title);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function forTemplate()
+    {
+        $asset = $this->asset;
+
+        $transformations = $asset->getTransformation()->toUrl();
+
+        if (!preg_match('~(/|,)f_~', $transformations) && $format = static::config()->get('default_format')) {
+            $asset->delivery(Delivery::format(TransformationFormat::$format()));
+        }
+
+        if (!preg_match('~(/|,)q_~', $transformations) && $quality = static::config()->get('default_quality')) {
+            $asset->quality($quality);
+        }
+
+        $this->extend('onBeforeRender', $asset);
+
+        return ($asset) ? $asset->toUrl() : '';
     }
 }
