@@ -3,14 +3,11 @@
 namespace MadeHQ\Cloudinary\Tasks;
 
 use Cloudinary\Api\Exception\NotFound;
-use Cloudinary\Cloudinary;
-use MadeHQ\Cloudinary\Controllers\API;
 use MadeHQ\Cloudinary\Model\ImageLink;
 use MadeHQ\Cloudinary\Utils\Helper;
 use Psr\SimpleCache\CacheInterface;
 use SilverStripe\Assets\File;
 use SilverStripe\Control\Director;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
@@ -20,12 +17,12 @@ use SilverStripe\Security\DefaultAdminService;
 use SilverStripe\Security\Security;
 use SilverStripe\Versioned\Versioned;
 
-class V2MigrationTaskStep2 extends BuildTask
+class MigrationTaskStep2 extends BuildTask
 {
     /**
      * @inheritdoc
      */
-    protected $title = 'Version 2: Step 2 of migrating integration to using widget';
+    protected $title = 'Step 2 of Migrating from `Files` integration to using widget';
 
     /**
      * @inheritdoc
@@ -149,35 +146,43 @@ SQL;
 
     public function run($request)
     {
+        $dataObjectClasses = ClassInfo::subclassesFor(DataObject::class, false);
         $schema = DataObject::getSchema();
 
-        foreach (ClassInfo::subclassesFor(DataObject::class, false) as $className) {
-            foreach (DataObject::get($className) as $dataObject) {
+        /**
+         *
+         */
+        foreach($dataObjectClasses As $className) {
+            DataObject::get($className)->each(function (DataObject $do) use ($schema) {
                 $stages = [
                     Versioned::DRAFT => '',
                 ];
 
-                if ($dataObject->has_extension(Versioned::class)) {
+                if ($do->has_extension(Versioned::class)) {
                     $stages[Versioned::LIVE] = '_Live';
                 }
 
-                foreach ($stages as $stage=>$suffix) {
+                foreach($stages As $stage => $suffix) {
                     Versioned::set_stage($stage);
 
-                    foreach ($schema->databaseFields($dataObject->ClassName) as $fieldName=>$fieldType) {
-                        if ($fieldType === 'CloudinaryImage') {
-                            $this->handleCloudinaryImage($dataObject, $fieldName, $suffix);
-                        } else if ($fieldType === 'CloudinaryMultiImage') {
-                            // $this->handleMultiImageResource($dataObject, $fieldName, $suffix);
-                        } else if ($fieldType === 'CloudinaryFile') {
-                            // $this->handleCloudinaryFile($do, $fieldName, $suffix);
+                    foreach($schema->databaseFields($do->ClassName) As $fieldName => $fieldType) {
+                        switch($fieldType) {
+                            case 'CloudinaryImage':
+                                $this->handleCloudinaryImage($do, $fieldName, $suffix);
+                                break;
+                            case 'CloudinaryMultiImage':
+                                $this->handleMultiImageResource($do, $fieldName, $suffix);
+                                break;
+                            case 'CloudinaryFile':
+                                $this->handleCloudinaryFile($do, $fieldName, $suffix);
+                                break;
                         }
                     }
                 }
-            }
+            });
         }
 
-        $this->output('COMPLETE!!');
+        static::output('COMPLETE!!');
     }
 
     /**
@@ -277,11 +282,11 @@ SQL;
      *
      * @return void(0)
      */
-    private function handleCloudinaryImage(DataObject $dataObject, string $fieldName, string $tableSuffix)
+    private function handleCloudinaryImage(DataObject $do, string $fieldName, string $tableSuffix)
     {
         $schema = DataObject::getSchema();
 
-        $tableName = $schema->tableForField($dataObject->ClassName, $fieldName) . $tableSuffix;
+        $tableName = $schema->tableForField($do->ClassName, $fieldName) . $tableSuffix;
 
         $sql = strtr(
             static::config()->get('has_one_image_sql_template'),
@@ -290,11 +295,9 @@ SQL;
                 '{FileTable}' => $schema->tableName(File::class) . $tableSuffix,
                 '{FieldName}' => $fieldName,
                 '{TableName}' => $tableName,
-                '{ID}' => $dataObject->ID,
+                '{ID}' => $do->ID,
             ]
         );
-
-        var_dump($sql);die;
 
         $data = DB::query($sql)->first();
         if (!$data || !array_key_exists('FilePublicID', $data) || !$data['FilePublicID']) {
@@ -364,17 +367,22 @@ SQL;
     }
 
     /**
-     * @param mixed ...$arguments
-     * @param boolean $last
+     * Echo's out the arguments (automatically wraps with `<pre>` if not CLI)
+     *
+     * @return void(0)
      */
-    protected static function output(...$arguments)
+    public static function output(...$args)
     {
-        $eol = '<br>';
-
-        if (in_array(PHP_SAPI, ['cli', 'cgi', 'cgi-fcgi'])) {
-            $eol = PHP_EOL;
+        if (!Director::is_cli()) {
+            echo '<pre>';
         }
 
-        echo sprintf(...$arguments) . $eol;
+        foreach($args As $line) {
+            echo sprintf('%s%s', $line, PHP_EOL);
+        }
+
+        if (!Director::is_cli()) {
+            echo '</pre>';
+        }
     }
 }
