@@ -286,4 +286,12 @@ abstract class BaseField extends TextareaField
 
         return $options;
     }
+
+    
+    public function setMultiple(bool $isMultiple): BaseField
+    {
+        $this->isMultiple = $isMultiple;
+
+        return $this;
+    }
 }
