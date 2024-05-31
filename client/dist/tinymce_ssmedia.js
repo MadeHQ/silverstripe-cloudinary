@@ -49,31 +49,60 @@
             writable: !0
         }) : e[t] = r, e;
     }
-    var e;
-    e = {
+    var e, t;
+    e = 'img[data-shortcode="image"]', t = {
         editor: null,
-        init: function(e) {
-            var t = this;
+        init: function(t) {
+            var r = this;
             this.openCloudinaryBrowser = this.openCloudinaryBrowser.bind(this), this.insertHandler = this.insertHandler.bind(this), 
-            this.linkHandler = this.linkHandler.bind(this), this.editor = e;
-            var r = e.translate("Insert from Files"), n = e.translate("Edit image"), o = e.translate("File");
-            e.addButton("ssmedia", {
-                title: r,
+            this.linkHandler = this.linkHandler.bind(this), this.editor = t;
+            var n = "Insert from Files", o = "Edit image", i = "File";
+            "addButton" in t ? (t.addButton("ssmedia", {
+                title: n,
                 icon: "image",
                 cmd: "ssmedia",
-                stateSelector: 'img[data-shortcode="image"]'
-            }), e.addMenuItem("ssmedia", {
-                text: o,
+                stateSelector: e
+            }), t.addMenuItem("ssmedia", {
+                text: i,
                 icon: "image",
                 cmd: "ssmedia"
-            }), e.addButton("ssmediaedit", {
-                title: n,
+            }), t.addButton("ssmediaedit", {
+                title: o,
                 icon: "editimage",
                 cmd: "ssmedia"
-            }), e.addCommand("ssmedia", (function() {
-                t.openCloudinaryBrowser(t.insertHandler);
-            })), e.addCommand("sslinkfile", (function() {
-                t.openCloudinaryBrowser(t.linkHandler);
+            })) : "ui" in t && (t.ui.registry.addButton("ssmedia", {
+                tooltip: n,
+                icon: "image",
+                onAction: function() {
+                    return t.execCommand("ssmedia");
+                },
+                stateSelector: e
+            }), t.ui.registry.addMenuItem("ssmedia", {
+                text: i,
+                icon: "image",
+                onAction: function() {
+                    return t.execCommand("ssmedia");
+                }
+            }), t.ui.registry.addButton("ssmediaedit", {
+                tooltip: o,
+                icon: "edit-block",
+                onAction: function() {
+                    return t.execCommand("ssmedia");
+                }
+            }), t.ui.registry.addButton("ssmediadelete", {
+                tooltip: "Delete image",
+                icon: "remove",
+                onAction: function() {
+                    return t.execCommand("ssmedia-delete");
+                }
+            })), t.addCommand("ssmedia", (function() {
+                r.openCloudinaryBrowser(r.insertHandler);
+            })), t.addCommand("ssmedia-delete", (function() {
+                var e = t.selection.getNode();
+                t.dom.is(e, filter) ? e.remove() : console.error({
+                    error: "Unexpected selection - expected image",
+                    selectedNode: e
+                });
             }));
         },
         openCloudinaryBrowser: function(e) {
@@ -98,11 +127,11 @@
                 format: "html"
             });
             o.trim().length <= 0 && (o = prompt("Link text")), r.context && r.context.custom && r.context.custom.alt && (n = r.context.custom.alt);
-            var i = prompt("Description", n), a = i ? 'title="'.concat(i, '"') : "", s = '<a href="'.concat(t, '" ').concat(a, ">").concat(o, "</a>");
-            this.editor.execCommand("mceInsertContent", !1, s);
+            var i = prompt("Description", n), s = i ? 'title="'.concat(i, '"') : "", a = '<a href="'.concat(t, '" ').concat(s, ">").concat(o, "</a>");
+            this.editor.execCommand("mceInsertContent", !1, a);
         }
-    }, tinymce.PluginManager.add("ssmedia", (function(t) {
-        e.init(t);
+    }, tinymce.PluginManager.add("ssmedia", (function(e) {
+        t.init(e);
     }));
 })();
 //# sourceMappingURL=tinymce_ssmedia.js.map

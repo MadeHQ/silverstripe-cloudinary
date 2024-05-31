@@ -23,33 +23,70 @@
 
             this.editor = editor;
 
-            const insertText = editor.translate('Insert from Files'),
-                editText = editor.translate('Edit image'),
-                fileText = editor.translate('File');
+            const insertTitle = 'Insert from Files';
+            const editTitle = 'Edit image';
+            const deleteTitle = 'Delete image';
+            const contextTitle = 'File';
 
-            editor.addButton('ssmedia', {
-                title: insertText,
-                icon: 'image',
-                cmd: 'ssmedia',
-                stateSelector: stateSelector
-            });
-            editor.addMenuItem('ssmedia', {
-                text: fileText,
-                icon: 'image',
-                cmd: 'ssmedia'
-            });
-            editor.addButton('ssmediaedit', {
-                title: editText,
-                icon: 'editimage',
-                cmd: 'ssmedia'
-            });
+            if ('addButton' in editor) {
+                editor.addButton('ssmedia', {
+                    title: insertTitle,
+                    icon: 'image',
+                    cmd: 'ssmedia',
+                    stateSelector: stateSelector
+                });
+
+                editor.addMenuItem('ssmedia', {
+                    text: contextTitle,
+                    icon: 'image',
+                    cmd: 'ssmedia'
+                });
+
+                editor.addButton('ssmediaedit', {
+                    title: editTitle,
+                    icon: 'editimage',
+                    cmd: 'ssmedia'
+                });
+            } else if ('ui' in editor) {
+                editor.ui.registry.addButton('ssmedia', {
+                    tooltip: insertTitle,
+                    icon: 'image',
+                    onAction: () => editor.execCommand('ssmedia'),
+                    stateSelector: stateSelector
+                });
+
+                editor.ui.registry.addMenuItem('ssmedia', {
+                    text: contextTitle,
+                    icon: 'image',
+                    onAction: () => editor.execCommand('ssmedia'),
+                });
+
+                editor.ui.registry.addButton('ssmediaedit', {
+                    tooltip: editTitle,
+                    icon: 'edit-block',
+                    onAction: () => editor.execCommand('ssmedia'),
+                });
+
+                editor.ui.registry.addButton('ssmediadelete', {
+                    tooltip: deleteTitle,
+                    icon: 'remove',
+                    onAction: () => editor.execCommand('ssmedia-delete'),
+                });
+            }
 
             editor.addCommand('ssmedia', () => {
                 this.openCloudinaryBrowser(this.insertHandler);
             });
 
-            editor.addCommand('sslinkfile', () => {
-                this.openCloudinaryBrowser(this.linkHandler);
+            editor.addCommand('ssmedia-delete', () => {
+                const node = editor.selection.getNode();
+
+                if (editor.dom.is(node, filter)) {
+                  node.remove();
+                } else {
+                  // eslint-disable-next-line no-console
+                  console.error({ error: 'Unexpected selection - expected image', selectedNode: node });
+                }
             });
         },
 
@@ -142,6 +179,7 @@
             this.editor.execCommand('mceInsertContent', false, link);
         },
     };
+
     tinymce.PluginManager.add('ssmedia', function (editor) {
         ssmedia.init(editor);
     });
