@@ -91,6 +91,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @param int $offset
      * @param DBSingleResource $value
+     * @return $this
      */
     public function offsetSet($offset, $value)
     {
@@ -99,14 +100,19 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
         } else {
             $this->items[$offset] = $value;
         }
+
+        return $this;
     }
 
     /**
      * @param int $offset
+     * @return $this
      */
     public function offsetUnset($offset)
     {
         unset($this->items[$offset]);
+
+        return $this;
     }
 
     /**
