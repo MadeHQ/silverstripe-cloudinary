@@ -67,13 +67,6 @@ export default class Field extends Component {
             max_files: maxFiles - this.state.resources.length,
         };
 
-        // Safari is the devil. Force users to login manually.
-        if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
-            delete options.username;
-            delete options.timestamp;
-            delete options.signature;
-        }
-
         cloudinary.openMediaLibrary(options, {
             insertHandler: this.insertHandler,
         });
@@ -361,7 +354,7 @@ export default class Field extends Component {
             <div className="cloudinary-field__inner">
                 { this.state.loading === true && (
                     <div className="cloudinary-field__loader">
-                        <span className="sr-only">Loading…</span>
+                        <span className="cloudinary-field__sr-only">Loading…</span>
                     </div>
                 ) }
 

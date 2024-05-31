@@ -7,6 +7,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Exception;
+use MadeHQ\Cloudinary\Utils\Helper;
 use SilverStripe\ORM\Limitable;
 use SilverStripe\ORM\Map;
 use Traversable;
@@ -252,7 +253,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @return $this
      */
-    public function limit($limit, $offset = 0)
+    public function limit(?int $length, int $offset = 0): Limitable
     {
         $list = clone $this;
 
@@ -282,7 +283,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      */
     public function getLink($opts = [])
     {
-        return static::cloudinary()->uploadApi()->downloadZipUrl(array_merge([
+        return Helper::cloudinary()->uploadApi()->downloadZipUrl(array_merge([
             'resource_type' => $this->getResourceType(),
             'flatten_folders' => true,
             'use_original_filename' => true,

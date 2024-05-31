@@ -36,7 +36,6 @@ if ($valid === true) {
             'cloud_name' => $settings['cloud_name'],
             'api_key' => $settings['api_key'],
             'api_secret' => $settings['api_secret'],
-            'signature_algorithm' => Utils::ALGO_SHA256,
         ],
         'url' => [
             'secure' => true,

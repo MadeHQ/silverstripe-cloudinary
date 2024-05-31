@@ -5,6 +5,7 @@ namespace MadeHQ\Cloudinary\Controllers;
 use DateTime;
 use DateInterval;
 use DateTimeZone;
+use MadeHQ\Cloudinary\Utils\Helper;
 use SilverStripe\Control\RequestHandler;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -30,39 +31,6 @@ class API extends RequestHandler
     ];
 
     /**
-     * @var AdminApi $admin_api_instance
-     */
-    protected static $admin_api_instance = null;
-
-    /**
-     * @throws HTTPResponse_Exception
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $user = Security::getCurrentUser();
-
-        if ($user === null) {
-            throw $this->httpError(401, 'Must be logged in');
-        }
-    }
-
-    /**
-     * @return AdminApi
-     */
-    protected static function adminApi()
-    {
-        if (static::$admin_api_instance) {
-            return static::$admin_api_instance;
-        }
-
-        static::$admin_api_instance = new AdminApi();
-
-        return static::$admin_api_instance;
-    }
-
-    /**
      * @param HTTPRequest $request
      * @return HTTPResponse
      */
@@ -75,8 +43,8 @@ class API extends RequestHandler
             return $this->httpError(400);
         }
 
-        return $this->json(
-            $this->getResource($publicId, $resourceType)
+        return static::json(
+            $this->getResourceData($publicId, $resourceType)
         );
     }
 
@@ -111,208 +79,6 @@ class API extends RequestHandler
     }
 
     /**
-     * @param string $publicId
-     * @param string $resourceType
-     * @return array
-     */
-    protected function getResource($publicId, $resourceType)
-    {
-        $response = static::adminApi()->asset($publicId, [
-            'resource_type' => $resourceType,
-            'colors' => true,
-            'image_metadata' => true,
-        ])->getArrayCopy();
-
-        return $this->processResource($response);
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    protected function processResource($data)
-    {
-        $resourceType = $data['resource_type'];
-
-        $return = [
-            'asset_id' => $data['asset_id'],
-            'public_id' => $data['public_id'],
-            'name' => $this->extractName($data),
-            'title' => $this->extractTitle($data) ?: $this->extractName($data),
-            'description' => $this->extractDescription($data),
-            'format' => $this->determineFormat($data),
-            'resource_type' => $resourceType,
-            'type' => $data['type'],
-            'version' => $data['version'],
-            'bytes' => $data['bytes'],
-        ];
-
-        if ($resourceType === 'video') {
-            $isAudio = array_key_exists('is_audio', $data) && $data['is_audio'];
-
-            $return['duration'] = $data['duration'];
-            $return['actual_type'] = $isAudio ? 'audio' : 'video';
-            $return['gravity'] = $isAudio ? null : 'auto';
-            $return['transformations'] = null;
-
-            if ($isAudio === false) {
-                $return['width'] = $data['width'];
-                $return['height'] = $data['height'];
-            }
-        } else if ($resourceType === 'image') {
-            $return['credit'] = $this->extractCredit($data);
-            $return['top_colours'] = $this->extractTopColours($data);
-            $return['actual_type'] = 'image';
-            $return['foreground_colour'] = null;
-            $return['background_colour'] = null;
-            $return['transformations'] = null;
-            $return['width'] = $data['width'];
-            $return['height'] = $data['height'];
-        } else {
-            $return['actual_type'] = 'raw';
-        }
-
-        $this->extend('updateResourceData', $return, $data);
-
-        return $return;
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    protected function extractTopColours($data)
-    {
-        if (!array_key_exists('colors', $data) || !is_array($data['colors'])) {
-            return null;
-        }
-
-        $colours = $data['colors'];
-
-        $colours = array_reduce($colours, function ($carry, $item) {
-            list($colour, $predominance) = $item;
-
-            array_push($carry, [
-                'colour' => $colour,
-                'predominance' => $predominance,
-            ]);
-
-            return $carry;
-        }, []);
-
-        return array_slice($colours, 0, 10);
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected function extractName($data)
-    {
-        if (array_key_exists('original_filename', $data) && !empty($data['original_filename'])) {
-            return $data['original_filename'];
-        }
-
-        $publicId = $data['public_id'];
-
-        $publicId = explode('/', $publicId);
-
-        return end($publicId);
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected function extractTitle($data)
-    {
-        if (!array_key_exists('context', $data) || !is_array($data['context'])) {
-            return null;
-        }
-
-        if (!array_key_exists('custom', $data['context']) || !is_array($data['context']['custom'])) {
-            return null;
-        }
-
-        if (array_key_exists('caption', $data['context']['custom'])) {
-            return $data['context']['custom']['caption'];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected function extractDescription($data)
-    {
-        if (!array_key_exists('context', $data) || !is_array($data['context'])) {
-            return null;
-        }
-
-        if (!array_key_exists('custom', $data['context']) || !is_array($data['context']['custom'])) {
-            return null;
-        }
-
-        if (array_key_exists('alt', $data['context']['custom'])) {
-            return $data['context']['custom']['alt'];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected function extractCredit($data)
-    {
-        if (!array_key_exists('image_metadata', $data)) {
-            return null;
-        }
-
-        $metadata = $data['image_metadata'];
-
-        if (array_key_exists('Copyright', $metadata)) {
-            return $metadata['Copyright'];
-        }
-
-        if (array_key_exists('By-line', $metadata)) {
-            return $metadata['By-line'];
-        }
-
-        if (array_key_exists('Artist', $metadata)) {
-            return $metadata['Artist'];
-        }
-
-        if (array_key_exists('Creator', $metadata)) {
-            return $metadata['Creator'];
-        }
-
-        if (array_key_exists('XPAuthor', $metadata)) {
-            return $metadata['XPAuthor'];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param array $data
-     * @return string
-     */
-    protected function determineFormat($data)
-    {
-        $url = $data['secure_url'];
-
-        if ($extension = pathinfo($url, PATHINFO_EXTENSION)) {
-            return $extension;
-        }
-
-		return null;
-    }
-
-    /**
      * @param array $data
      * @return HTTPResponse
      */
@@ -336,7 +102,7 @@ class API extends RequestHandler
                                 continue;
                             }
 
-                            $newJSON = $this->getResource($data['to_public_id'], $oldJSON->resource_type);
+                            $newJSON = $this->getResourceData($data['to_public_id'], $oldJSON->resource_type);
 
                             $oldJSON->public_id = $data['to_public_id'];
                             $oldJSON->version = $newJSON['version'];
@@ -352,7 +118,23 @@ class API extends RequestHandler
 
         Versioned::set_stage($currentStage);
 
-        return $this->json(true, 200, 1);
+        return static::json(true, 200, 1);
+    }
+
+    /**
+     * @param string $publicId
+     * @param string $resourceType
+     * @return array
+     */
+    protected function getResourceData($publicId, $resourceType)
+    {
+        $resource = Helper::get_resource($publicId, $resourceType);
+
+        $return = Helper::process_resource($resource);
+
+        $this->extend('updateResourceData', $return, $resource);
+
+        return $return;
     }
 
     /**
@@ -361,7 +143,7 @@ class API extends RequestHandler
      * @param int $ttl
      * @return HTTPResponse
      */
-    protected function json($data, $status = 200, $ttl = 300)
+    public static function json($data, $status = 200, $ttl = 300)
     {
         $response = new HTTPResponse();
 
@@ -374,7 +156,7 @@ class API extends RequestHandler
         $expire->setTimezone(new DateTimeZone('UTC'));
 
         $response->addHeader('Content-Type', 'application/json; charset=utf-8')
-            ->addHeader('Access-Control-Allow-Methods', 'GET')
+            ->addHeader('Access-Control-Allow-Methods', 'GET,OPTIONS')
             ->addHeader('Access-Control-Allow-Credentials', 'true')
             ->addHeader('Access-Control-Allow-Origin', '*')
             ->addHeader('Cache-Control', 'public, must-revalidate, stale-while-revalidate=86400, no-transform')

@@ -177,40 +177,27 @@ export default class Resource extends Component {
             return false;
         }
 
-        const moveUpClassNames = [
-            'cloudinary-field-order__move',
-            'cloudinary-field-order__move--up',
-        ];
-        const moveDownClassNames = [
-            'cloudinary-field-order__move',
-            'cloudinary-field-order__move--down',
-        ];
-
-        if (firstItem) {
-            moveUpClassNames.push('cloudinary-field-order__move--first');
-        }
-        if (lastItem) {
-            moveDownClassNames.push('cloudinary-field-order__move--last');
-        }
-
         return (
             <div className="cloudinary-field-order">
-                <a
-                    className={moveUpClassNames.join(' ')}
+                <button
+                    className={ classnames('btn', 'btn-sm', 'btn-block', 'cloudinary-field-order__move', 'cloudinary-field-order__move--up', firstItem && 'cloudinary-field-order__move--first') }
+                    type="button"
                     onClick={ this.moveResourceUp }
                     disabled={ firstItem }
                     title="Move Up"
                 >
                     <ins className="font-icon-up-open">&nbsp;</ins>
-                </a>
-                <a
-                    className={moveDownClassNames.join(' ')}
+                </button>
+
+                <button
+                    className={ classnames('btn', 'btn-sm', 'btn-block', 'cloudinary-field-order__move', 'cloudinary-field-order__move--down', lastItem && 'cloudinary-field-order__move--last') }
+                    type="button"
                     onClick={ this.moveResourceDown }
                     disabled={ lastItem }
                     title="Move Down"
                 >
                     <ins className="font-icon-down-open">&nbsp;</ins>
-                </a>
+                </button>
             </div>
         );
     }
@@ -232,20 +219,20 @@ export default class Resource extends Component {
 
                     <div className="cloudinary-field__actions">
                         <button type="button" className="cloudinary-field__action cloudinary-field__action--remove" title="Remove" onClick={ this.removeResource }>
-                            <span className="sr-only">Remove</span>
+                            <span className="cloudinary-field__sr">Remove</span>
                         </button>
 
                         <a className="cloudinary-field__action cloudinary-field__action--link" title="View original" href={ this.url() } target="_blank" rel="noopener noreferrer">
-                            <span className="sr-only">View original</span>
+                            <span className="cloudinary-field__sr">View original</span>
                         </a>
                     </div>
                 </div>
 
                 <div className="cloudinary-field__meta">
-                    {this.fields().map(field => {
+                    {this.fields().map((field, index) => {
                         if (field === 'title') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div key={index} className="cloudinary-field__field">
                                     <label htmlFor={ `${public_id}_title` } className="cloudinary-field__label">
                                         { this.titleFieldLabel() }
                                     </label>
@@ -259,7 +246,7 @@ export default class Resource extends Component {
 
                         if (field === 'description') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div key={index} className="cloudinary-field__field">
                                     <label htmlFor={ `${public_id}_description` } className="cloudinary-field__label">
                                         { this.descriptionFieldLabel() }
                                     </label>
@@ -273,7 +260,7 @@ export default class Resource extends Component {
 
                         if (field === 'credit') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div key={index} className="cloudinary-field__field">
                                     <label htmlFor={ `${public_id}_credit` } className="cloudinary-field__label">
                                         { this.creditFieldLabel() }
                                     </label>
@@ -287,7 +274,7 @@ export default class Resource extends Component {
 
                         if (field === 'gravity') {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div key={index} className="cloudinary-field__field">
                                     <label htmlFor={ `${public_id}_gravity` } className="cloudinary-field__label">
                                         { this.gravityFieldLabel() }
                                     </label>
@@ -305,7 +292,7 @@ export default class Resource extends Component {
 
                         if (field === 'fg-colour' && resource_type === 'image' && top_colours && top_colours.length) {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div key={index} className="cloudinary-field__field">
                                     <label className="cloudinary-field__label">
                                         { this.fgColourFieldLabel() }
                                     </label>
@@ -333,7 +320,7 @@ export default class Resource extends Component {
 
                         if (field === 'bg-colour' && resource_type === 'image' && top_colours && top_colours.length) {
                             return (
-                                <div className="cloudinary-field__field">
+                                <div key={index} className="cloudinary-field__field">
                                     <label className="cloudinary-field__label">
                                         { this.bgColourFieldLabel() }
                                     </label>
