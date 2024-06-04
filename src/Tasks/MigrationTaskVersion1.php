@@ -2,10 +2,14 @@
 
 namespace MadeHQ\Cloudinary\Tasks;
 
+use MadeHQ\Cloudinary\FieldType\DBFileResource;
+use MadeHQ\Cloudinary\FieldType\DBImageResource;
+use MadeHQ\Cloudinary\FieldType\DBMediaResource;
 use MadeHQ\Cloudinary\Utils\Helper;
 use Psr\SimpleCache\CacheInterface;
 use ReflectionClass;
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DataObject;
@@ -21,41 +25,14 @@ class MigrationTaskVersion1 extends BuildTask
     /**
      * @inheritdoc
      */
-    protected $description = 'This step will give you a list of classes and fields that will need to be updated in PHP (gives the root file of the class for reference but the fields may be in an extension or similar)';
+    protected $description = 'Run this task after you have moved all the assets from has_one to db - the name of the fields should be kept the same';
 
     protected static $cache;
 
     protected static $cloudinaryClasses = [
-        'CloudinaryFile',
-        'CloudinaryAudio',
-        'CloudinaryImage',
-        'CloudinaryVideo',
-    ];
-
-    protected static $sql = [
-        'CloudinaryFile' => <<<SQL
-            SELECT a.*
-            FROM CloudinaryFile a
-            WHERE a.ID = %d
-    SQL,
-        'CloudinaryAudio' => <<<SQL
-            SELECT a.*, b.*
-            FROM CloudinaryAudio a
-            INNER JOIN CloudinaryFile b ON a.ID = b.ID
-            WHERE a.ID = %d
-    SQL,
-        'CloudinaryImage' => <<<SQL
-            SELECT a.*, b.*
-            FROM CloudinaryImage a
-            INNER JOIN CloudinaryFile b ON a.ID = b.ID
-            WHERE a.ID = %d
-    SQL,
-        'CloudinaryVideo' => <<<SQL
-            SELECT a.*, b.*
-            FROM CloudinaryVideo a
-            INNER JOIN CloudinaryFile b ON a.ID = b.ID
-            WHERE a.ID = %d
-    SQL,
+        DBImageResource::class,
+        DBMediaResource::class,
+        DBFileResource::class,
     ];
 
     public function run($request)
@@ -67,10 +44,6 @@ class MigrationTaskVersion1 extends BuildTask
         static::$cache = Injector::inst()->get(CacheInterface::class . '.cloudinary');
 
         foreach (ClassInfo::subclassesFor(DataObject::class, false) as $className) {
-            if ($className !== 'Page') {
-                continue;
-            }
-
             $singleton = singleton($className);
 
             $baseTable = DataObject::getSchema()->tableName($className);
@@ -85,33 +58,9 @@ class MigrationTaskVersion1 extends BuildTask
                 array_push($tables, $baseTable . '_Live');
             }
 
-            foreach ($singleton->hasOne() as $field=>$relatedClass) {
+            foreach ((array) Config::inst()->get($className, 'db', Config::UNINHERITED) as $field=>$type) {
                 foreach (static::$cloudinaryClasses as $cloudinaryClass) {
-                    if ($this->getIsClassOrSubclassOf($relatedClass, $cloudinaryClass)) {
-                        array_push($fields, [
-                            'type' => $cloudinaryClass,
-                            'source' => $field . 'ID',
-                            'target' => $field,
-                        ]);
-                    }
-                }
-            }
-
-            foreach ($singleton->hasMany() as $field=>$relatedClass) {
-                foreach (static::$cloudinaryClasses as $cloudinaryClass) {
-                    if ($this->getIsClassOrSubclassOf($relatedClass, $cloudinaryClass)) {
-                        array_push($fields, [
-                            'type' => $cloudinaryClass,
-                            'source' => $field . 'ID',
-                            'target' => $field,
-                        ]);
-                    }
-                }
-            }
-
-            foreach ($singleton->manyMany() as $field=>$relatedClass) {
-                foreach (static::$cloudinaryClasses as $cloudinaryClass) {
-                    if ($this->getIsClassOrSubclassOf($relatedClass, $cloudinaryClass)) {
+                    if (Injector::inst()->get($type) instanceof $cloudinaryClass) {
                         array_push($fields, [
                             'type' => $cloudinaryClass,
                             'source' => $field . 'ID',
@@ -145,7 +94,12 @@ SQL);
                     foreach ($records as $record) {
                         $this->output('===> Moving record ' . $record['ID'] . ' asset ' . $record[$field['source']]);
 
-                        $data = DB::query(sprintf(static::$sql[$field['type']], $record[$field['source']]))->first();
+                        $data = DB::query(<<<SQL
+                            SELECT a.*, b.*
+                            FROM CloudinaryFile a
+                            LEFT OUTER JOIN CloudinaryImage b ON a.ID = b.ID
+                            WHERE a.ID = {$record[$field['source']]}
+SQL)->first();
 
                         if (!$data) {
                             $this->output('====> Skipping: no data found');
@@ -186,16 +140,6 @@ SQL, [$resource]);
         }
 
         $this->output('=== Task Ended ===');
-    }
-
-    /**
-     * @param string $class
-     * @param string $baseClass
-     * @return boolean
-     */
-    protected function getIsClassOrSubclassOf($class, $baseClass)
-    {
-        return $class === $baseClass || is_subclass_of($class, $baseClass);
     }
 
     protected function getResource($url)
