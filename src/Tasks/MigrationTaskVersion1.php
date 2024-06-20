@@ -14,6 +14,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Dev\BuildTask;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DB;
+use Sheadawson\Linkable\Models\Link;
 
 class MigrationTaskVersion1 extends BuildTask
 {
@@ -44,6 +45,10 @@ class MigrationTaskVersion1 extends BuildTask
         static::$cache = Injector::inst()->get(CacheInterface::class . '.cloudinary');
 
         foreach (ClassInfo::subclassesFor(DataObject::class, false) as $className) {
+            if ($className === Link::class) {
+                continue;
+            }
+
             $singleton = singleton($className);
 
             $baseTable = DataObject::getSchema()->tableName($className);
