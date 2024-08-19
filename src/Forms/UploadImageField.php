@@ -71,4 +71,9 @@ class UploadImageField extends UploadFileField
 
         $this->removeField('Description');
     }
+
+    public function performReadonlyTransformation()
+    {
+        return $this->castedCopy(UploadImageField_Readonly::class);
+    }
 }
