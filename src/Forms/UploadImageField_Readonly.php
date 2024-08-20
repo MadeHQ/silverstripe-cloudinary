@@ -11,7 +11,6 @@ use MadeHQ\Cloudinary\Model\File;
  */
 class UploadImageField_Readonly extends ReadonlyField
 {
-
     /**
      * Overloaded to display the correctly formatted value for this data type
      *
@@ -20,22 +19,23 @@ class UploadImageField_Readonly extends ReadonlyField
      */
     public function Field($properties = [])
     {
-        if ($this->value) {
-            $fileId = $this->value->FileID;
-            $file = DataObject::get(File::class)->filter('ID', $fileId);
-
-            if ($file->count()) {
-                $remoteData = json_decode($file->first()->RemoteData);
-
-                if ($remoteData) {
-                    $image = sprintf('https://res.cloudinary.com/detroit-symphony-orchestra/image/upload/c_fill,f_avif,g_auto,h_160,q_auto:eco,w_160/v1589819311/%s', $remoteData->public_id, );
-                    $this->setDescription($remoteData->secure_url);
-                    return "<img width='160' class='readonly " . $this->extraClass() . "' id='" . $this->ID() . "' src='" . $image . "'>";
-                }
-            }
+        if (empty($this->value)) {
+            $this->setValue(null);
+            return parent::Field($properties);
         }
 
-        return "<img src=''>";
+        $image = DataObject::get_by_id(File::class, $this->value->FileID);
+
+        if (!$image || !$image->exists()) {
+            $this->setValue(null);
+            return parent::Field($properties);
+        }
+
+        $this->setDescription($image->SecureURL);
+
+        return sprintf(
+            '<img width="160" class="readonly %s" id="%s" src="%s">', $this->extraClass(), $this->ID(), $image->Size(160, 160)->Crop('fill')->forTemplate()
+        );
     }
 
     /**
