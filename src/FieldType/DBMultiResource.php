@@ -10,6 +10,7 @@ use Exception;
 use MadeHQ\Cloudinary\Utils\Helper;
 use SilverStripe\ORM\Limitable;
 use SilverStripe\ORM\Map;
+use Traversable;
 
 abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Countable, IteratorAggregate, Limitable
 {
@@ -61,7 +62,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new ArrayIterator($this->items);
     }
@@ -70,7 +71,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @return boolean
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return array_key_exists($offset, $this->items);
     }
@@ -79,7 +80,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
      * @param int $offset
      * @return DBSingleResource|null
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         if ($this->offsetExists($offset)) {
             return $this->items[$offset];
@@ -91,34 +92,28 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     /**
      * @param int $offset
      * @param DBSingleResource $value
-     * @return $this
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset == null) {
             $this->items[] = $value;
         } else {
             $this->items[$offset] = $value;
         }
-
-        return $this;
     }
 
     /**
      * @param int $offset
-     * @return $this
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->items[$offset]);
-
-        return $this;
     }
 
     /**
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->items);
     }
