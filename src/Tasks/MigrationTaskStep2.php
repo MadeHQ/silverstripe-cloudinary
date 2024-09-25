@@ -147,6 +147,8 @@ WHERE
 ;
 SQL;
 
+    private static $ignored_classes = [];
+
     private $requestCount = 0;
 
     public function __construct(Cloudinary $cloudinary, CacheInterface $cache)
@@ -167,6 +169,10 @@ SQL;
          *
          */
         foreach($dataObjectClasses As $className) {
+            if (in_array($className, static::config()->get('ignored_classes'))) {
+                continue;
+            }
+
             DataObject::get($className)->each(function (DataObject $do) use ($schema) {
                 $stages = [
                     Versioned::DRAFT => '',
@@ -222,7 +228,7 @@ SQL;
             ]
         );
 
-        $data = DB::query($sql)->first();
+        $data = DB::query($sql)->record();
         if (!$data || !array_key_exists('FilePublicID', $data) || !$data['FilePublicID']) {
             return;
         }
@@ -313,7 +319,7 @@ SQL;
             ]
         );
 
-        $data = DB::query($sql)->first();
+        $data = DB::query($sql)->record();
         if (!$data || !array_key_exists('FilePublicID', $data) || !$data['FilePublicID']) {
             return;
         }
