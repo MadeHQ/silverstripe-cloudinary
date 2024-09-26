@@ -15,6 +15,7 @@ const config = {
     context: path.resolve(__dirname, paths.js),
     entry: {
         bundle: './bundle.js',
+        tinymce: './TinyMCE_ssmedia.js',
         userform: './userform.js',
     },
     mode: env,

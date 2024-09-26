@@ -1,6 +1,7 @@
 'use strict';
 
 /* global CLOUDINARY_CONFIG, cloudinary, tinymce */
+import { transformationStringFromObject, Cloudinary } from "@cloudinary/url-gen";
 
 (() => {
     const stateSelector = 'img[data-shortcode="image"]';
@@ -18,8 +19,8 @@
          */
         init(editor) {
             this.openCloudinaryBrowser = this.openCloudinaryBrowser.bind(this);
-            this.insertHandler = this.insertHandler.bind(this);
-            this.linkHandler = this.linkHandler.bind(this);
+            this.insertImageHandler = this.insertImageHandler.bind(this);
+            this.insertLinkHandler = this.insertLinkHandler.bind(this);
 
             this.editor = editor;
 
@@ -27,29 +28,30 @@
                 editText = editor.translate('Edit image'),
                 fileText = editor.translate('File');
 
-            editor.addButton('ssmedia', {
+            editor.ui.registry.addButton('ssmedia', {
                 title: insertText,
                 icon: 'image',
                 cmd: 'ssmedia',
+                onAction: () => editor.execCommand('ssmedia'),
                 stateSelector: stateSelector
             });
-            editor.addMenuItem('ssmedia', {
+            editor.ui.registry.addMenuItem('ssmedia', {
                 text: fileText,
                 icon: 'image',
                 cmd: 'ssmedia'
             });
-            editor.addButton('ssmediaedit', {
+            editor.ui.registry.addButton('ssmediaedit', {
                 title: editText,
                 icon: 'editimage',
                 cmd: 'ssmedia'
             });
 
             editor.addCommand('ssmedia', () => {
-                this.openCloudinaryBrowser(this.insertHandler);
+                this.openCloudinaryBrowser(this.insertImageHandler);
             });
 
             editor.addCommand('sslinkfile', () => {
-                this.openCloudinaryBrowser(this.linkHandler);
+                this.openCloudinaryBrowser(this.insertLinkHandler);
             });
         },
 
@@ -70,12 +72,6 @@
                 multiple: false,
             };
 
-            const defaultTransformations = this.editor.getParam('default_transformations');
-
-            if (defaultTransformations) {
-                options.default_transformations = [defaultTransformations];
-            }
-
             // Safari is the devil. Force users to login manually.
             if (navigator.userAgent.indexOf('Safari') != -1 && navigator.userAgent.indexOf('Chrome') == -1) {
                 delete options.username;
@@ -88,26 +84,51 @@
             });
         },
 
+        cloudinaryInstance() {
+            return new Cloudinary({
+                cloud: {
+                    cloudName: CLOUDINARY_CONFIG.cloud_name,
+                }
+            });
+        },
+
         /**
          * Inserts the data into the editor
          *
          * @param {*} response
          */
-        insertHandler(response) {
+        insertImageHandler(response) {
             const asset = response.assets[0];
             if (asset.resource_type !== 'image') {
                 throw `Resource type of [${asset.resource_type}] is not supported`;
             }
 
-            let secureUrl;
-            if (asset.derived && asset.derived.length > 0) {
-                secureUrl = asset.derived[0].secure_url;
-            } else {
-                secureUrl = asset.secure_url;
+            const image = this.cloudinaryInstance().image(asset.public_id);
+            const defaultTransformations = this.editor.getParam('default_transformations');
+
+            if (defaultTransformations) {
+                const transformationString = transformationStringFromObject(defaultTransformations);
+                image.addTransformation(transformationString);
             }
 
-            const img = `<img src="${secureUrl}" />`;
-            this.editor.execCommand('mceInsertContent', false, img);
+            // Copied same logic from `API::extractDescription()`
+            const defaultAltText = asset.context?.custom?.alt;
+            // Copied same logic from `API::extractTitle()`
+            const defaultTitle = asset.context?.custom?.caption;
+
+            const altText = prompt('Description', defaultAltText);
+            const titleText = prompt('Title', defaultTitle);
+            const img = document.createElement('img');
+            img.src = image.toURL();
+
+            if (altText) {
+                img.alt = altText;
+            }
+            if (titleText) {
+                img.title = titleText;
+            }
+
+            this.editor.execCommand('mceInsertContent', false, img.outerHTML);
         },
 
         /**
@@ -115,7 +136,7 @@
          *
          * @param {*} response
          */
-        linkHandler(response) {
+        insertLinkHandler(response) {
             const asset = response.assets[0];
 
             let secureUrl;
