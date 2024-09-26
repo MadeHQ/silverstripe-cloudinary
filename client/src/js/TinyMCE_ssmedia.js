@@ -99,7 +99,6 @@ import { transformationStringFromObject, Cloudinary } from "@cloudinary/url-gen"
          */
         insertImageHandler(response) {
             const asset = response.assets[0];
-console.log('insertImageHandler', asset);
             if (asset.resource_type !== 'image') {
                 throw `Resource type of [${asset.resource_type}] is not supported`;
             }
@@ -113,9 +112,9 @@ console.log('insertImageHandler', asset);
             }
 
             // Copied same logic from `API::extractDescription()`
-            const defaultAltText = asset.context && asset.context.custom && asset.context.custom.alt ? asset.context.custom.alt : '';
+            const defaultAltText = asset.context?.custom?.alt;
             // Copied same logic from `API::extractTitle()`
-            const defaultTitle = asset.context && asset.context.custom && asset.context.custom.alt ? asset.context.custom.caption : '';
+            const defaultTitle = asset.context?.custom?.caption;
 
             const altText = prompt('Description', defaultAltText);
             const titleText = prompt('Title', defaultTitle);
