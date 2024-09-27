@@ -147,6 +147,12 @@ WHERE
 ;
 SQL;
 
+    /**
+     * List of Classes to ignore
+     *
+     * @config
+     * @var array
+     */
     private static $ignored_classes = [];
 
     private $requestCount = 0;
@@ -165,15 +171,18 @@ SQL;
         $dataObjectClasses = ClassInfo::subclassesFor(DataObject::class, false);
         $schema = DataObject::getSchema();
 
+        $ignoredClasses = static::config()->get('ignored_classes');
         /**
          *
          */
         foreach($dataObjectClasses As $className) {
-            if (in_array($className, static::config()->get('ignored_classes'))) {
+            if (in_array($className, $ignoredClasses)) {
                 continue;
             }
 
-            DataObject::get($className)->each(function (DataObject $do) use ($schema) {
+            DataObject::get($className)->filter([
+                'ClassName:not' => $ignoredClasses,
+            ])->each(function (DataObject $do) use ($schema) {
                 $stages = [
                     Versioned::DRAFT => '',
                 ];
