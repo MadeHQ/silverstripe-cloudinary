@@ -14,6 +14,9 @@ trait Crop
      */
     public function Crop($width, $height, $gravity = null)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         if (empty($gravity) === true) {

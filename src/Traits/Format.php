@@ -13,6 +13,9 @@ trait Format
      */
     public function Format($format)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->delivery(Delivery::format(TransformationFormat::$format()));

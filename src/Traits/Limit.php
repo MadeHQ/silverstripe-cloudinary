@@ -14,6 +14,9 @@ trait Limit
      */
     public function Limit($width, $height, $aspectRatio = null)
     {
+        if (!$this->asset) {
+            return null;
+        }
         $clone = $this->clone();
 
         $clone->asset->resize(Resize::limitFit($width, $height, $aspectRatio));
