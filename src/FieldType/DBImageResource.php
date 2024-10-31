@@ -186,6 +186,10 @@ class DBImageResource extends DBSingleResource
     {
         $asset = $this->asset;
 
+        if ($asset == null) {
+            return '';
+        }
+
         $transformations = $asset->getTransformation()->toUrl();
 
         if (!preg_match('~(/|,)f_~', $transformations) && $format = static::config()->get('default_format')) {
