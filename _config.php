@@ -61,4 +61,10 @@ call_user_func(function () {
         'ssmedia' => $module
             ->getResource('client/dist/tinymce.js'),
     ]);
+
+    $validElements = $config->getOption('extended_valid_elements');
+
+    $validElements.= ',img[role]';
+
+    $config->setOption('extended_valid_elements', $validElements);
 });

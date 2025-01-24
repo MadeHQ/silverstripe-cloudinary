@@ -118,11 +118,17 @@ import { transformationStringFromObject, Cloudinary } from "@cloudinary/url-gen"
 
             const altText = prompt('Description', defaultAltText);
             const titleText = prompt('Title', defaultTitle);
+            let presentationOnly;
+            if (!altText) {
+                presentationOnly = confirm('Presentation only?\nApplies a presentation role so the image is ignored by screenreaders');
+            }
             const img = document.createElement('img');
             img.src = image.toURL();
 
             if (altText) {
                 img.alt = altText;
+            } else if (presentationOnly) {
+                img.role = "presentation";
             }
             if (titleText) {
                 img.title = titleText;
