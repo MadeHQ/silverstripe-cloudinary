@@ -257,7 +257,7 @@ abstract class DBMultiResource extends DBBaseResource implements ArrayAccess, Co
     {
         $list = clone $this;
 
-        $list->items = array_slice($this->items, $offset, $limit);
+        $list->items = array_slice($this->items, $offset, $length);
 
         return $list;
     }
