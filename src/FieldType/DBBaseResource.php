@@ -69,6 +69,17 @@ abstract class DBBaseResource extends DBText
     protected $asset = null;
 
     /**
+     * Only show as exists if the JSON is valid.
+     * @todo: Use `json_validate()` once it exists maybe??
+     *
+     * {@inheritdoc}
+     */
+    public function exists()
+    {
+        return parent::exists() && $this->getJSON();
+    }
+
+    /**
      * @return stdClass
      */
     protected function getJSON()
@@ -115,7 +126,7 @@ abstract class DBBaseResource extends DBText
             return $carry;
         }, []);
     }
-
+    
     /**
      * @param string $abbr
      * @return string
