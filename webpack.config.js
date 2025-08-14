@@ -64,10 +64,10 @@ const config = {
     devtool: isProd ? 'source-map' : 'eval-source-map',
     plugins: (function() {
         var plugins = [
-    //         // new webpack.ProvidePlugin({
-    //         //     jQuery: 'jquery',
-    //         //     $: 'jquery',
-    //         // }),
+            // new webpack.ProvidePlugin({
+            //     jQuery: 'jquery',
+            //     $: 'jquery',
+            // }),
             new ESLintPlugin({
                 files: `${paths.js}/**/*.js`,
             }),

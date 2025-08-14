@@ -119,16 +119,26 @@ export default class Field extends Component {
             }
 
             let requests = assets.map(asset => {
-                return this.loadResource(asset.public_id, asset.resource_type);
+                return this.loadResource(asset.public_id, asset.resource_type)
+                    .catch(err => {
+                        // If we fail to load the resource, just log it and return false
+                        jQuery.noticeAdd({text: `Failed to load resource "${asset.public_id}"`, stay: false, type: 'error'})
+                        console.error(`Failed to load resource: ${asset.public_id}`, err);
+                        return false;
+                    });
             });
 
             Promise.all(requests).then(responses => {
-                responses = responses.map(response => {
+                responses = responses.reduce((carry, response) => {
                     const asset = assets.find(item => {
                         return item.public_id === response.public_id;
                     });
 
-                    return this.processResource(asset, response);
+                    if (asset) {
+                        carry.push(this.processResource(asset, response));
+                    }
+
+                    return carry;
                 });
 
                 resolve(responses);
