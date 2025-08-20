@@ -139,7 +139,7 @@ export default class Field extends Component {
                     }
 
                     return carry;
-                });
+                }, []);
 
                 resolve(responses);
             });
