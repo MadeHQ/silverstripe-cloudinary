@@ -103,12 +103,21 @@ import { transformationStringFromObject, Cloudinary } from "@cloudinary/url-gen"
                 throw `Resource type of [${asset.resource_type}] is not supported`;
             }
 
-            const image = this.cloudinaryInstance().image(asset.public_id);
-            const defaultTransformations = this.editor.getParam('default_transformations');
+            let url = null;
 
-            if (defaultTransformations) {
-                const transformationString = transformationStringFromObject(defaultTransformations);
-                image.addTransformation(transformationString);
+            if (asset.derived && asset.derived.length > 0) {
+                url = asset.derived[0].secure_url;
+            } else {
+                const image = this.cloudinaryInstance().image(asset.public_id);
+
+                const defaultTransformations = this.editor.getParam('default_transformations');
+
+                if (defaultTransformations) {
+                    const transformationString = transformationStringFromObject(defaultTransformations);
+                    image.addTransformation(transformationString);
+                }
+
+                url = image.toURL();
             }
 
             // Copied same logic from `API::extractDescription()`
@@ -119,7 +128,7 @@ import { transformationStringFromObject, Cloudinary } from "@cloudinary/url-gen"
             const altText = prompt('Description', defaultAltText);
             const titleText = prompt('Title', defaultTitle);
             const img = document.createElement('img');
-            img.src = image.toURL();
+            img.src = url;
 
             if (altText) {
                 img.alt = altText;
