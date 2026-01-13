@@ -76,6 +76,17 @@ abstract class DBBaseResource extends DBText
     protected $asset = null;
 
     /**
+     * (non-PHPdoc)
+     * @see DBField::exists()
+     */
+    public function exists()
+    {
+        $value = $this->RAW();
+        // Will use `json_validate()` if exists otherwise falls back to `json_decode()`
+        return $value && (function_exists('json_validate') ? json_validate($value) : !!json_decode($value));
+    }
+
+    /**
      * @return Cloudinary
      */
     protected static function cloudinary()
