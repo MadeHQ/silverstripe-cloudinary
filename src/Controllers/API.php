@@ -268,11 +268,11 @@ class API extends RequestHandler
      */
     protected function extractCredit($data)
     {
-        if (!array_key_exists('image_metadata', $data)) {
+        $metadata = $data['context']['custom'] ?? null;
+
+        if (!$metadata) {
             return null;
         }
-
-        $metadata = $data['image_metadata'];
 
         if (array_key_exists('Copyright', $metadata)) {
             return $metadata['Copyright'];
