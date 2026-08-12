@@ -119,7 +119,7 @@ export default class Field extends Component {
             }
 
             let requests = assets.map(asset => {
-                return this.loadResource(asset.public_id, asset.resource_type)
+                return this.loadResource(asset.public_id, asset.resource_type, asset.type)
                     .catch(err => {
                         // If we fail to load the resource, just log it and return false
                         jQuery.noticeAdd({text: `Failed to load resource "${asset.public_id}"`, stay: false, type: 'error'})
@@ -146,10 +146,11 @@ export default class Field extends Component {
         });
     }
 
-    loadResource(publicId, resourceType) {
+    loadResource(publicId, resourceType, type) {
         return jQuery.get('cloudinary-api/resource', {
             public_id: publicId,
             resource_type: resourceType,
+            type: type,
         });
     }
 
