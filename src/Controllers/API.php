@@ -70,13 +70,14 @@ class API extends RequestHandler
     {
         $publicId = $request->requestVar('public_id');
         $resourceType = $request->requestVar('resource_type');
+        $type = $request->requestVar('type');
 
         if (!$publicId || !$resourceType) {
             return $this->httpError(400);
         }
 
         return $this->json(
-            $this->getResource($publicId, $resourceType)
+            $this->getResource($publicId, $resourceType, $type)
         );
     }
 
@@ -115,10 +116,11 @@ class API extends RequestHandler
      * @param string $resourceType
      * @return array
      */
-    protected function getResource($publicId, $resourceType)
+    protected function getResource($publicId, $resourceType, $type)
     {
         $response = static::adminApi()->asset($publicId, [
             'resource_type' => $resourceType,
+            'type' => $type,
             'colors' => true,
             'image_metadata' => true,
         ])->getArrayCopy();
