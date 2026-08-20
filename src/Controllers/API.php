@@ -116,7 +116,7 @@ class API extends RequestHandler
      * @param string $resourceType
      * @return array
      */
-    protected function getResource($publicId, $resourceType, $type)
+    protected function getResource($publicId, $resourceType, $type = 'upload')
     {
         $response = static::adminApi()->asset($publicId, [
             'resource_type' => $resourceType,
